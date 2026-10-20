@@ -6,13 +6,13 @@
 <meta name="theme-color" content="#05110a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Recon Cam V12.2 · Distance Vision</title>
+<title>Recon Cam V12.3 · Smooth Live Camera</title>
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
 <style>
 :root{--green:#8aff9f;--bg:#061008;--glass:rgba(1,15,8,.8);--line:rgba(139,255,160,.27);--safe:env(safe-area-inset-bottom,0px);color-scheme:dark}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#000;color:white;font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif}button,select,input{font:inherit}button{cursor:pointer;touch-action:manipulation}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #e8fa64;outline-offset:2px}.screen{position:fixed;inset:0;background:#000;overflow:hidden}.feed{position:absolute;inset:0;overflow:hidden;background:radial-gradient(circle,#1c3026,#020503 65%)}#video,#overlay{position:absolute;width:100%;height:100%;inset:0;object-fit:cover;transform-origin:50% 50%}#overlay{pointer-events:none}.feed:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.47),transparent 19%,transparent 66%,rgba(0,0,0,.66))}.hud{z-index:3;position:absolute;left:0;right:0;padding:0 12px}.top{top:0;padding-top:calc(env(safe-area-inset-top,0px) + 8px);display:flex;gap:8px;align-items:center;justify-content:space-between}.brand{display:flex;gap:8px;min-width:0;align-items:center}.brandmark{background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:7px;color:var(--green);font-size:23px;font-weight:900}.brand h1{font-size:15px;margin:0;letter-spacing:.10em;white-space:nowrap}.brand small{display:block;color:#bbd7c2;font-size:10px;letter-spacing:.05em}.topbuttons{display:flex;gap:7px}.control{border:1px solid var(--line);color:white;background:var(--glass);border-radius:12px;min-height:43px;padding:9px 12px;font-size:12px;font-weight:800;backdrop-filter:blur(8px)}.control[aria-pressed="true"],.control.selected{background:#7df59a;color:#061208}.control.alert{border-color:#ffc174}.status{top:calc(env(safe-area-inset-top,0px) + 65px);display:flex;justify-content:space-between;gap:8px;pointer-events:none}.pill{background:var(--glass);border:1px solid var(--line);color:#c6f4cd;font-size:11px;min-height:30px;padding:7px 9px;border-radius:9px;font-weight:800;backdrop-filter:blur(8px);max-width:48%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pill.warn{border-color:#ffbc6a;color:#ffe6c3}.weaponBadge{pointer-events:auto;cursor:pointer;text-align:center;white-space:normal;line-height:1.15;min-height:35px;font-family:inherit}.weaponBadge:focus-visible{outline:3px solid white;outline-offset:2px}.centerMessage{z-index:4;position:absolute;left:12%;right:12%;top:39%;background:rgba(0,0,0,.82);border:1px solid #4e8960;color:#f0ffed;padding:16px;border-radius:15px;text-align:center;font-size:14px;line-height:1.5;box-shadow:0 5px 25px #0009}.centerMessage[hidden]{display:none}.crosshair{position:absolute;z-index:2;top:50%;left:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border:1px solid #baffc275;border-radius:50%;pointer-events:none}.bottom{bottom:calc(var(--safe) + 8px);display:grid;gap:8px}.row{display:flex;align-items:center;justify-content:center;gap:7px}.row .control{min-height:44px}.row .compact{padding:7px 10px}.zoomRead{background:var(--glass);border:1px solid var(--line);border-radius:9px;min-width:67px;text-align:center;font-size:13px;font-weight:800;padding:11px 9px}.readDock{border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(14px);padding:10px;border-radius:14px;display:none;max-height:28dvh;overflow-y:auto}.readDock.show{display:block}.readHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:800}.readLines{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;max-height:13dvh;overflow:auto}.word{background:#172d1e;color:white;border:1px solid #386c44;border-radius:8px;padding:8px 10px;min-height:37px;font-size:14px;max-width:100%;overflow-wrap:anywhere}.word.active{background:#98ffaf;color:#05200b}.hint{font-size:11px;color:#c4d7c6;line-height:1.3}.readActions{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px}.readActions button{background:#1b4028;border:1px solid #54775c;border-radius:9px;color:white;padding:9px;font-size:12px;font-weight:800;min-height:38px}.sheet{z-index:9;position:absolute;inset:0;background:rgba(0,0,0,.56);display:none;align-items:flex-end}.sheet.open{display:flex}.sheetContent{width:100%;background:#0a1b10;border:1px solid #3d6546;border-bottom:0;border-radius:20px 20px 0 0;max-height:87dvh;overflow-y:auto;padding:14px 15px calc(var(--safe) + 20px);box-shadow:0 -14px 40px #0009}.sheetHeader{display:flex;align-items:center;justify-content:space-between;gap:10px}.sheetHeader h2{font-size:18px;margin:3px 0 12px}.settingsGroup{background:#102418;border:1px solid #36523d;border-radius:13px;padding:11px;margin:0 0 10px;display:grid;gap:7px}.settingsGroup h3{font-size:13px;margin:0;color:#baffb8}.settingsGroup p{margin:0;color:#c7d7ca;font-size:12px;line-height:1.45}.settingsGroup select,.settingsGroup input[type=range]{width:100%}.settingsGroup select{background:#051107;border:1px solid #4c7457;color:white;border-radius:9px;padding:9px;font-size:15px;min-height:40px}.settingsGroup label{font-size:12px;color:#dbf0e2}.switchLine{display:flex;justify-content:space-between;align-items:center;gap:10px}.switchLine input{width:22px;height:22px;accent-color:#7dffa2}.settingsButton{background:#1b4028;border:1px solid #67966e;color:white;border-radius:10px;min-height:42px;padding:10px;font-size:12px;font-weight:750}.settingsButton:disabled{opacity:.5}.notice{border-left:3px solid #efc277;padding:9px 11px;background:#2e281a;font-size:12px;line-height:1.4;color:#ffeac8}.twoCols{display:grid;grid-template-columns:1fr 1fr;gap:7px}.substatus{font-size:12px;color:#b5ddba;overflow-wrap:anywhere}.danger{color:#ffca91}.focusButton{width:100%;min-height:42px;background:rgba(31,33,13,.87);border-color:#dca665;color:#ffe4a3}.focusButton:disabled{opacity:.65}.focusGuide{position:absolute;z-index:2;pointer-events:none;width:85%;height:62%;left:7.5%;top:19%;border:2px dashed #ffdb7b;background:rgba(250,220,100,.035);border-radius:14px;box-shadow:0 0 0 9999px rgba(0,0,0,.03)}.focusGuide[hidden]{display:none}.focusGuide span{position:absolute;top:-28px;left:0;background:#26250c;color:#ffe6a5;border:1px solid #dfac65;border-radius:5px;padding:4px 6px;font-size:10px;font-weight:800}.noScroll{overflow:hidden}.srOnly{position:absolute;left:-9999px}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#000;color:white;font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif}button,select,input{font:inherit}button{cursor:pointer;touch-action:manipulation}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #e8fa64;outline-offset:2px}.screen{position:fixed;inset:0;background:#000;overflow:hidden}.feed{position:absolute;inset:0;overflow:hidden;background:radial-gradient(circle,#1c3026,#020503 65%)}#video,#overlay{position:absolute;width:100%;height:100%;inset:0;object-fit:cover;transform-origin:50% 50%}#overlay{pointer-events:none}.feed:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.47),transparent 19%,transparent 66%,rgba(0,0,0,.66))}.hud{z-index:3;position:absolute;left:0;right:0;padding:0 12px}.top{top:0;padding-top:calc(env(safe-area-inset-top,0px) + 8px);display:flex;gap:8px;align-items:center;justify-content:space-between}.brand{display:flex;gap:8px;min-width:0;align-items:center}.brandmark{background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:7px;color:var(--green);font-size:23px;font-weight:900}.brand h1{font-size:15px;margin:0;letter-spacing:.10em;white-space:nowrap}.brand small{display:block;color:#bbd7c2;font-size:10px;letter-spacing:.05em}.topbuttons{display:flex;gap:7px}.control{border:1px solid var(--line);color:white;background:var(--glass);border-radius:12px;min-height:43px;padding:9px 12px;font-size:12px;font-weight:800;backdrop-filter:blur(8px)}.control[aria-pressed="true"],.control.selected{background:#7df59a;color:#061208}.control.alert{border-color:#ffc174}.refreshControl{font-size:19px;min-width:39px;padding:7px 8px}.brand h1{font-size:clamp(12px,3.6vw,15px)}.brandmark{flex-shrink:0}.topbuttons{flex-shrink:0}#liveStatus.stale{color:#ffc174}.status{top:calc(env(safe-area-inset-top,0px) + 65px);display:flex;justify-content:space-between;gap:8px;pointer-events:none}.pill{background:var(--glass);border:1px solid var(--line);color:#c6f4cd;font-size:11px;min-height:30px;padding:7px 9px;border-radius:9px;font-weight:800;backdrop-filter:blur(8px);max-width:48%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pill.warn{border-color:#ffbc6a;color:#ffe6c3}.weaponBadge{pointer-events:auto;cursor:pointer;text-align:center;white-space:normal;line-height:1.15;min-height:35px;font-family:inherit}.weaponBadge:focus-visible{outline:3px solid white;outline-offset:2px}.centerMessage{z-index:4;position:absolute;left:12%;right:12%;top:39%;background:rgba(0,0,0,.82);border:1px solid #4e8960;color:#f0ffed;padding:16px;border-radius:15px;text-align:center;font-size:14px;line-height:1.5;box-shadow:0 5px 25px #0009}.centerMessage[hidden]{display:none}.crosshair{position:absolute;z-index:2;top:50%;left:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border:1px solid #baffc275;border-radius:50%;pointer-events:none}.bottom{bottom:calc(var(--safe) + 8px);display:grid;gap:8px}.row{display:flex;align-items:center;justify-content:center;gap:7px}.row .control{min-height:44px}.row .compact{padding:7px 10px}.zoomRead{background:var(--glass);border:1px solid var(--line);border-radius:9px;min-width:67px;text-align:center;font-size:13px;font-weight:800;padding:11px 9px}.readDock{border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(14px);padding:10px;border-radius:14px;display:none;max-height:28dvh;overflow-y:auto}.readDock.show{display:block}.readHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:800}.readLines{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;max-height:13dvh;overflow:auto}.word{background:#172d1e;color:white;border:1px solid #386c44;border-radius:8px;padding:8px 10px;min-height:37px;font-size:14px;max-width:100%;overflow-wrap:anywhere}.word.active{background:#98ffaf;color:#05200b}.hint{font-size:11px;color:#c4d7c6;line-height:1.3}.readActions{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px}.readActions button{background:#1b4028;border:1px solid #54775c;border-radius:9px;color:white;padding:9px;font-size:12px;font-weight:800;min-height:38px}.sheet{z-index:9;position:absolute;inset:0;background:rgba(0,0,0,.56);display:none;align-items:flex-end}.sheet.open{display:flex}.sheetContent{width:100%;background:#0a1b10;border:1px solid #3d6546;border-bottom:0;border-radius:20px 20px 0 0;max-height:87dvh;overflow-y:auto;padding:14px 15px calc(var(--safe) + 20px);box-shadow:0 -14px 40px #0009}.sheetHeader{display:flex;align-items:center;justify-content:space-between;gap:10px}.sheetHeader h2{font-size:18px;margin:3px 0 12px}.settingsGroup{background:#102418;border:1px solid #36523d;border-radius:13px;padding:11px;margin:0 0 10px;display:grid;gap:7px}.settingsGroup h3{font-size:13px;margin:0;color:#baffb8}.settingsGroup p{margin:0;color:#c7d7ca;font-size:12px;line-height:1.45}.settingsGroup select,.settingsGroup input[type=range]{width:100%}.settingsGroup select{background:#051107;border:1px solid #4c7457;color:white;border-radius:9px;padding:9px;font-size:15px;min-height:40px}.settingsGroup label{font-size:12px;color:#dbf0e2}.switchLine{display:flex;justify-content:space-between;align-items:center;gap:10px}.switchLine input{width:22px;height:22px;accent-color:#7dffa2}.settingsButton{background:#1b4028;border:1px solid #67966e;color:white;border-radius:10px;min-height:42px;padding:10px;font-size:12px;font-weight:750}.settingsButton:disabled{opacity:.5}.notice{border-left:3px solid #efc277;padding:9px 11px;background:#2e281a;font-size:12px;line-height:1.4;color:#ffeac8}.twoCols{display:grid;grid-template-columns:1fr 1fr;gap:7px}.substatus{font-size:12px;color:#b5ddba;overflow-wrap:anywhere}.danger{color:#ffca91}.focusButton{width:100%;min-height:42px;background:rgba(31,33,13,.87);border-color:#dca665;color:#ffe4a3}.focusButton:disabled{opacity:.65}.focusGuide{position:absolute;z-index:2;pointer-events:none;width:85%;height:62%;left:7.5%;top:19%;border:2px dashed #ffdb7b;background:rgba(250,220,100,.035);border-radius:14px;box-shadow:0 0 0 9999px rgba(0,0,0,.03)}.focusGuide[hidden]{display:none}.focusGuide span{position:absolute;top:-28px;left:0;background:#26250c;color:#ffe6a5;border:1px solid #dfac65;border-radius:5px;padding:4px 6px;font-size:10px;font-weight:800}.noScroll{overflow:hidden}.srOnly{position:absolute;left:-9999px}
 @media(min-width:700px){.top,.bottom,.status{max-width:840px;margin:auto}.sheetContent{max-width:620px;margin:auto}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
@@ -20,7 +20,7 @@
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body>
-<main class="screen" aria-label="Recon Cam V12.2">
+<main class="screen" aria-label="Recon Cam V12.3">
   <section class="feed" id="feed">
     <video id="video" playsinline muted autoplay></video>
     <canvas id="overlay" aria-label="Recognized objects are outlined over camera picture"></canvas>
@@ -29,8 +29,8 @@
     <div id="message" class="centerMessage">Opening camera… If iPhone asks permission, tap Allow. If it does not open, tap START.</div>
   </section>
   <div class="hud top">
-    <div class="brand"><span class="brandmark">R◉</span><div><h1>RECON CAM</h1><small>V12.2 · FOCUS SCAN</small></div></div>
-    <div class="topbuttons"><button class="control" id="startBtn" type="button">START</button><button class="control" id="settingsBtn" type="button" aria-label="Open settings">☰</button></div>
+    <div class="brand"><span class="brandmark">R◉</span><div><h1>RECON CAM</h1><small>V12.3 · <span id="liveStatus" aria-live="polite">STARTING</span></small></div></div>
+    <div class="topbuttons"><button class="control refreshControl" id="recoverBtn" type="button" aria-label="Restart camera if image is frozen" title="Restart live camera">↻</button><button class="control" id="startBtn" type="button">START</button><button class="control" id="settingsBtn" type="button" aria-label="Open settings">☰</button></div>
   </div>
   <div class="hud status"><div class="pill" id="objectStatus" role="status">OBJECT AI · LOADING</div><button class="pill weaponBadge" type="button" id="weaponStatus" aria-label="Tap to enable experimental weapon model">WEAPON · TAP TO ENABLE</button></div>
   <div class="hud bottom">
@@ -47,10 +47,10 @@
     <div class="sheetContent">
       <div class="sheetHeader"><h2>Recon Cam controls</h2><button class="control" type="button" id="closeSheet">CLOSE</button></div>
       <div class="settingsGroup"><h3>DETECTION</h3><label for="targetSelect">Show objects</label><select id="targetSelect"><option value="all">All recognized objects</option><option value="people">People only</option><option value="living">People, animals & vehicles</option><option value="tools">Tools / possible knives / scissors</option></select><label for="sensitivity">Sensitivity</label><select id="sensitivity"><option value="balanced" selected>Balanced · fewer false alerts</option><option value="sensitive">Sensitive · may show more false alerts</option><option value="strict">Strict · highest confidence only</option></select><label class="switchLine" for="farSwitch"><span>Search smaller, farther objects (uses more battery)</span><input type="checkbox" id="farSwitch" checked></label><p>Green boxes identify likely people, not who they are. Boxes can be wrong, and distance depends on lighting and camera resolution. Scanning smaller image regions may help, but cannot create missing detail.</p></div>
-      <div class="settingsGroup" id="weaponSettings"><h3>EXPERIMENTAL WEAPON SCANNER · OPTIONAL</h3><div class="notice">COCO recognition can suggest a knife or scissors, but has no firearm class. This optional second AI tries possible handgun/rifle/knife labels. It is experimental, needs about 155 MB for weights plus other files, may fail on iPhone, and cannot confirm that an area is safe. Never rely on it for safety decisions.</div><button class="settingsButton" type="button" id="weaponEnable">ENABLE EXPERIMENTAL MODEL</button><div class="twoCols"><button class="settingsButton" type="button" id="weaponScan" disabled>SCAN WHOLE FRAME</button><button class="settingsButton" type="button" id="weaponFocus" disabled>SCAN CENTER CLOSE-UP</button></div><label for="weaponSensitivity">Experimental match sensitivity</label><select id="weaponSensitivity"><option value="sensitive">Sensitive · many false positives</option><option value="balanced" selected>Balanced · experimental</option><option value="strict">Strict · fewer false positives</option></select><span class="substatus" id="weaponDetail" role="status" aria-live="polite">Off. Tap ENABLE to download the experimental model. It may need Wi-Fi and sufficient available memory.</span><span class="substatus" id="weaponDiagnostics" aria-live="polite">No weapon scan has run yet.</span><p>Automatic scans are requested about every 14 seconds after the previous scan completes. To examine a knife, hold it near the crosshair and tap FOCUS SCAN on the camera. A weak score is not a reliable recognition. No matches do not mean no weapons.</p></div>
-      <div class="settingsGroup"><h3>CAMERA</h3><div class="twoCols"><button class="settingsButton" id="cameraDefault" type="button">REAR CAMERA</button><button class="settingsButton" id="cameraUltra" type="button">TRY ULTRA-WIDE 0.5×</button></div><p id="cameraNote">iPhone controls camera permissions. Not all browsers expose the ultra-wide lens or hardware zoom.</p><label for="viewSelect">Picture appearance</label><select id="viewSelect"><option value="normal">Normal / natural color</option><option value="night">Brighten image</option><option value="outline">High contrast</option><option value="thermal">False-color effect (not thermal vision)</option></select><button class="settingsButton" id="refreshBtn" type="button">RELOAD OBJECT AI</button></div>
-      <div class="settingsGroup"><h3>READ WRITING</h3><label class="switchLine" for="ocrSwitch"><span>Automatic text reading every 12 seconds</span><input type="checkbox" id="ocrSwitch" checked></label><label class="switchLine" for="speechSwitch"><span>Automatically say new text after voice is enabled</span><input type="checkbox" id="speechSwitch"></label><p>Tap READ TEXT below the camera to open the reader. Text is kept away from the picture. Automatic speech needs a user tap to begin on iPhone.</p></div>
-      <div class="settingsGroup"><h3>IMPORTANT LIMITS</h3><p>Object and text recognition need model downloads and may not work without internet on first load. This is a visual aid, not a security, medical, or emergency detection system. No camera can be permanently authorized by a web page; Safari controls permissions. Night/thermal modes are only visual filters.</p><span class="substatus" id="systemStatus">V12.2 ready to start.</span></div>
+      <div class="settingsGroup" id="weaponSettings"><h3>EXPERIMENTAL WEAPON SCANNER · OPTIONAL</h3><div class="notice">COCO recognition can suggest a knife or scissors, but has no firearm class. This optional second AI tries possible handgun/rifle/knife labels. It is experimental, needs about 155 MB for weights plus other files, may fail on iPhone, and cannot confirm that an area is safe. Never rely on it for safety decisions.</div><button class="settingsButton" type="button" id="weaponEnable">ENABLE EXPERIMENTAL MODEL</button><div class="twoCols"><button class="settingsButton" type="button" id="weaponScan" disabled>SCAN WHOLE FRAME</button><button class="settingsButton" type="button" id="weaponFocus" disabled>SCAN CENTER CLOSE-UP</button></div><label for="weaponSensitivity">Experimental match sensitivity</label><select id="weaponSensitivity"><option value="sensitive">Sensitive · many false positives</option><option value="balanced" selected>Balanced · experimental</option><option value="strict">Strict · fewer false positives</option></select><label class="switchLine" for="weaponAuto"><span>Auto weapon scans (resource-intensive; may freeze camera)</span><input type="checkbox" id="weaponAuto"></label><span class="substatus" id="weaponDetail" role="status" aria-live="polite">Off. Tap ENABLE to download the experimental model. It may need Wi-Fi and sufficient available memory.</span><span class="substatus" id="weaponDiagnostics" aria-live="polite">No weapon scan has run yet.</span><p>Automatic weapon scanning is OFF by default to keep the live camera smooth. If enabled, scans are requested about every 20 seconds after the previous scan completes. To examine a knife, hold it near the crosshair and tap FOCUS SCAN on the camera. A weak score is not a reliable recognition. No matches do not mean no weapons.</p></div>
+      <div class="settingsGroup"><h3>CAMERA</h3><div class="twoCols"><button class="settingsButton" id="cameraDefault" type="button">REAR CAMERA</button><button class="settingsButton" id="cameraUltra" type="button">TRY ULTRA-WIDE 0.5×</button></div><p id="cameraNote">iPhone controls camera permissions. Not all browsers expose the ultra-wide lens or hardware zoom.</p><label for="qualitySelect">Live camera performance</label><select id="qualitySelect"><option value="smooth" selected>Smooth live · 720p, lighter AI (recommended)</option><option value="detail">High detail · 1080p, slower AI</option></select><button class="settingsButton" id="recoverCamera" type="button">↻ RESTART LIVE CAMERA</button><p>Keeping the picture live takes priority over AI speed. If it freezes, use ↻. High detail uses more resources and may stall older iPhones.</p><label for="viewSelect">Picture appearance</label><select id="viewSelect"><option value="normal">Normal / natural color</option><option value="night">Brighten image</option><option value="outline">High contrast</option><option value="thermal">False-color effect (not thermal vision)</option></select><button class="settingsButton" id="refreshBtn" type="button">RELOAD OBJECT AI</button></div>
+      <div class="settingsGroup"><h3>READ WRITING</h3><label class="switchLine" for="ocrSwitch"><span>Automatic text reading every 12 seconds (higher load)</span><input type="checkbox" id="ocrSwitch"></label><label class="switchLine" for="speechSwitch"><span>Automatically say new text after voice is enabled</span><input type="checkbox" id="speechSwitch"></label><p>Automatic reading is OFF by default to reduce freezes. Tap READ TEXT below the camera to scan words manually. Text is kept away from the picture. Automatic speech needs a user tap to begin on iPhone.</p></div>
+      <div class="settingsGroup"><h3>IMPORTANT LIMITS</h3><p>Object and text recognition need model downloads and may not work without internet on first load. This is a visual aid, not a security, medical, or emergency detection system. No camera can be permanently authorized by a web page; Safari controls permissions. Night/thermal modes are only visual filters.</p><span class="substatus" id="systemStatus">V12.3 ready · smooth live mode.</span></div>
     </div>
   </div>
 </main>
@@ -58,7 +58,7 @@
 (() => {
 'use strict';
 const $=id=>document.getElementById(id), video=$('video'), overlay=$('overlay'), ctx=overlay.getContext('2d'), msg=$('message');
-const S={stream:null,track:null,running:false,generation:0,model:null,loading:false,busy:false,far:true,frame:0,tile:0,phase:0,tracks:[],zoom:1,deviceZoom:false,ultra:false,ultraId:null,ocrBusy:false,ocrWorker:null,ocrLines:[],selected:'',ocrTimer:0,weaponModel:null,weaponImport:null,weaponBusy:false,weaponLoading:false,weaponDet:[],weaponTimer:null,weaponScans:0,weaponLast:0,speechUnlocked:false,interval:0};
+const S={stream:null,track:null,running:false,generation:0,model:null,loading:false,busy:false,far:true,frame:0,tile:0,phase:0,tracks:[],zoom:1,deviceZoom:false,ultra:false,ultraId:null,ocrBusy:false,ocrWorker:null,ocrLines:[],selected:'',ocrTimer:0,objectTimer:null,healthTimer:null,frameHandle:null,frameLast:0,frameLastSeen:0,frameCount:0,recoveries:0,lastRecovery:0,autoRecovery:false,resumeOnVisible:false,weaponModel:null,weaponImport:null,weaponBusy:false,weaponLoading:false,weaponDet:[],weaponTimer:null,weaponScans:0,weaponLast:0,speechUnlocked:false,interval:0};
 const COCO_COLORS={person:'#7bff92',dog:'#ffe06e',cat:'#ffe06e',car:'#fa8181',truck:'#fa8181',bus:'#fa8181',knife:'#ffae6e',scissors:'#ffae6e',book:'#9eaeff'};
 const TILES=[{x:0,y:0,w:.59,h:.59},{x:.41,y:0,w:.59,h:.59},{x:0,y:.41,w:.59,h:.59},{x:.41,y:.41,w:.59,h:.59}];
 const tileCanvas=document.createElement('canvas'),tileCtx=tileCanvas.getContext('2d',{willReadFrequently:false}),weaponCanvas=document.createElement('canvas');
@@ -71,21 +71,139 @@ function fit(){const dpr=Math.min(devicePixelRatio||1,2),w=overlay.clientWidth,h
 function screenBox(box){const vw=video.videoWidth,vh=video.videoHeight,W=overlay.clientWidth,H=overlay.clientHeight;if(!vw||!vh)return null;const scale=Math.max(W/vw,H/vh),ox=(W-vw*scale)/2,oy=(H-vh*scale)/2;return [ox+box[0]*scale,oy+box[1]*scale,box[2]*scale,box[3]*scale]}
 function labelRect(text,x,y,color){const W=overlay.clientWidth;ctx.font='700 13px -apple-system,system-ui,sans-serif';const maxW=W-12;while(text.length>5&&ctx.measureText(text).width>maxW-18)text=text.slice(0,-2)+'…';const tw=ctx.measureText(text).width+15,w=Math.min(maxW,tw),h=24;const a=Math.max(5,Math.min(W-w-5,x));const topClear=$('objectStatus').getBoundingClientRect().bottom+8;const bottomClear=$('zoomOutBtn').getBoundingClientRect().top-8;const desired=y-h>topClear?y-h:y+6;const b=Math.max(topClear,Math.min(desired,bottomClear-h));ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(a,b,w,h,5);ctx.fill();ctx.fillStyle='#031006';ctx.fillText(text,a+7,b+16)}
 function rect(box,label,color){const b=screenBox(box);if(!b)return;const [x,y,w,h]=b;if(x>overlay.clientWidth||y>overlay.clientHeight||x+w<0||y+h<0)return;ctx.lineWidth=3.5;ctx.strokeStyle=color;ctx.shadowColor=color;ctx.shadowBlur=8;ctx.strokeRect(x,y,w,h);ctx.shadowBlur=0;labelRect(label,x,y,color)}
-function visibleTrack(t,now){return now-t.seen<((S.far)?3600:2500)&&(t.hits>=2||(t.class==='person'&&t.score>=.79))}
+function visibleTrack(t,now){return now-t.seen<((S.far)?2200:1700)&&(t.hits>=2||(t.class==='person'&&t.score>=.79))}
 function render(){const W=overlay.clientWidth,H=overlay.clientHeight;ctx.clearRect(0,0,W,H);if(!S.running)return;const now=performance.now(),target=$('targetSelect').value;const valid=S.tracks.filter(t=>visibleTrack(t,now));let count=0;for(const t of valid){if(target==='people'&&t.class!=='person')continue;if(target==='living'&&!['person','dog','cat','bird','car','truck','bus','motorcycle','bicycle','horse','cow','sheep','boat'].includes(t.class))continue;if(target==='tools'&&!['knife','scissors','fork','spoon','baseball bat'].includes(t.class))continue;const name=t.class==='knife'?'Possible knife':t.class.replace(/^\w/,a=>a.toUpperCase());rect(t.bbox,`${name} ${Math.round(t.score*100)}%`,COCO_COLORS[t.class]||'#8cfaa5');count++}
-for(const w of S.weaponDet.filter(x=>now-x.seen<8000)){rect(w.bbox,`Possible ${w.class} · experimental`, '#ffb54f')}
+for(const w of S.weaponDet.filter(x=>now-x.seen<5000)){rect(w.bbox,`Possible ${w.class} · experimental`, '#ffb54f')}
 if(!S.model)objectStatus(S.loading?'OBJECT AI · LOADING':'OBJECT AI · UNAVAILABLE');else objectStatus(count?`OBJECTS · ${count} VISIBLE`:'OBJECT AI · SCANNING')}
 function intersection(a,b){const x=Math.max(a[0],b[0]),y=Math.max(a[1],b[1]),right=Math.min(a[0]+a[2],b[0]+b[2]),bottom=Math.min(a[1]+a[3],b[1]+b[3]);const area=Math.max(0,right-x)*Math.max(0,bottom-y);return area/(a[2]*a[3]+b[2]*b[3]-area||1)}
 function near(a,b){const x=(a[0]+a[2]/2-b[0]-b[2]/2),y=(a[1]+a[3]/2-b[1]-b[3]/2);const d=Math.sqrt(x*x+y*y),size=Math.sqrt(Math.max(a[2],b[2])**2+Math.max(a[3],b[3])**2);return d<Math.max(25,size*.26)&&Math.min(a[2]*a[3],b[2]*b[3])/Math.max(a[2]*a[3],b[2]*b[3])>.32}
 function minConfidence(name){const level=$('sensitivity').value,base={person:.52,car:.67,truck:.66,bus:.66,book:.77,knife:.47,scissors:.51,bottle:.42,cup:.49};const b=base[name]||.53;return level==='sensitive'?Math.max(.22,b-.14):level==='strict'?Math.min(.93,b+.14):b}
 function updateTracks(pred){const now=performance.now(),gen=S.generation;S.tracks=S.tracks.filter(t=>now-t.seen<12000);for(const p of pred){if(!p||!Number.isFinite(p.score)||!Array.isArray(p.bbox)||p.score<minConfidence(p.class)||p.bbox[2]<3||p.bbox[3]<4)continue;let best=null,bestScore=0;for(const t of S.tracks){if(t.class!==p.class||t.generation!==gen||now-t.seen>8500)continue;const i=intersection(t.bbox,p.bbox),isNear=near(t.bbox,p.bbox);if(i>.14||isNear){const sim=i+(isNear?.15:0);if(sim>bestScore){best=t;bestScore=sim}}}if(best){const alpha=.58;best.bbox=best.bbox.map((v,i)=>v*(1-alpha)+p.bbox[i]*alpha);best.score=best.score*.35+p.score*.65;best.hits=Math.min(20,best.hits+1);best.seen=now}else S.tracks.push({class:p.class,score:p.score,bbox:p.bbox.slice(),hits:1,seen:now,generation:gen})}
 S.tracks=S.tracks.slice(-45);render()}
-async function objectLoop(gen){if(!S.running||gen!==S.generation)return;if(!S.model||S.busy||S.weaponBusy){setTimeout(()=>objectLoop(gen),650);return}S.busy=true;try{let input=video,transform=null;const vw=video.videoWidth,vh=video.videoHeight;let maxBoxes=18;const doTile=S.far&&(S.frame++%3!==0);if(doTile){const t=TILES[Math.floor(S.tile/2)%4];S.tile++;const x=t.x*vw,y=t.y*vh,w=t.w*vw,h=t.h*vh;tileCanvas.width=512;tileCanvas.height=Math.max(1,Math.round(512*h/w));tileCtx.drawImage(video,x,y,w,h,0,0,tileCanvas.width,tileCanvas.height);input=tileCanvas;transform=b=>[x+b[0]/tileCanvas.width*w,y+b[1]/tileCanvas.height*h,b[2]/tileCanvas.width*w,b[3]/tileCanvas.height*h];maxBoxes=9}const preds=await S.model.detect(input,maxBoxes,.17);if(S.running&&gen===S.generation){updateTracks(preds.map(p=>({...p,bbox:transform?transform(p.bbox):p.bbox})))}}
-catch(e){console.error('Object scan',e);system('Object scan error: '+String(e.message||e).slice(0,110))}finally{S.busy=false;const delay= S.far?320:380;if(S.running&&gen===S.generation)setTimeout(()=>objectLoop(gen),delay)}}
-async function loadObjects(){if(S.loading)return;S.loading=true;objectStatus('OBJECT AI · LOADING');system('Loading standard object detection…');try{if(!window.cocoSsd?.load)throw Error('TensorFlow or COCO script unavailable. Check internet.');S.model=await cocoSsd.load({base:'lite_mobilenet_v2'});objectStatus('OBJECT AI · READY');system('Object AI ready. Distant targets are scanned in tiles.');if(S.running)objectLoop(S.generation)}catch(e){S.model=null;objectStatus('OBJECT AI · OFFLINE');system('Object model unavailable: '+e.message)}finally{S.loading=false}}
-function stop(){setFocusGuide(false);S.running=false;S.generation++;S.stream?.getTracks().forEach(t=>t.stop());S.stream=null;S.track=null;video.srcObject=null;S.tracks=[];S.weaponDet=[];S.tile=0;S.frame=0;clearTimeout(S.ocrTimer);clearTimeout(S.weaponTimer);S.weaponTimer=null;$('startBtn').textContent='START';objectStatus(S.model?'OBJECT AI · READY':'OBJECT AI · OFF');render()}
+function scheduleObjects(gen,delay=1000){
+ clearTimeout(S.objectTimer);S.objectTimer=null;
+ if(S.running && gen===S.generation)S.objectTimer=setTimeout(()=>objectLoop(gen),delay);
+}
+async function objectLoop(gen){
+ if(!S.running||gen!==S.generation)return;
+ if(!S.model||S.busy||S.weaponBusy||video.readyState<2||!video.videoWidth){scheduleObjects(gen,900);return}
+ S.busy=true;
+ const started=performance.now();
+ try{
+   const vw=video.videoWidth,vh=video.videoHeight;
+   const detail=$('qualitySelect').value==='detail';
+   const doTile=S.far&&(S.frame++%(detail?3:4)===0);
+   const t=doTile?TILES[Math.floor(S.tile++)%TILES.length]:{x:0,y:0,w:1,h:1};
+   const x=Math.round(t.x*vw),y=Math.round(t.y*vh);
+   const w=Math.max(1,Math.min(vw-x,Math.round(t.w*vw))),h=Math.max(1,Math.min(vh-y,Math.round(t.h*vh)));
+   const cap=detail?(doTile?512:512):(doTile?400:416);
+   tileCanvas.width=Math.min(cap,w);
+   tileCanvas.height=Math.max(1,Math.round(tileCanvas.width*h/w));
+   tileCtx.drawImage(video,x,y,w,h,0,0,tileCanvas.width,tileCanvas.height);
+   // The video element stays on screen untouched; the smaller canvas is for AI only.
+   const predictions=await S.model.detect(tileCanvas,doTile?9:18,.17);
+   if(S.running&&gen===S.generation){
+     const mapped=predictions.map(p=>({...p,bbox:[x+p.bbox[0]/tileCanvas.width*w,y+p.bbox[1]/tileCanvas.height*h,p.bbox[2]/tileCanvas.width*w,p.bbox[3]/tileCanvas.height*h]}));
+     updateTracks(mapped);
+   }
+ }catch(e){console.error('Object scan',e);system('Object scan error: '+String(e.message||e).slice(0,110))}
+ finally{
+   S.busy=false;
+   if(S.running&&gen===S.generation){
+     const took=performance.now()-started;
+     const delay=$('qualitySelect').value==='detail'?Math.max(900,Math.min(2600,took*.8)):Math.max(1300,Math.min(3300,took*1.2));
+     scheduleObjects(gen,delay);
+   }
+ }
+}
+async function loadObjects(){if(S.loading)return;S.loading=true;objectStatus('OBJECT AI · LOADING');system('Loading standard object detection…');try{if(!window.cocoSsd?.load)throw Error('TensorFlow or COCO script unavailable. Check internet.');S.model=await cocoSsd.load({base:'lite_mobilenet_v2'});objectStatus('OBJECT AI · READY');system('Object AI ready. Distant targets are scanned in tiles.');if(S.running)scheduleObjects(S.generation,400)}catch(e){S.model=null;objectStatus('OBJECT AI · OFFLINE');system('Object model unavailable: '+e.message)}finally{S.loading=false}}
+function liveState(t,stale=false){
+ const el=$('liveStatus');el.textContent=t;el.classList.toggle('stale',stale);
+ $('recoverBtn').classList.toggle('alert',stale);
+}
+function monitorFrames(gen){
+ // WebKit supports requestVideoFrameCallback on modern iOS. The timestamp is
+ // refreshed only when a *new* decoded frame is displayed, not on a frozen video.
+ if(!video.requestVideoFrameCallback)return;
+ const seen=()=>{
+   if(gen!==S.generation||!S.running)return;
+   S.frameLast=performance.now();S.frameCount++;
+   video.requestVideoFrameCallback(seen);
+ };
+ video.requestVideoFrameCallback(seen);
+}
+function watchdog(gen){
+ clearTimeout(S.healthTimer);S.healthTimer=null;
+ if(!S.running||gen!==S.generation||document.hidden)return;
+ const now=performance.now(),delta=now-S.frameLast;
+ const invalid=S.track?.readyState==='ended';
+ const stalled=invalid||(!!video.requestVideoFrameCallback&&delta>7500);
+ if(stalled){
+   liveState('FROZEN · ↻',true);
+   // Restart at most twice per session. A browser/device GPU lock cannot be
+   // reliably recovered by JavaScript; leave the manual restart visible.
+   if((!S.lastRecovery||now-S.lastRecovery>45000) && S.recoveries<2 && !S.autoRecovery){
+     S.lastRecovery=now;S.recoveries++;S.autoRecovery=true;
+     notify('Camera frames stopped. Trying to restore the live view…',2500);
+     const useUltra=S.ultra;
+     setTimeout(()=>{if(S.running&&gen===S.generation)start(useUltra).finally(()=>{S.autoRecovery=false})},50);
+     return;
+   }
+   system('Camera image stalled. Tap ↻ at the top to restart. If it repeats, switch to Smooth live, disable auto scans, and close other apps.');
+ }else if(S.frameCount>0){liveState('LIVE')}
+ else {liveState('CONNECTING')}
+ // This timer is light and doesn't perform any image processing.
+ S.healthTimer=setTimeout(()=>watchdog(gen),1200);
+}
+function stop(){
+ setFocusGuide(false);S.running=false;S.generation++;
+ clearTimeout(S.objectTimer);S.objectTimer=null;
+ clearTimeout(S.healthTimer);S.healthTimer=null;
+ clearTimeout(S.ocrTimer);clearTimeout(S.weaponTimer);S.weaponTimer=null;
+ S.stream?.getTracks().forEach(t=>t.stop());S.stream=null;S.track=null;
+ video.pause();video.srcObject=null;S.tracks=[];S.weaponDet=[];S.tile=0;S.frame=0;
+ S.frameLast=0;S.frameCount=0;
+ $('startBtn').textContent='START';liveState('OFFLINE');
+ objectStatus(S.model?'OBJECT AI · READY':'OBJECT AI · OFF');render();
+}
 async function findUltra(){try{const devices=await navigator.mediaDevices.enumerateDevices();const found=devices.find(d=>d.kind==='videoinput'&&/ultra[ -]?wide|0[.,]5\s*x/i.test(d.label));S.ultraId=found?.deviceId||null}catch{S.ultraId=null}return S.ultraId}
-async function start(useUltra=false){stop();const gen=S.generation;notify('Requesting rear camera access…',0);if(!navigator.mediaDevices?.getUserMedia){notify('Camera access is not supported here. Open the app in Safari over HTTPS.',0);return}try{if(useUltra&&!S.ultraId){const temp=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});await findUltra();temp.getTracks().forEach(t=>t.stop());if(gen!==S.generation)return;if(!S.ultraId)throw Error('Safari does not expose the 0.5× camera. Use 1× instead.')}const constraints=useUltra?{deviceId:{exact:S.ultraId},width:{ideal:1920},height:{ideal:1080}}:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}};const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:constraints});if(gen!==S.generation){stream.getTracks().forEach(t=>t.stop());return}S.stream=stream;S.track=stream.getVideoTracks()[0];video.srcObject=stream;await video.play();if(gen!==S.generation)return;S.ultra=useUltra;S.running=true;S.zoom=useUltra ? 0.5 : 1;$('startBtn').textContent='STOP';fit();await applyZoom();notify('Camera running · recognition estimates only',2500);findUltra().catch(()=>{});if(S.model)objectLoop(S.generation);else if(!S.loading)loadObjects();ocrSchedule();if(S.weaponModel)weaponSchedule();system('Camera running. Capturing stays on this device unless you explicitly save a photo.')}catch(e){console.warn(e);notify(String(e.message||'Camera could not open'),0);$('cameraNote').textContent=String(e.message||'Camera unavailable');S.ultra=false;S.zoom=1;updateZoomRead();if(useUltra){await start(false);notify('0.5× lens unavailable. Returned to 1×.',4200)}}}
+async function start(useUltra=false){
+ stop();const gen=S.generation;notify('Requesting rear camera access…',0);
+ if(!navigator.mediaDevices?.getUserMedia){notify('Camera access unavailable. Open this page in Safari over HTTPS.',0);return}
+ try{
+   if(useUltra&&!S.ultraId){
+     const temp=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
+     await findUltra();temp.getTracks().forEach(t=>t.stop());
+     if(gen!==S.generation)return;
+     if(!S.ultraId)throw Error('Safari does not expose the 0.5× camera. Use 1× instead.');
+   }
+   const detail=$('qualitySelect').value==='detail';
+   const desired=detail?{width:1920,height:1080,frameRate:30}:{width:1280,height:720,frameRate:24};
+   const constraints={
+     ...(useUltra?{deviceId:{exact:S.ultraId}}:{facingMode:{ideal:'environment'}}),
+     width:{ideal:desired.width},height:{ideal:desired.height},frameRate:{ideal:desired.frameRate,max:30}
+   };
+   const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:constraints});
+   if(gen!==S.generation){stream.getTracks().forEach(t=>t.stop());return}
+   S.stream=stream;S.track=stream.getVideoTracks()[0];
+   video.srcObject=stream;await video.play();
+   if(gen!==S.generation)return;
+   S.ultra=useUltra;S.running=true;S.zoom=useUltra?0.5:1;
+   $('startBtn').textContent='STOP';fit();await applyZoom();
+   S.frameLast=performance.now();S.frameCount=0;monitorFrames(S.generation);
+   watchdog(S.generation);liveState('CONNECTING');
+   notify('Live camera running · AI checks periodically',2300);
+   findUltra().catch(()=>{});
+   if(S.model)scheduleObjects(S.generation,500);else if(!S.loading)loadObjects();
+   ocrSchedule();if(S.weaponModel&&$('weaponAuto').checked)weaponSchedule();
+   system('Live video is separate from lower-rate AI scans. Use ↻ to recover a stalled picture.');
+ }catch(e){
+   console.warn(e);notify(String(e.message||'Camera could not open'),0);
+   $('cameraNote').textContent=String(e.message||'Camera unavailable');
+   liveState('CAMERA ERROR',true);S.ultra=false;S.zoom=1;updateZoomRead();
+   if(useUltra){await start(false);notify('0.5× lens unavailable. Returned to 1×.',4200)}
+ }
+}
 function updateZoomRead(){$('zoomRead').textContent=S.zoom.toFixed(1)+'×';document.querySelectorAll('[data-zoom]').forEach(b=>b.classList.toggle('selected',Math.abs(Number(b.dataset.zoom)-S.zoom)<.01))}
 function setDisplayScale(scale){const t=scale>1?`scale(${scale})`:'none';video.style.transform=t;overlay.style.transform=t}
 async function applyZoom(){updateZoomRead();if(!S.track)return;const relative=S.zoom/(S.ultra ? 0.5 : 1);const caps=S.track.getCapabilities?.()||{};if(caps.zoom){const z=Math.min(caps.zoom.max,Math.max(caps.zoom.min,relative));try{await S.track.applyConstraints({advanced:[{zoom:z}]});S.deviceZoom=true;setDisplayScale(1);return}catch(e){console.info('Device zoom unavailable',e)}}S.deviceZoom=false;setDisplayScale(Math.max(1,relative))}
@@ -94,7 +212,7 @@ function setFilter(v){const css={normal:'none',night:'brightness(1.5) contrast(1
 function cleanText(s){return String(s||'').normalize('NFKC').replace(/\s+/g,' ').replace(/[|~^_]{2,}/g,'').trim().slice(0,115)}
 function showOCR(lines){const root=$('readLines');root.replaceChildren();S.ocrLines=lines;S.selected=lines[0]||'';if(!lines.length){const span=document.createElement('span');span.className='hint';span.textContent='No clearly readable text. Aim at large printed words in bright light.';root.append(span);return}for(const line of lines){const b=document.createElement('button');b.className='word';b.type='button';b.textContent=line;b.addEventListener('click',()=>{S.selected=line;root.querySelectorAll('.word').forEach(x=>x.classList.toggle('active',x===b));speak(line)});if(line===S.selected)b.classList.add('active');root.append(b)}}
 async function ocrWorker(){if(S.ocrWorker)return S.ocrWorker;if(!window.Tesseract?.createWorker)throw Error('OCR library not available');S.ocrWorker=await Tesseract.createWorker('eng',1);return S.ocrWorker}
-async function scanOCR(force=false){if(!S.running||S.ocrBusy||!video.videoWidth)return;if(!force&&!$('ocrSwitch').checked)return;S.ocrBusy=true;$('ocrStatus').textContent='Scanning…';const gen=S.generation;try{const worker=await ocrWorker(),can=document.createElement('canvas'),scale=Math.min(1,1600/video.videoWidth);can.width=Math.round(video.videoWidth*scale);can.height=Math.round(video.videoHeight*scale);can.getContext('2d',{willReadFrequently:true}).drawImage(video,0,0,can.width,can.height);const result=await worker.recognize(can);if(!S.running||S.generation!==gen)return;const data=result.data||{},rows=data.lines||[],raw=rows.length?rows.map(l=>({text:l.text,confidence:l.confidence})):String(data.text||'').split('\n').map(text=>({text,confidence:data.confidence||0}));let seen=new Set(),good=[];for(const r of raw){const s=cleanText(r.text),confidence=Number(r.confidence??0);if(confidence<55||s.length<2||s.length>95||!/[a-z0-9]{2}/i.test(s)||seen.has(s.toLowerCase()))continue;const core=(s.match(/[a-z0-9]/ig)||[]).length;if(core/s.length<.58)continue;seen.add(s.toLowerCase());good.push(s);if(good.length>=6)break}showOCR(good);$('ocrStatus').textContent=good.length?`${good.length} line(s)`:'No clear text';if(good.length&&$('speechSwitch').checked&&S.speechUnlocked&&good.join(' ')!==scanOCR.lastSpoken){scanOCR.lastSpoken=good.join(' ');speak(scanOCR.lastSpoken)}}catch(e){console.warn(e);$('ocrStatus').textContent='OCR unavailable';system('Text model may need internet for initial download. '+e.message)}finally{S.ocrBusy=false}}
+async function scanOCR(force=false){if(!S.running||S.ocrBusy||S.weaponBusy||!video.videoWidth)return;if(!force&&!$('ocrSwitch').checked)return;S.ocrBusy=true;$('ocrStatus').textContent='Scanning…';const gen=S.generation;try{const worker=await ocrWorker(),can=document.createElement('canvas'),scale=Math.min(1,1100/video.videoWidth);can.width=Math.round(video.videoWidth*scale);can.height=Math.round(video.videoHeight*scale);can.getContext('2d',{willReadFrequently:true}).drawImage(video,0,0,can.width,can.height);const result=await worker.recognize(can);if(!S.running||S.generation!==gen)return;const data=result.data||{},rows=data.lines||[],raw=rows.length?rows.map(l=>({text:l.text,confidence:l.confidence})):String(data.text||'').split('\n').map(text=>({text,confidence:data.confidence||0}));let seen=new Set(),good=[];for(const r of raw){const s=cleanText(r.text),confidence=Number(r.confidence??0);if(confidence<55||s.length<2||s.length>95||!/[a-z0-9]{2}/i.test(s)||seen.has(s.toLowerCase()))continue;const core=(s.match(/[a-z0-9]/ig)||[]).length;if(core/s.length<.58)continue;seen.add(s.toLowerCase());good.push(s);if(good.length>=6)break}showOCR(good);$('ocrStatus').textContent=good.length?`${good.length} line(s)`:'No clear text';if(good.length&&$('speechSwitch').checked&&S.speechUnlocked&&good.join(' ')!==scanOCR.lastSpoken){scanOCR.lastSpoken=good.join(' ');speak(scanOCR.lastSpoken)}}catch(e){console.warn(e);$('ocrStatus').textContent='OCR unavailable';system('Text model may need internet for initial download. '+e.message)}finally{S.ocrBusy=false}}
 function ocrSchedule(){clearTimeout(S.ocrTimer);const gen=S.generation;const loop=async()=>{if(!S.running||gen!==S.generation)return;if($('ocrSwitch').checked&&!S.weaponBusy)await scanOCR();if(S.running&&gen===S.generation)S.ocrTimer=setTimeout(loop,12000)};S.ocrTimer=setTimeout(loop,2500)}
 function speak(text,spell=false){const s=String(text||'');if(!s){$('ocrStatus').textContent='Scan text first';return}if(!window.speechSynthesis){$('ocrStatus').textContent='Speech not available';return}S.speechUnlocked=true;try{speechSynthesis.cancel();const chars=spell?Array.from(s).map(ch=>ch===' '?'pause':ch).join(', '):s;const utter=new SpeechSynthesisUtterance(chars);utter.lang='en-US';utter.rate=spell?.65:.85;speechSynthesis.speak(utter)}catch{$('ocrStatus').textContent='Speech blocked by browser'}}
 async function enableWeapon(){
@@ -140,9 +258,9 @@ async function enableWeapon(){
     $('weaponFocus').disabled=false;
     $('focusWeaponBtn').disabled=false;
     $('focusWeaponBtn').textContent='FOCUS SCAN · CENTER TARGET';
-    $('weaponDetail').textContent='Experimental model ready. Scans approximately every 14 seconds after each previous scan completes. Misses and false matches are possible.';
+    $('weaponDetail').textContent='Experimental model ready. Manual focus scan ready. To enable automatic scans, turn on Auto weapon scans in Settings. Misses and false matches are possible.';
     notify('Experimental weapon model loaded. Scanning when camera runs.',3500);
-    if(S.running)weaponSchedule();
+    if(S.running && $('weaponAuto').checked)weaponSchedule();
   } catch(e){
     console.error('Weapon model failed to load:',e);
     S.weaponModel=null;
@@ -237,16 +355,16 @@ async function scanWeapons(mode='full'){
 }
 function weaponSchedule(){
   clearTimeout(S.weaponTimer);S.weaponTimer=null;
-  if(!S.weaponModel||!S.running)return;
+  if(!S.weaponModel||!S.running||!$('weaponAuto').checked)return;
   const gen=S.generation;
   const tick=async()=>{
     if(!S.running||gen!==S.generation||!S.weaponModel)return;
     if(!S.weaponBusy)await scanWeapons('full');
-    if(S.running&&gen===S.generation)S.weaponTimer=setTimeout(tick,14000);
+    if(S.running&&gen===S.generation)S.weaponTimer=setTimeout(tick,20000);
   };
   S.weaponTimer=setTimeout(tick,1800);
 }
-function savePhoto(){if(!S.running||!video.videoWidth){notify('Start camera first.');return}const W=overlay.clientWidth,H=overlay.clientHeight,dpr=2,can=document.createElement('canvas');can.width=W*dpr;can.height=H*dpr;const x=can.getContext('2d');x.scale(dpr,dpr);x.fillStyle='#000';x.fillRect(0,0,W,H);const vw=video.videoWidth,vh=video.videoHeight,sc=Math.max(W/vw,H/vh),cw=vw*sc,ch=vh*sc,rel=S.deviceZoom?1:S.zoom/(S.ultra?.5:1);x.save();x.translate(W/2,H/2);x.scale(Math.max(1,rel),Math.max(1,rel));x.translate(-W/2,-H/2);x.filter=video.style.filter||'none';x.drawImage(video,(W-cw)/2,(H-ch)/2,cw,ch);x.restore();x.drawImage(overlay,0,0,W,H);can.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`recon-cam-v12-2-${Date.now()}.jpg`;a.click();setTimeout(()=>URL.revokeObjectURL(url),12000)},'image/jpeg',.92)}
+function savePhoto(){if(!S.running||!video.videoWidth){notify('Start camera first.');return}const W=overlay.clientWidth,H=overlay.clientHeight,dpr=2,can=document.createElement('canvas');can.width=W*dpr;can.height=H*dpr;const x=can.getContext('2d');x.scale(dpr,dpr);x.fillStyle='#000';x.fillRect(0,0,W,H);const vw=video.videoWidth,vh=video.videoHeight,sc=Math.max(W/vw,H/vh),cw=vw*sc,ch=vh*sc,rel=S.deviceZoom?1:S.zoom/(S.ultra?.5:1);x.save();x.translate(W/2,H/2);x.scale(Math.max(1,rel),Math.max(1,rel));x.translate(-W/2,-H/2);x.filter=video.style.filter||'none';x.drawImage(video,(W-cw)/2,(H-ch)/2,cw,ch);x.restore();x.drawImage(overlay,0,0,W,H);can.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`recon-cam-v12-3-${Date.now()}.jpg`;a.click();setTimeout(()=>URL.revokeObjectURL(url),12000)},'image/jpeg',.92)}
 function sheet(open){$('sheet').classList.toggle('open',open)}
 $('settingsBtn').onclick=()=>sheet(true);$('closeSheet').onclick=()=>sheet(false);$('sheet').addEventListener('click',e=>{if(e.target===$('sheet'))sheet(false)});
 $('startBtn').onclick=()=>S.running?(stop(),notify('Camera stopped',0)):start(false);
@@ -255,7 +373,10 @@ $('farSwitch').onchange=()=>{$('farBtn').click()};
 $('textBtn').onclick=()=>{const showing=!$('readDock').classList.contains('show');$('readDock').classList.toggle('show',showing);$('textBtn').setAttribute('aria-pressed',String(showing));if(showing&&S.running)scanOCR(true)};
 $('scanTextBtn').onclick=()=>scanOCR(true);$('readBtn').onclick=()=>speak(S.selected||S.ocrLines.join('. '));$('spellBtn').onclick=()=>speak(S.selected||S.ocrLines[0],true);$('copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(S.selected||S.ocrLines.join('\n'));$('ocrStatus').textContent='Copied'}catch{$('ocrStatus').textContent='Copy unavailable'}};
 $('photoBtn').onclick=savePhoto;document.querySelectorAll('[data-zoom]').forEach(b=>b.onclick=()=>setZoom(Number(b.dataset.zoom)));$('zoomOutBtn').onclick=()=>setZoom(S.zoom-.5);$('zoomInBtn').onclick=()=>setZoom(S.zoom+.5);
-$('cameraDefault').onclick=()=>start(false);$('cameraUltra').onclick=()=>start(true);$('refreshBtn').onclick=()=>{S.generation++;S.tracks=[];render();if(S.running&&S.model)objectLoop(S.generation);else loadObjects();if(S.running){ocrSchedule();if(S.weaponModel)weaponSchedule()}};$('viewSelect').onchange=e=>setFilter(e.target.value);$('targetSelect').onchange=render;$('sensitivity').onchange=()=>{S.tracks=[];render()};$('weaponEnable').onclick=enableWeapon;
+$('qualitySelect').onchange=()=>{if(S.running){notify('Applying camera quality…',1500);start(S.ultra)}};
+$('recoverBtn').onclick=$('recoverCamera').onclick=()=>{S.recoveries=0;S.lastRecovery=0;S.autoRecovery=false;start(S.ultra)};
+$('weaponAuto').onchange=()=>{if($('weaponAuto').checked){if(S.weaponModel&&S.running)weaponSchedule()}else{clearTimeout(S.weaponTimer);S.weaponTimer=null;weaponStatus(S.weaponModel?'WEAPON · READY':'WEAPON · TAP TO ENABLE',!S.weaponModel)}};
+$('cameraDefault').onclick=()=>start(false);$('cameraUltra').onclick=()=>start(true);$('refreshBtn').onclick=()=>{S.generation++;S.tracks=[];render();if(S.running&&S.model)scheduleObjects(S.generation,600);else loadObjects();if(S.running){ocrSchedule();if(S.weaponModel)weaponSchedule()}};$('viewSelect').onchange=e=>setFilter(e.target.value);$('targetSelect').onchange=render;$('sensitivity').onchange=()=>{S.tracks=[];render()};$('weaponEnable').onclick=enableWeapon;
 $('weaponScan').onclick=()=>scanWeapons('full');
 $('weaponFocus').onclick=()=>{sheet(false);scanWeapons('focus')};
 $('focusWeaponBtn').onclick=()=>scanWeapons('focus');
@@ -266,12 +387,12 @@ $('weaponStatus').onclick=()=>{
   if(approved)enableWeapon();
   else {sheet(true);$('weaponSettings').scrollIntoView({block:'start'});}
 };
-window.addEventListener('resize',fit);video.addEventListener('loadedmetadata',fit);document.addEventListener('visibilitychange',()=>{if(document.hidden&&S.running){stop();notify('Camera paused when app went into the background. Tap START to resume.',0)}});
+window.addEventListener('resize',fit);video.addEventListener('loadedmetadata',fit);document.addEventListener('visibilitychange',()=>{if(document.hidden&&S.running){S.resumeOnVisible=true;stop()}else if(!document.hidden&&S.resumeOnVisible){S.resumeOnVisible=false;setTimeout(()=>start(false),300)}});
 let touchDistance=0;const feed=$('feed');feed.addEventListener('touchstart',e=>{if(e.touches.length===2)touchDistance=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY)},{passive:true});feed.addEventListener('touchend',()=>{touchDistance=0},{passive:true});feed.addEventListener('touchmove',e=>{if(e.touches.length!==2||!touchDistance)return;const distance=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);if(Math.abs(distance-touchDistance)>24){const step=distance>touchDistance ? 0.25 : -0.25;touchDistance=distance;setZoom(Math.max(1,S.zoom+step))}},{passive:true});
 // Clear old PWA cache/service-worker instances from previous Recon Cam versions.
 if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(rs=>Promise.all(rs.filter(r=>r.scope.includes('/recon-cam/')).map(r=>r.unregister()))).catch(()=>{});}
 if('caches' in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>/^reconcam-v/i.test(k)).map(k=>caches.delete(k)))).catch(()=>{});
-fit();setFilter('normal');updateZoomRead();loadObjects();
+setInterval(()=>{if(S.running)render()},700);fit();setFilter('normal');updateZoomRead();loadObjects();
 // Browsers may require a user gesture: attempt automatic camera, then keep START available.
 window.addEventListener('load',()=>start(false),{once:true});
 })();

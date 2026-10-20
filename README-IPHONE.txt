@@ -1,27 +1,30 @@
-RECON CAM V11 - FULL SCREEN AUTO UPGRADE
+RECON CAM V12.3 — SMOOTH LIVE CAMERA
 
-This ZIP contains ONLY THE THREE FILES THAT NEED REPLACING in your existing GitHub repo.
-Keep your existing app.js, style.css, icons and other files.
+WHAT CHANGED
+- Camera preview remains a real <video> stream; object recognition analyzes a smaller separate canvas.
+- Object recognition scans less often (about every 1–3 seconds after each scan, depending on performance).
+- Default camera capture target is 720p / 24fps to reduce load. Optional High detail setting is available.
+- Top ↻ button restarts a frozen feed. A frame watchdog tries limited automatic recovery if the browser reports stopped frames.
+- Automatic text OCR is OFF at first launch, but tap READ TEXT to scan manually.
+- Optional experimental weapon model is NOT loaded automatically. Its AUTO weapon scanning switch is OFF by default to protect live performance. Manual focus scans are available after loading the model.
+- Standard object AI can still label knives and scissors without the large optional model.
 
-FROM IPHONE:
-1. Open https://github.com/nickolassantiago525-cell/recon-cam in Safari.
-2. Download this ZIP in ChatGPT, open Files and tap it to unzip.
-3. Open the repository in GitHub, upload/replace index.html, manifest.webmanifest and sw.js at the repository root (main branch). GitHub may require you to use its Add file -> Upload files interface and to commit.
-4. Open https://nickolassantiago525-cell.github.io/recon-cam/?v=11 in Safari.
-5. For edge-to-edge Home Screen view, use Safari Share > Add to Home Screen > Open as Web App, if shown.
+IPHONE GITHUB UPLOAD
+1. Save the included index.html to the iPhone Files app.
+2. Open https://github.com/nickolassantiago525-cell/recon-cam in Safari.
+3. Replace the existing root index.html in the main branch (not in a subfolder). If GitHub will not overwrite it, delete the old index.html, commit, then Add file > Upload files > select the new index.html and commit.
+4. Wait for GitHub Pages to publish. Then open:
+   https://nickolassantiago525-cell.github.io/recon-cam/index.html?v=123
+5. If an old screen remains, refresh Safari or close and reopen the Home Screen app.
 
-NEW:
-- The camera fills the full iPhone screen.
-- It requests camera access automatically at page launch. If iOS refuses, tap START CAMERA.
-- Automatic object detection with readable green boxes (default strict mode).
-- Automatic word/number recognition (results stay in the small bottom panel).
-- Simple floating zoom buttons and a hamburger menu for the rest of the controls.
-- Tap-to-read individual words, manual spelling and optional automatic speech.
+TROUBLESHOOTING
+- If the live picture sticks, tap ↻ in the upper-right corner. If it keeps happening, use Settings > Smooth live and turn OFF Auto weapon scans and Automatic text reading.
+- A stopped camera can also be caused by Safari/iOS permissions, thermal throttling, low available memory, other camera apps, or browser suspension. Web apps cannot promise uninterrupted operation in the background.
+- In this update, normal knife detection remains automatic. The optional, resource-heavy weapon beta must be enabled separately. It can make the feed less responsive, especially on an iPhone.
 
-LIMITS:
-- iOS/Safari may ask for camera permission at each app start. Code cannot override this.
-- 0.5x works only if Safari exposes the iPhone ultra-wide camera.
-- AI recognizes only its trained classes, may hallucinate labels, and is NOT a reliable weapon or safety detector.
-- AI model libraries may need network access, especially on the first load.
-- The app cannot use the camera while backgrounded or phone locked.
-- It has not been tested on your physical iPhone; report any errors with a screenshot.
+LIMITS
+These features are experimental visual aids. Knives can be confused with scissors, and the optional weapon model's gun labels are unreliable. Failure to draw a box does NOT mean an area is safe.
+The application requires HTTPS, permission from Safari/iOS, and an internet connection to load its AI libraries/models unless cached by the browser.
+
+TESTING
+V12.3 passed JavaScript syntax checking and a simulated moving-camera test for live frame progress, throttled AI scans, manual restart, and automatic recovery after a stopped stream. It has not been tested on your actual iPhone hardware.
