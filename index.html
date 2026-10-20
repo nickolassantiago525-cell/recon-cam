@@ -1,308 +1,244 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#08110a" />
-  <title>Recon Cam V10 · Word Reader</title>
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" href="icon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="icon-180.png" />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#020602">
+  <title>Recon Cam V11 · Full Screen Auto</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="stylesheet" href="style.css?v=11">
+  <!-- Keep exactly the same recognition engines as V10. These may need internet to load. -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3"></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <style>
-    /* V10 is added directly to index.html so the iPhone GitHub update needs one file. */
-    .wordTools{background:linear-gradient(180deg,#112716,#0a170f);border:1px solid #416a49;border-radius:16px;padding:14px;margin:0 0 12px;display:grid;gap:12px;max-width:100%}
-    .wordTools h2{margin:0;color:#b8ffa3;font-size:18px;letter-spacing:.03em}
-    .wordTools p{margin:0;color:#bfd9c1;line-height:1.45;font-size:13px}
-    .wordActions{display:flex;flex-wrap:wrap;gap:8px}
-    .wordActions button{background:#173922;border:1px solid #6aa16a;color:#f0ffeb;padding:12px;border-radius:12px;font-size:14px;font-weight:750;min-height:46px}
-    .wordActions button:disabled{opacity:.5}
-    .wordActions button[aria-pressed="true"]{background:#a1ef83;color:#071308;border-color:#a1ef83}
-    .wordFound{font-size:12px;color:#cff3bc;min-height:20px}
-    .wordChips{display:flex;flex-wrap:wrap;gap:8px;max-height:240px;overflow:auto}
-    .wordChips button{padding:10px 12px;min-height:44px;background:#0c1f12;color:#fff;border:1px solid #517c58;border-radius:10px;font-size:19px;font-weight:700;word-break:break-word}
-    .wordChips button:focus-visible{outline:3px solid #e3ff93;outline-offset:2px}
-    .wordSelected{border:1px dashed #4e8055;background:#102516;border-radius:12px;padding:10px 12px;line-height:1.35;min-height:52px;overflow-wrap:anywhere}
-    .wordSelected small{display:block;color:#a7d49d;font-size:11px;letter-spacing:.07em;margin-bottom:4px}
-    .wordSelected strong{font-size:clamp(20px,5vw,29px);font-weight:800;color:#fff}
-    .wordSpeed{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .wordSpeed label{min-width:0;display:flex;align-items:center;gap:8px;font-size:13px;flex:1}
-    .wordSpeed select{flex:1;min-width:115px;max-width:190px;padding:10px;font-size:14px}
-    .wordHint{font-size:12px;color:#bdccb8}
+    /* V11: camera is the entire screen; controls float above it. */
+    :root { color-scheme: dark; }
+    html, body { width:100%;height:100%;margin:0;overflow:hidden; overscroll-behavior:none; }
+    body { background:#000; color:#f1fff0; }
+    .app { width:100%;max-width:none;height:100%;min-height:0;margin:0;padding:0;overflow:hidden; }
+    .viewer { position:fixed;inset:0;width:100%;height:100%;margin:0;border:0;border-radius:0;background:#000;z-index:0; }
+    .videoWrap { position:absolute;inset:0;width:100%;height:100%;max-height:none;aspect-ratio:auto;overflow:hidden; }
+    .videoWrap video, .videoWrap canvas { width:100%;height:100%;object-fit:cover; }
+    .crosshair { display:none; }
+    #overlayMsg { position:absolute;bottom:calc(178px + env(safe-area-inset-bottom));left:50%;right:auto;transform:translateX(-50%);width:max-content;max-width:86vw;background:#081c0dd9;color:#e7ffe3;border:1px solid #427f42;opacity:1;text-align:center;z-index:5; }
+    #overlayMsg[hidden] { display:none!important; }
+    .topbar { position:fixed;z-index:9;top:0;left:0;right:0;width:100%;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 10px 6px;margin:0;border:0;border-radius:0;background:linear-gradient(to bottom,#000d 0%,#0008 65%,transparent 100%);box-shadow:none; }
+    .brand { display:flex;align-items:center;gap:7px;min-width:0; }
+    .logo { width:30px;height:30px;font-size:15px;border-radius:9px;border-width:1px; }
+    .title { font-size:15px;letter-spacing:.04em;white-space:nowrap; }
+    .subtitle { font-size:9px;letter-spacing:.07em;margin:2px 0 0; }
+    .statuswrap { display:flex;align-items:center;flex-direction:row;gap:6px;justify-content:flex-end;min-width:0; }
+    .statuswrap .status, .iconbtn, .overlayButton { border:1px solid #679a66;border-radius:11px;background:#071508d9;color:#e6ffde;min-height:40px;padding:8px 10px;font-size:11px;font-weight:800; }
+    .iconbtn { width:40px;height:40px;font-size:18px; }
+    #settingsBtn { width:40px;height:40px; }
+    #startStopBtn { white-space:nowrap;max-width:118px; }
+    .stats { position:fixed;z-index:6;top:calc(51px + env(safe-area-inset-top));left:8px;right:8px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:4px 0;border:1px solid #35543a77;background:#01070185;border-radius:11px;margin:0;box-shadow:none;pointer-events:none; }
+    .stat { padding:3px 7px;min-width:0;border-right:1px solid #56745260; }
+    .stat span { font-size:9px;letter-spacing:0; }
+    .stat strong, #detectValue { font-size:13px;line-height:1.15;margin-top:2px; }
+    .readPanel { position:fixed;z-index:7;bottom:calc(8px + env(safe-area-inset-bottom));left:8px;right:8px;margin:0;padding:8px 11px;min-height:72px;max-height:120px;overflow:hidden;border-radius:15px;border:1px solid #477149aa;background:#031109e8;box-shadow:0 4px 30px #0009;gap:5px; }
+    .readHeader { font-size:10px;line-height:1.15;letter-spacing:.03em;flex-wrap:nowrap; }
+    .readContent { min-height:16px;max-height:58px;overflow-y:auto;font-size:clamp(15px,3.8vw,18px);line-height:1.3; }
+    .readContent .ocrLineText { padding:2px 4px;font-size:clamp(15px,3.8vw,18px); }
+    #ocrQuality { font-size:10px; }
+    .readButtons, .readHint { display:none; }
+    .textToggle { padding:4px 8px;font-size:10px;min-height:26px; }
+    .cameraDock { position:fixed;z-index:8;left:50%;bottom:calc(103px + env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:6px;max-width:96vw;padding:6px;border:1px solid #5a91598c;border-radius:15px;background:#000c;backdrop-filter:blur(8px); }
+    .cameraDock button { white-space:nowrap;min-width:51px;min-height:38px;padding:5px 8px;color:#eaffdd;border:1px solid #456846;border-radius:9px;background:#132417ec;font-size:13px;font-weight:800; }
+    .cameraDock .preset.active { background:#a2f784;color:#061007;border-color:#a2f784; }
+    .cameraDock .squareBtn { min-width:38px;line-height:1;font-size:21px; }
+    #controlsDrawer { position:fixed;z-index:15;top:calc(56px + env(safe-area-inset-top));bottom:calc(10px + env(safe-area-inset-bottom));left:10px;right:10px;overflow:auto;background:#08140df9;border:1px solid #668b68;border-radius:18px;padding:14px;box-shadow:0 10px 60px #000e;display:none; }
+    #controlsDrawer.open { display:block; }
+    #controlsDrawer .drawerTop { position:sticky;top:-14px;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:10px;margin:-14px -14px 12px;padding:12px 14px;background:#0b2012;border-radius:16px 16px 0 0; }
+    #controlsDrawer .drawerTop strong { font-size:17px; }
+    #controlsDrawer button { min-height:43px; }
+    #controlsDrawer .panel { box-shadow:none; }
+    #controlsDrawer .wordTools { border:1px solid #426b48;border-radius:15px;padding:12px;background:#10231a;display:grid;gap:10px; }
+    #controlsDrawer .wordActions { display:flex;flex-wrap:wrap;gap:7px; }
+    #controlsDrawer .wordActions button { padding:8px 10px;border:1px solid #6aa16a;border-radius:9px;background:#163722;color:#fff;font-weight:700; }
+    #controlsDrawer .wordChips { display:flex;flex-wrap:wrap;gap:7px;max-height:170px;overflow-y:auto; }
+    #controlsDrawer .wordChips button {font-size:18px;background:#142918;color:#fff;border:1px solid #517c58;border-radius:9px;padding:8px;word-break:break-word;}
+    .wordSelected {padding:8px 10px;border:1px dashed #508a53;border-radius:10px;overflow-wrap:anywhere;}
+    .wordSelected small {display:block;font-size:10px;}
+    .wordSelected strong {font-size:24px;}
+    .wordHint {font-size:12px;line-height:1.4;color:#d0dfcd;}
+    #helpDialog {z-index:40;max-width:95vw;}
+    #helpDialog::backdrop {background:#000c;}
+    @media (orientation:landscape) and (max-height:520px) { .stats{top:calc(48px + env(safe-area-inset-top))}.cameraDock{bottom:calc(91px + env(safe-area-inset-bottom))}.readPanel{max-height:83px;min-height:63px} }
+    @media(max-width:380px){.brand .subtitle{display:none}.cameraDock button{min-width:45px;padding:5px}.title{font-size:13px} }
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="brand">
-        <div class="logo">R◉</div>
-        <div>
-          <div class="title">RECON CAM</div>
-          <div class="subtitle">FIELD VIEWER · V10</div>
-        </div>
-      </div>
-      <div class="statuswrap">
-        <button id="startStopBtn" class="status on">START CAMERA</button>
-        <button id="helpBtn" class="iconbtn">?</button>
-      </div>
-    </header>
-    <section class="stats">
-      <div class="stat"><span>MAGNIFICATION</span><strong id="magValue">1.0×</strong></div>
-      <div class="stat"><span>DETECTION</span><strong id="detectValue">OFF</strong></div>
-      <div class="stat"><span>DIRECTION</span><strong id="dirValue">—</strong></div>
-    </section>
-    <section class="viewer">
-      <div class="videoWrap" id="videoWrap">
-        <video id="video" playsinline autoplay muted></video>
-        <canvas id="overlay"></canvas>
-        <div class="crosshair"></div>
-        <div id="overlayMsg" class="overlayMsg">Camera off. Tap START CAMERA.</div>
-      </div>
-    </section>
-    <section class="readPanel" aria-live="polite">
-      <div class="readHeader"><strong>📖 WORD &amp; NUMBER READER</strong><button id="ocrToggle" class="textToggle" aria-pressed="true">ON · PAUSE</button></div>
-      <div class="readButtons" role="group" aria-label="Text reading actions">
-        <button id="readScanBtn">SCAN NOW</button>
-        <button id="readSpeechBtn">READ ALOUD</button>
-        <button id="spellSpeechBtn">SPELL IT</button>
-        <button id="readCopyBtn">COPY</button>
-        <span id="ocrQuality" aria-live="polite">Ready</span>
-      </div>
-      <div class="readContent" id="readContent">Scanning for readable signs, words, and numbers…</div>
-      <div class="readHint" id="readHint">Text is shown here, never over your camera image. Readings can be mistaken.</div>
-    </section>
-    <section class="wordTools" aria-label="Word reader controls">
-      <h2>🔤 READ WORDS · V10</h2>
-      <p>Recognize visible writing. Tap a word below to hear it; READ ALL speaks the detected lines. Voice stays off until you choose to use it.</p>
+<div class="app">
+  <section class="viewer" aria-label="Full-screen camera">
+    <div class="videoWrap" id="videoWrap">
+      <video id="video" playsinline autoplay muted></video>
+      <canvas id="overlay"></canvas>
+      <div class="crosshair"></div>
+      <div id="overlayMsg" class="overlayMsg">Starting camera…</div>
+    </div>
+  </section>
+  <header class="topbar">
+    <div class="brand"><div class="logo">R◉</div><div><div class="title">RECON CAM</div><div class="subtitle">FULL SCREEN · V11 AUTO</div></div></div>
+    <div class="statuswrap">
+      <button id="startStopBtn" class="status on" aria-label="Start or stop camera">START CAMERA</button>
+      <button id="settingsBtn" class="iconbtn" aria-label="Open settings" aria-expanded="false">☰</button>
+      <button id="helpBtn" class="iconbtn" aria-label="Help">?</button>
+    </div>
+  </header>
+  <section class="stats" aria-label="Camera information">
+    <div class="stat"><span>ZOOM</span><strong id="magValue">1.0×</strong></div>
+    <div class="stat"><span>OBJECTS</span><strong id="detectValue">OFF</strong></div>
+    <div class="stat"><span>DIRECTION</span><strong id="dirValue">—</strong></div>
+  </section>
+  <nav class="cameraDock" aria-label="Zoom controls">
+    <button class="preset" data-zoom="0.5">0.5×</button>
+    <button class="preset active" data-zoom="1">1×</button>
+    <button class="preset" data-zoom="2">2×</button>
+    <button class="preset" data-zoom="5">5×</button>
+    <button id="zoomOutBtn" class="squareBtn" aria-label="Zoom out">−</button>
+    <button id="zoomInBtn" class="squareBtn" aria-label="Zoom in">+</button>
+  </nav>
+  <section class="readPanel" aria-label="Automatic word and number reader" aria-live="polite">
+    <div class="readHeader"><strong>WORDS &amp; NUMBERS · AUTO SCAN</strong><button id="ocrToggle" class="textToggle" aria-pressed="true">ON · PAUSE</button></div>
+    <div class="readContent" id="readContent">Camera starting. Words and numbers appear here.</div>
+    <div class="readButtons">
+      <button id="readScanBtn">SCAN NOW</button><button id="readSpeechBtn">READ ALOUD</button><button id="spellSpeechBtn">SPELL IT</button><button id="readCopyBtn">COPY</button><span id="ocrQuality">Ready</span>
+    </div>
+    <div class="readHint" id="readHint">Verify important text. Automatic recognition may make mistakes.</div>
+  </section>
+  <aside id="controlsDrawer" aria-label="Camera settings" aria-hidden="true">
+    <div class="drawerTop"><strong>Recon Cam controls</strong><button id="closeSettingsBtn" class="overlayButton">CLOSE</button></div>
+    <section class="wordTools" aria-label="Word reader">
+      <h2 style="margin:0;font-size:18px;color:#c2ffa5">READ WORDS · V11</h2>
+      <p style="margin:0;font-size:13px">Words scan automatically while the camera is running. Tap a recognized word to hear it. Speech requires a user tap to enable on iPhone.</p>
       <div class="wordActions">
         <button id="wordScanBtn">SCAN WORDS</button>
         <button id="wordReadAllBtn">READ ALL</button>
         <button id="wordAutoBtn" aria-pressed="false">AUTO VOICE: OFF</button>
         <button id="wordStopBtn">STOP VOICE</button>
       </div>
-      <div id="wordFound" class="wordFound" role="status" aria-live="polite">Start the camera, then tap SCAN WORDS.</div>
-      <div id="wordSelected" class="wordSelected" aria-live="polite"><small>SELECTED WORD</small><strong>—</strong></div>
+      <div id="wordFound" role="status">Automatic text scan starts with the camera.</div>
+      <div id="wordSelected" class="wordSelected"><small>SELECTED WORD</small><strong>—</strong></div>
       <div id="wordChips" class="wordChips" aria-label="Detected words"></div>
-      <div class="wordSpeed">
-        <label for="wordSpeedSelect">VOICE SPEED
-          <select id="wordSpeedSelect">
-            <option value="0.7">Slow</option>
-            <option value="0.9" selected>Normal</option>
-            <option value="1.15">Fast</option>
-          </select>
-        </label>
-      </div>
-      <div class="wordHint">Best with large printed letters, good lighting and a steady camera. Automatic voice may be restricted by iPhone Safari. OCR can mistake letters and numbers; verify important text.</div>
+      <label for="wordSpeedSelect">SPEECH SPEED<select id="wordSpeedSelect"><option value="0.7">Slow</option><option value="0.9" selected>Normal</option><option value="1.15">Fast</option></select></label>
+      <div class="wordHint">Automatic voice is optional so the camera stays quiet by default. Text results appear below the picture, not over it.</div>
     </section>
-    <section class="panel compact">
+    <section class="panel compact" style="margin-top:12px">
       <div class="row rowwrap">
-        <label class="wide">
-          <span>CAMERA / WIDE VIEW</span>
-          <select id="cameraMode">
-            <option value="rear-default">Default rear camera</option>
-            <option value="rear-ultrawide">Back ultra wide camera</option>
-          </select>
-        </label>
-        <div class="presetGroup">
-          <button class="preset" data-zoom="0.5">0.5×</button>
-          <button class="preset active" data-zoom="1">1×</button>
-          <button class="preset" data-zoom="2">2×</button>
-          <button class="preset" data-zoom="5">5×</button>
-        </div>
+        <label class="wide"><span>CAMERA / WIDE VIEW</span><select id="cameraMode"><option value="rear-default">Default rear camera</option><option value="rear-ultrawide">Back ultra-wide camera (if available)</option></select></label>
+        <label class="wide"><span>ZOOM</span><input id="zoomSlider" type="range" min="1" max="20" step="0.1" value="1"><span id="zoomValue">1.0×</span></label>
+      </div>
+      <div class="row rowwrap"><div class="seg">
+        <button class="modeBtn active" data-view="normal">NORMAL</button>
+        <button class="modeBtn" data-view="outline">OUTLINE</button>
+        <button class="modeBtn" data-view="night">NIGHT</button>
+        <button class="modeBtn" data-view="thermal">THERMAL*</button>
+      </div></div>
+      <div class="row rowwrap">
+        <label><span>TARGET MODE</span><select id="targetMode"><option value="all">All objects + OCR</option><option value="living">People / animals / vehicles</option><option value="electronics">Electronics</option><option value="kitchen">Kitchen / tools</option><option value="home">Furniture / home</option><option value="signs">Signs / streets</option><option value="text">Text / numbers only</option><option value="entry">Entry / exit text</option><option value="money">Money / cards (not reliably supported)</option></select></label>
+        <label><span>HIGHLIGHT</span><select id="drawMode"><option value="both">Outline + box + label</option><option value="box">Box</option><option value="label">Label only</option></select></label>
       </div>
       <div class="row rowwrap">
-        <div class="zoomBox">
-          <button id="zoomOutBtn" class="squareBtn">−</button>
-          <div class="zoomRead"><span>ZOOM</span><strong id="zoomValue">1.0×</strong></div>
-          <input id="zoomSlider" type="range" min="0.5" max="20" step="0.1" value="1" />
-          <button id="zoomInBtn" class="squareBtn">+</button>
-        </div>
-      </div>
-      <div class="row rowwrap">
-        <div class="seg">
-          <button class="modeBtn active" data-view="normal">NORMAL</button>
-          <button class="modeBtn" data-view="outline">OUTLINE</button>
-          <button class="modeBtn" data-view="night">NIGHT</button>
-          <button class="modeBtn" data-view="thermal">THERMAL*</button>
-        </div>
-      </div>
-      <div class="row rowwrap">
-        <label class="wide">
-          <span>TARGET MODE</span>
-          <select id="targetMode">
-            <option value="all">All targets</option>
-            <option value="living">People / Animals / Vehicles</option>
-            <option value="electronics">Electronics</option>
-            <option value="kitchen">Kitchen / Tools</option>
-            <option value="home">Home / Furniture</option>
-            <option value="signs">Signs / Streets</option>
-            <option value="text">Text / Numbers</option>
-            <option value="entry">Entry / Exit</option>
-            <option value="money">Money / Card</option>
-          </select>
-        </label>
-        <label>
-          <span>HIGHLIGHT</span>
-          <select id="drawMode">
-            <option value="both">Outline + Box</option>
-            <option value="box">Box only</option>
-            <option value="label">Label only</option>
-          </select>
-        </label>
-      </div>
-      <div class="row rowwrap">
-        <label>
-          <span>OUTLINE COLOR</span>
-          <select id="colorMode">
-            <option value="auto">Auto by type</option>
-            <option value="green">All green</option>
-            <option value="yellow">All yellow</option>
-            <option value="red">All red</option>
-          </select>
-        </label>
-        <label>
-          <span>LINE STRENGTH</span>
-          <input id="lineStrength" type="range" min="2" max="8" step="1" value="4" />
-        </label>
-        <label>
-          <span>DETECTION</span>
-          <select id="accuracyMode"><option value="strict">Strict · fewer mistakes</option><option value="normal">Normal · more objects</option></select>
-        </label>
-        <label>
-          <span>LABEL SIZE</span>
-          <input id="labelSize" type="range" min="12" max="22" step="1" value="16" />
-        </label>
+        <label><span>OUTLINE COLOR</span><select id="colorMode"><option value="green">Green</option><option value="auto">Auto by type</option><option value="yellow">Yellow</option><option value="red">Red</option></select></label>
+        <label><span>LINE STRENGTH</span><input id="lineStrength" type="range" min="2" max="8" step="1" value="4"></label>
+        <label><span>DETECTION</span><select id="accuracyMode"><option value="strict" selected>Strict · fewer false positives</option><option value="normal">Normal · more results</option></select></label>
+        <label><span>LABEL SIZE</span><input id="labelSize" type="range" min="12" max="22" step="1" value="17"></label>
       </div>
       <div class="row actions">
-        <button id="gpsBtn">GPS</button>
-        <button id="compassBtn">COMPASS</button>
-        <button id="photoBtn">PHOTO</button>
-        <button id="refreshBtn">REFRESH AI</button>
+        <button id="gpsBtn">GPS</button><button id="compassBtn">COMPASS</button><button id="photoBtn">PHOTO</button><button id="refreshBtn">REFRESH AI</button>
       </div>
-      <div class="note" id="noteBox">
-        V10 adds tap-to-read words and optional automatic voice. It uses the same on-device camera OCR as V9, so accuracy is limited by lighting, movement, font and camera resolution. It does not reliably identify firearms or establish that an area is safe. Night and thermal are visual effects, not sensors.
-      </div>
+      <div class="row actions"><button id="settingsScanBtn">SCAN NOW</button><button id="settingsSpeakBtn">READ ALOUD</button><button id="settingsSpellBtn">SPELL IT</button><button id="settingsCopyBtn">COPY</button></div>
+      <div class="note">The live camera and object/word scanning start automatically once iOS grants camera access. iPhone controls whether it asks again after the app reopens. The AI may mistake objects, miss knives or other hazards, and cannot reliably detect firearms. Night and thermal are appearance filters, not real night vision or a thermal sensor. The app needs recognition model files to load, which may require an internet connection.</div>
     </section>
-  </div>
-  <dialog id="helpDialog">
-    <div class="dialogCard">
-      <h3>Recon Cam V10</h3>
-      <ul>
-        <li>Tap START CAMERA, aim at a sign or label, and tap SCAN WORDS.</li>
-        <li>Tap any detected word to hear just that word or tap READ ALL for all scanned lines.</li>
-        <li>AUTO VOICE reads new scans, but may be limited by iPhone Safari and can repeat inaccurate readings.</li>
-        <li>Use NORMAL or NIGHT for a clear image; 0.5× works only if Safari exposes the ultra-wide lens.</li>
-        <li>Text, object names, and numbers are estimates, not verified observations.</li>
-      </ul>
-      <button id="closeHelpBtn">Close</button>
-    </div>
-  </dialog>
-  <script src="app.js?v=10"></script>
-  <script>
-    // V10 add-on: uses existing V9 OCR results, without loading a second OCR model.
-    (() => {
-      'use strict';
-      const $ = id => document.getElementById(id);
-      const panel = $('readContent');
-      const chips = $('wordChips');
-      const found = $('wordFound');
-      const selected = $('wordSelected').querySelector('strong');
-      const autoBtn = $('wordAutoBtn');
-      const videoEl = $('video');
-      let lastResult = '', lastSpoken = '', lastSpokenAt = 0;
-      let autoEnabled = false, voiceUnlocked = false, lastWord = '';
-      const MAX_SPEECH = 240;
-
-      function activeCamera(){ return Boolean(videoEl?.srcObject && videoEl.readyState >= 2); }
-      function ocrEnabled(){ return $('ocrToggle')?.getAttribute('aria-pressed') === 'true'; }
-      function getLines(){ return [...panel.querySelectorAll('.ocrLineText')].map(b => b.textContent.trim()).filter(Boolean); }
-      function safeReadText(t){
-        return String(t||'').replace(/\b(?:\d[ -]?){12,19}\b/g, '[long number hidden]').trim().slice(0,MAX_SPEECH);
-      }
-      function status(t){found.textContent=t;}
-      function say(t){
-        const clean=safeReadText(t);
-        if(!clean){status('No readable text yet. Tap SCAN WORDS.');return;}
-        if(!('speechSynthesis' in window)){status('Speech is not supported in this browser.');return;}
-        try {
-          window.speechSynthesis.cancel();
-          const u=new SpeechSynthesisUtterance(clean);
-          u.lang='en-US';u.rate=Number($('wordSpeedSelect').value);
-          const voices=window.speechSynthesis.getVoices();
-          const match=voices.find(v=>v.lang?.toLowerCase().startsWith('en')&&v.localService)||voices.find(v=>v.lang?.toLowerCase().startsWith('en'));
-          if(match)u.voice=match;
-          u.onerror=()=>status('iPhone speech did not start. Try tapping READ ALL.');
-          window.speechSynthesis.speak(u);
-          status('Reading: '+clean.slice(0,70));
-        } catch(err){status('Speech unavailable. Try again from Safari.');}
-      }
-      function wordsOf(lines){
-        // Keep reading order. Remove repeated junk and cap DOM work on iPhone.
-        const tokens=[];
-        for(const line of lines){
-          for(const match of line.matchAll(/[A-Za-z0-9]+(?:['’.-][A-Za-z0-9]+)*/g)){
-            const word=match[0];
-            if(!word||word.length>45)continue;
-            tokens.push(word);
-            if(tokens.length>=55)return tokens;
-          }
-        }
-        return tokens;
-      }
-      function updateWordList(){
-        const lines=getLines();
-        const current=lines.join('\n');
-        if(current===lastResult)return;
-        lastResult=current;
-        chips.replaceChildren();
-        if(!lines.length){ selected.textContent='—';status(activeCamera()?'No clear writing detected. Try again with better lighting.':'Start the camera, then tap SCAN WORDS.'); return; }
-        const words=wordsOf(lines);
-        for(const word of words){
-          const b=document.createElement('button');b.type='button';b.textContent=word;
-          b.setAttribute('aria-label','Read word: '+word);
-          b.addEventListener('click',()=>{voiceUnlocked=true;lastWord=word;selected.textContent=word;say(word);});
-          chips.append(b);
-        }
-        selected.textContent=lastWord&&words.includes(lastWord)?lastWord:words[0]||'—';
-        status(`${words.length} words or numbers detected · tap a word to hear it`);
-        if(autoEnabled && voiceUnlocked && activeCamera() && ocrEnabled()){
-          const now=Date.now();
-          // Don't continuously repeat identical OCR results or speak more than once every 5s.
-          if(current!==lastSpoken && now-lastSpokenAt>5000){lastSpoken=current;lastSpokenAt=now;say(lines.join('. '));}
-        }
-      }
-      // V9 replaces reader elements on every OCR scan. Observe those changes.
-      const observer=new MutationObserver(updateWordList);
-      observer.observe(panel,{childList:true,subtree:true,characterData:true});
-      $('wordScanBtn').addEventListener('click',()=>{
-        if(!activeCamera()){status('Start the camera first.');return;}
-        if(!ocrEnabled()){status('Turn the WORD & NUMBER READER back on first.');return;}
-        status('Scanning words. Keep the camera steady…');
-        $('readScanBtn').click();
-      });
-      $('wordReadAllBtn').addEventListener('click',()=>{
-        voiceUnlocked=true;
-        const lines=getLines();
-        if(!lines.length){status('No words scanned. Tap SCAN WORDS first.');return;}
-        say(lines.join('. '));
-      });
-      autoBtn.addEventListener('click',()=>{
-        autoEnabled=!autoEnabled;
-        voiceUnlocked=true; // Only enable in direct response to a deliberate user tap.
-        autoBtn.setAttribute('aria-pressed',String(autoEnabled));
-        autoBtn.textContent=`AUTO VOICE: ${autoEnabled?'ON':'OFF'}`;
-        if(!autoEnabled){window.speechSynthesis?.cancel();status('Automatic voice is off. Tap words to hear them.');}
-        else {status('Automatic voice enabled. New scans will be read aloud when supported.');}
-      });
-      $('wordStopBtn').addEventListener('click',()=>{window.speechSynthesis?.cancel();status('Voice stopped.');});
-      $('startStopBtn').addEventListener('click',()=>{
-        if(!activeCamera()){window.speechSynthesis?.cancel();lastSpoken='';lastSpokenAt=0;}
-      });
-      updateWordList();
-    })();
-  </script>
+  </aside>
+</div>
+<dialog id="helpDialog"><div class="dialogCard"><h3>Recon Cam V11</h3><p>Camera, objects and text detection attempt to start automatically. Tap START CAMERA if iPhone requests a manual start. Move or pinch to frame the image and use the floating zoom buttons.</p><p>Open ☰ for optional voice reading, spelling, OCR tools and camera settings. Speech requires a tap to enable where iOS requires it.</p><p>Safari/iOS controls camera permission; this web app cannot grant itself permanent access. The picture fills the screen when opened as a Home Screen web app.</p><p>Labels and readings are AI estimates, not safety or security guarantees.</p><button id="closeHelpBtn">Close</button></div></dialog>
+<script src="app.js?v=11"></script>
+<script>
+// V11: thin enhancement over the existing V10 object-detection/OCR engine in app.js.
+(() => {
+  'use strict';
+  const $=id=>document.getElementById(id);
+  const videoEl=$('video'),panel=$('readContent'),chips=$('wordChips'),wordFound=$('wordFound');
+  const selected=$('wordSelected').querySelector('strong'),autoBtn=$('wordAutoBtn');
+  const drawer=$('controlsDrawer'), settingsBtn=$('settingsBtn');
+  let cachedText='',lastSpeech='',lastSpeechTime=0, voiceUnlocked=false,autoVoice=false,userStopped=false,autoAttempted=false;
+  const active=()=>!!(videoEl.srcObject&&videoEl.readyState>=2);
+  const currentLines=()=>[...panel.querySelectorAll('.ocrLineText')].map(x=>x.textContent.trim()).filter(Boolean);
+  function openDrawer(open){drawer.classList.toggle('open',open);drawer.setAttribute('aria-hidden',String(!open));settingsBtn.setAttribute('aria-expanded',String(open));}
+  settingsBtn.addEventListener('click',()=>openDrawer(!drawer.classList.contains('open')));
+  $('closeSettingsBtn').addEventListener('click',()=>openDrawer(false));
+  const click=id=>$(id).click();
+  $('settingsScanBtn').addEventListener('click',()=>click('readScanBtn'));
+  $('settingsSpeakBtn').addEventListener('click',()=>{voiceUnlocked=true;click('readSpeechBtn');});
+  $('settingsSpellBtn').addEventListener('click',()=>{voiceUnlocked=true;click('spellSpeechBtn');});
+  $('settingsCopyBtn').addEventListener('click',()=>click('readCopyBtn'));
+  $('wordScanBtn').addEventListener('click',()=>click('readScanBtn'));
+  function safeText(t){return String(t||'').replace(/\b(?:\d[ -]?){12,19}\b/g,'[long number hidden]').trim().slice(0,240);}
+  function say(t){
+    const clean=safeText(t);
+    if(!clean){wordFound.textContent='No readable words yet';return;}
+    if(!('speechSynthesis' in window)){wordFound.textContent='Speech not supported here';return;}
+    try{
+      window.speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(clean);u.lang='en-US';u.rate=Number($('wordSpeedSelect').value);
+      const v=window.speechSynthesis.getVoices();u.voice=v.find(x=>x.localService&&/^en/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null;
+      window.speechSynthesis.speak(u);
+    } catch {wordFound.textContent='Speech unavailable in this browser';}
+  }
+  function listWords(){
+    const lines=currentLines(),text=lines.join('\n');if(text===cachedText)return;cachedText=text;
+    chips.replaceChildren();
+    if(!text){selected.textContent='—';wordFound.textContent='Waiting for readable text…';return;}
+    const words=[];for(const line of lines){for(const m of line.matchAll(/[A-Za-z0-9]+(?:['’.-][A-Za-z0-9]+)*/g)){if(m[0].length<=45)words.push(m[0]);if(words.length>=45)break;}if(words.length>=45)break;}
+    const fragment=document.createDocumentFragment();
+    for(const word of words){const b=document.createElement('button');b.type='button';b.textContent=word;b.addEventListener('click',()=>{voiceUnlocked=true;selected.textContent=word;say(word);});fragment.appendChild(b);}
+    chips.appendChild(fragment);selected.textContent=words[0]||'—';
+    wordFound.textContent=`${words.length} words / numbers detected`;
+    if(autoVoice&&voiceUnlocked&&active()&&$('ocrToggle').getAttribute('aria-pressed')==='true'){
+      const now=Date.now();if(text!==lastSpeech&&now-lastSpeechTime>6000){lastSpeech=text;lastSpeechTime=now;say(lines.join('. '));}
+    }
+  }
+  new MutationObserver(listWords).observe(panel,{childList:true,subtree:true,characterData:true});
+  $('wordReadAllBtn').addEventListener('click',()=>{voiceUnlocked=true;say(currentLines().join('. '));});
+  autoBtn.addEventListener('click',()=>{
+    autoVoice=!autoVoice;voiceUnlocked=true;autoBtn.setAttribute('aria-pressed',String(autoVoice));
+    autoBtn.textContent=`AUTO VOICE: ${autoVoice?'ON':'OFF'}`;
+    if(!autoVoice)window.speechSynthesis?.cancel();
+    wordFound.textContent=autoVoice?'Auto voice enabled for new readable text':'Auto voice is off';
+  });
+  $('wordStopBtn').addEventListener('click',()=>{autoVoice=false;autoBtn.textContent='AUTO VOICE: OFF';autoBtn.setAttribute('aria-pressed','false');window.speechSynthesis?.cancel();});
+  // Existing camera engine starts OCR and object recognition together.
+  // Do not promise a permission bypass: iOS may still ask or reject autoplay.
+  const startBtn=$('startStopBtn');
+  startBtn.addEventListener('click',()=>{userStopped=(startBtn.textContent.trim()==='STOP CAMERA');},true);
+  function autoStart(){
+    if(userStopped||document.visibilityState==='hidden'||active())return;
+    // Don't repeatedly request permission if the user denied it.
+    if(autoAttempted)return;
+    autoAttempted=true;
+    startCamera();
+  }
+  // Start once per document, plus one attempt after genuine page restoration.
+  setTimeout(autoStart,150);
+  window.addEventListener('pageshow',e=>{if(e.persisted){autoAttempted=false;setTimeout(autoStart,180);}});
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible'&&!userStopped&&videoEl.srcObject &&
+      videoEl.srcObject.getVideoTracks().every(t=>t.readyState==='ended'))startCamera();
+  });
+  // Avoid cluttering the picture with routine "Camera on" messages.
+  const overlayMessage=$('overlayMsg');
+  new MutationObserver(()=>{if(active() && /^(Camera on\.|Camera ready\b)/i.test(overlayMessage.textContent.trim()))overlayMessage.hidden=true;})
+    .observe(overlayMessage,{childList:true,characterData:true,subtree:true});
+  videoEl.addEventListener('playing',()=>{if(active()&&/^(Camera on\.|Camera ready\b)/i.test(overlayMessage.textContent.trim()))overlayMessage.hidden=true;});
+  listWords();
+})();
+</script>
 </body>
 </html>
