@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#08110a" />
-  <title>Recon Cam V7</title>
+  <title>Recon Cam V8</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="icon-180.png" />
@@ -20,7 +20,7 @@
         <div class="logo">R◉</div>
         <div>
           <div class="title">RECON CAM</div>
-          <div class="subtitle">FIELD VIEWER · V7</div>
+          <div class="subtitle">FIELD VIEWER · V8</div>
         </div>
       </div>
       <div class="statuswrap">
@@ -42,6 +42,12 @@
         <div class="crosshair"></div>
         <div id="overlayMsg" class="overlayMsg">Camera off. Tap START CAMERA.</div>
       </div>
+    </section>
+
+    <section class="readPanel" aria-live="polite">
+      <div class="readHeader"><strong>📖 TEXT READER</strong><button id="ocrToggle" class="textToggle" aria-pressed="true">ON · PAUSE</button></div>
+      <div class="readContent" id="readContent">Scanning for readable signs, words, and numbers…</div>
+      <div class="readHint" id="readHint">Text is shown here, never over your camera image. Readings can be mistaken.</div>
     </section>
 
     <section class="panel compact">
@@ -116,6 +122,10 @@
           <input id="lineStrength" type="range" min="2" max="8" step="1" value="4" />
         </label>
         <label>
+          <span>DETECTION</span>
+          <select id="accuracyMode"><option value="strict">Strict · fewer mistakes</option><option value="normal">Normal · more objects</option></select>
+        </label>
+        <label>
           <span>LABEL SIZE</span>
           <input id="labelSize" type="range" min="12" max="22" step="1" value="16" />
         </label>
@@ -129,19 +139,21 @@
       </div>
 
       <div class="note" id="noteBox">
-        V7 uses live object detection for common categories such as people, animals, vehicles, phones, laptops, bottles, cups, TVs, chairs, and text blocks. Some categories you requested remain experimental or unreliable in a free web app, especially weapons, coins, cash, cards, and tiny distant objects.
+        V8 keeps object labels visible and readable while placing text-recognition results below the camera. Person and car labels require repeated, stronger detections to reduce false positives. Predictions are not proof that an object is present. Weapons, money, cards, and coins are not reliably identified by this model.
       </div>
     </section>
   </div>
 
   <dialog id="helpDialog">
     <div class="dialogCard">
-      <h3>Recon Cam V7</h3>
+      <h3>Recon Cam V8</h3>
       <ul>
         <li>For a clearer picture, use NORMAL or NIGHT. OUTLINE draws strong target boxes over the normal camera feed.</li>
         <li>0.5× works only if Safari exposes the iPhone ultra-wide lens.</li>
         <li>Auto target categories are limited in a free browser app.</li>
-        <li>Text / Numbers mode uses OCR and may take a few seconds.</li>
+        <li>Text Reader displays the best OCR results below the camera; use PAUSE to turn it off.</li>
+        <li>Strict detection waits for repeat matches and may miss some real objects.</li>
+        <li>Night and thermal modes are visual effects, not true night vision or heat sensing.</li>
       </ul>
       <button id="closeHelpBtn">Close</button>
     </div>

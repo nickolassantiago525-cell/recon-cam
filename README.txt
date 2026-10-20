@@ -1,19 +1,18 @@
-Recon Cam V7
+Recon Cam V8 — Clear Labels + Smart Text Reader
 
-Files:
-- index.html
-- style.css
-- app.js
-- manifest.webmanifest
-- sw.js
-- icon.svg
-- icon-180.png
-- README.txt
+What's new:
+- Keeps object name + confidence labels (such as Bottle 59%).
+- Text/letters/numbers are shown in a separate readable panel BELOW the camera instead of dozens of overlapping blue labels.
+- OCR filters low-confidence text and shows up to three lines. Can be paused independently.
+- A strict detection option raises confidence thresholds and waits for repeated matches before showing object labels, especially people and vehicles.
+- Strong colored boxes remain over the live, normally colored camera.
+- Actual ultra-wide camera is requested only when Safari exposes an identifiable ultra-wide device. 0.5x is not simulated by a CSS scale.
 
-Notes:
-- Free web app for iPhone/Safari and GitHub Pages.
-- Uses TensorFlow.js Coco-SSD for common object detection.
-- Uses Tesseract.js for text / numbers / exit words.
-- Strong target boxes over a normal camera image.
-- 0.5x ultra-wide works only if Safari exposes that camera.
-- Some requested categories remain experimental or unreliable.
+Limitations:
+- Even repeated high-confidence predictions can be wrong. Object detections are NOT proof a person or car exists.
+- OCR still occasionally misreads signs; low-confidence results are hidden.
+- Coco-SSD doesn't identify weapons, coins, cash, cards, doors and many tiny objects reliably.
+- Thermal and night view are visual effects only, not heat/night sensors.
+- Free CDN-based AI download requires internet; camera itself is not dependent on AI.
+
+Upload all eight files to GitHub repo root, overriding V7, enable Pages from main root (existing setup remains).
