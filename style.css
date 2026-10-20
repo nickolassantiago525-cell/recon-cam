@@ -40,3 +40,18 @@
 .zoomRow{gap:7px;margin:7px 0 4px}.zoomRow .mini{font-size:16px;padding:6px 9px;min-width:37px}.zoomTip{font-size:10px;line-height:1.4;color:#b7c8b5;margin:3px 0 7px}
 #outlinePanel .traceHelp{font-size:11px}#outlineStatus{min-height:30px}
 @media(max-width:380px){.zoomRow{gap:5px}.zoomRow label{min-width:46px}.zoomRow .mini{min-width:31px;padding:6px}}
+
+/* V6: natural sharp video underneath transparent, gently anti-aliased edge overlay */
+.viewer video{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform-origin:center center;z-index:0;}
+.viewer #viewCanvas{z-index:0;}
+.viewer #shapeCanvas{z-index:1;image-rendering:auto;}
+.zoomPresets{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:10px 0 6px;}
+.zoomPresets button{min-width:0;border:1px solid #557157;background:#213228;color:#e8f5e7;border-radius:8px;padding:9px 3px;font-weight:800;font-size:14px;min-height:43px;}
+.zoomPresets button.selected{border-color:#b1f985;background:#9fea7f;color:#0c2111;}
+.zoomPresets button small{display:block;font-size:8px;letter-spacing:.4px;line-height:1.1;}
+.detailRow{display:flex;align-items:center;gap:10px;margin:9px 1px 2px}
+.detailRow label{font-size:10px;font-weight:800;white-space:nowrap;color:#b5dfa9}
+.detailRow input{flex:1;min-width:0;accent-color:var(--accent)}
+.lensRow{margin-top:7px}
+#outlineStatus{min-height:0}
+@media(max-width:375px){.zoomPresets button{font-size:12px}.zoomPresets button small{font-size:7px}}
