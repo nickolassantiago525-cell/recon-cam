@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#08110a" />
-  <title>Recon Cam V8</title>
+  <title>Recon Cam V9</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="icon-180.png" />
@@ -20,7 +20,7 @@
         <div class="logo">R◉</div>
         <div>
           <div class="title">RECON CAM</div>
-          <div class="subtitle">FIELD VIEWER · V8</div>
+          <div class="subtitle">FIELD VIEWER · V9</div>
         </div>
       </div>
       <div class="statuswrap">
@@ -45,7 +45,14 @@
     </section>
 
     <section class="readPanel" aria-live="polite">
-      <div class="readHeader"><strong>📖 TEXT READER</strong><button id="ocrToggle" class="textToggle" aria-pressed="true">ON · PAUSE</button></div>
+      <div class="readHeader"><strong>📖 WORD & NUMBER READER</strong><button id="ocrToggle" class="textToggle" aria-pressed="true">ON · PAUSE</button></div>
+      <div class="readButtons" role="group" aria-label="Text reading actions">
+        <button id="readScanBtn">SCAN NOW</button>
+        <button id="readSpeechBtn">READ ALOUD</button>
+        <button id="spellSpeechBtn">SPELL IT</button>
+        <button id="readCopyBtn">COPY</button>
+        <span id="ocrQuality" aria-live="polite">Ready</span>
+      </div>
       <div class="readContent" id="readContent">Scanning for readable signs, words, and numbers…</div>
       <div class="readHint" id="readHint">Text is shown here, never over your camera image. Readings can be mistaken.</div>
     </section>
@@ -92,6 +99,9 @@
             <option value="all">All targets</option>
             <option value="living">People / Animals / Vehicles</option>
             <option value="electronics">Electronics</option>
+            <option value="kitchen">Kitchen / Tools</option>
+            <option value="home">Home / Furniture</option>
+            <option value="signs">Signs / Streets</option>
             <option value="text">Text / Numbers</option>
             <option value="entry">Entry / Exit</option>
             <option value="money">Money / Card</option>
@@ -139,19 +149,19 @@
       </div>
 
       <div class="note" id="noteBox">
-        V8 keeps object labels visible and readable while placing text-recognition results below the camera. Person and car labels require repeated, stronger detections to reduce false positives. Predictions are not proof that an object is present. Weapons, money, cards, and coins are not reliably identified by this model.
+        V9 recognizes more of the 80 common COCO object categories, including possible knives, scissors, bowls, and kitchen tools. It does not recognize firearms reliably or validate the absence of weapons. Product packaging can resemble a book; uncertain book-like items have a question mark. Word and number reading is approximate and long financial numbers are hidden.
       </div>
     </section>
   </div>
 
   <dialog id="helpDialog">
     <div class="dialogCard">
-      <h3>Recon Cam V8</h3>
+      <h3>Recon Cam V9</h3>
       <ul>
         <li>For a clearer picture, use NORMAL or NIGHT. OUTLINE draws strong target boxes over the normal camera feed.</li>
         <li>0.5× works only if Safari exposes the iPhone ultra-wide lens.</li>
         <li>Auto target categories are limited in a free browser app.</li>
-        <li>Text Reader displays the best OCR results below the camera; use PAUSE to turn it off.</li>
+        <li>SCAN NOW reads a fresh camera frame. Tap a result, then READ ALOUD or SPELL IT to speak its letters and digits. Results are estimates and can be wrong.</li>
         <li>Strict detection waits for repeat matches and may miss some real objects.</li>
         <li>Night and thermal modes are visual effects, not true night vision or heat sensing.</li>
       </ul>

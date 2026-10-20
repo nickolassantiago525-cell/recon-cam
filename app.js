@@ -22,30 +22,39 @@ const cameraMode = el('cameraMode');
 const readContent = el('readContent');
 const readHint = el('readHint');
 const ocrToggle = el('ocrToggle');
+const readSpeechBtn = el('readSpeechBtn');
+const spellSpeechBtn = el('spellSpeechBtn');
+const readScanBtn = el('readScanBtn');
+const readCopyBtn = el('readCopyBtn');
+const ocrQuality = el('ocrQuality');
 const presetBtns = [...document.querySelectorAll('.preset')];
 const modeBtns = [...document.querySelectorAll('.modeBtn')];
 
+// COCO-SSD recognizes these 80 object classes; it is not a gun detector.
 const SUPPORTED_CLASSES = {
-  all: ['person','dog','cat','bird','horse','sheep','cow','elephant','bear','zebra','giraffe','car','bus','truck','motorcycle','bicycle','boat','cell phone','laptop','tv','remote','keyboard','mouse','bottle','cup','chair','book','backpack','handbag','suitcase'],
-  living: ['person','dog','cat','bird','horse','sheep','cow','elephant','bear','zebra','giraffe','car','bus','truck','motorcycle','bicycle','boat'],
-  electronics: ['cell phone','laptop','tv','remote','keyboard','mouse'],
+  all: ['person','bicycle','car','motorcycle','airplane','bus','train','truck','boat','traffic light','fire hydrant','stop sign','parking meter','bench','bird','cat','dog','horse','sheep','cow','elephant','bear','zebra','giraffe','backpack','umbrella','handbag','tie','suitcase','frisbee','skis','snowboard','sports ball','kite','baseball bat','baseball glove','skateboard','surfboard','tennis racket','bottle','wine glass','cup','fork','knife','spoon','bowl','banana','apple','sandwich','orange','broccoli','carrot','hot dog','pizza','donut','cake','chair','couch','potted plant','bed','dining table','toilet','tv','laptop','mouse','remote','keyboard','cell phone','microwave','oven','toaster','sink','refrigerator','book','clock','vase','scissors','teddy bear','hair drier','toothbrush'],
+  living: ['person','dog','cat','bird','horse','sheep','cow','elephant','bear','zebra','giraffe','bicycle','car','bus','truck','motorcycle','boat','train','airplane'],
+  electronics: ['cell phone','laptop','tv','remote','keyboard','mouse','microwave','oven','toaster','refrigerator','clock','hair drier'],
+  kitchen: ['knife','fork','spoon','scissors','bottle','wine glass','cup','bowl','sink','microwave','oven','toaster','refrigerator','banana','apple','sandwich','orange','broccoli','carrot','hot dog','pizza','donut','cake'],
+  home: ['chair','couch','bed','dining table','toilet','potted plant','book','clock','vase','teddy bear','toothbrush','handbag','backpack','suitcase'],
+  signs: ['traffic light','stop sign','parking meter'],
   text: [], entry: [], money: []
 };
 const COLORS = {
   person:'#80ff6c', dog:'#ffe563', cat:'#ffe563', bird:'#ffe563', horse:'#ffe563', sheep:'#ffe563', cow:'#ffe563', elephant:'#ffe563', bear:'#ffe563', zebra:'#ffe563', giraffe:'#ffe563',
   car:'#ff6f6f', truck:'#ff6f6f', bus:'#ff6f6f', boat:'#ff6f6f', motorcycle:'#ff6f6f', bicycle:'#ffbd67',
   'cell phone':'#5ee8ff', laptop:'#5ee8ff', tv:'#5ee8ff', keyboard:'#5ee8ff', mouse:'#5ee8ff', remote:'#5ee8ff',
-  bottle:'#6affdf', cup:'#6affdf', chair:'#c49aff', book:'#c49aff', handbag:'#c49aff', backpack:'#c49aff', suitcase:'#c49aff'
+  bottle:'#6affdf', cup:'#6affdf', chair:'#c49aff', book:'#c49aff', knife:'#ffe563', scissors:'#ffe563', fork:'#ffe563', spoon:'#ffe563', bowl:'#ffe563', handbag:'#c49aff', backpack:'#c49aff', suitcase:'#c49aff'
 };
-const MIN_SCORE_STRICT = {person:0.79, car:0.82, truck:0.77, bus:0.77, motorcycle:0.72, bottle:0.56, cup:0.60};
-const MIN_SCORE_NORMAL = {person:0.63, car:0.68, truck:0.64, bottle:0.48, cup:0.52};
-const IMPORTANT = new Set(['person','car','truck','bus','motorcycle']);
+const MIN_SCORE_STRICT = {person:0.82, car:0.84, truck:0.80, bus:0.80, motorcycle:0.77, knife:0.78, scissors:0.72, book:0.86, bottle:0.56, cup:0.60};
+const MIN_SCORE_NORMAL = {person:0.69, car:0.71, truck:0.69, knife:0.65, book:0.72, bottle:0.48, cup:0.52};
+const IMPORTANT = new Set(['person','car','truck','bus','motorcycle','knife','scissors']);
 
 let stream = null, currentTrack = null, running = false, model = null;
 let frameTimer = null, ocrTimer = null, detectionBusy = false, ocrBusy = false;
 let currentView = 'normal', zoom = 1, isUltra = false, knownUltraDeviceId = null;
 let tracks = [], detections = [], lastFrame = 0, scanEpoch = 0;
-let ocrEnabled = true, ocrWorkerPromise = null, ocrLast = [];
+let ocrEnabled = true, ocrWorkerPromise = null, ocrLast = [], selectedText = '', lastOCRSnapshot = 0;
 let lastPinch = null, lastCameraMessage = '';
 
 function setMessage(t){ overlayMsg.textContent = t; overlayMsg.hidden = !t; }
@@ -56,11 +65,25 @@ function readMessage(t, hint){
 }
 function readLines(lines){
   readContent.replaceChildren();
-  if(!lines.length){ readMessage('No clearly readable text yet.', 'Hold the phone steady and point at a nearby sign or product label.'); return; }
-  for(const t of lines){
-    const div=document.createElement('div'); div.className='ocrLine'; div.textContent=t; readContent.appendChild(div);
+  if(!lines.length){
+    selectedText='';
+    readMessage('No clear words or numbers yet.', 'Point at a printed label in good light, then tap SCAN NOW.');
+    return;
   }
-  readHint.textContent = 'Up to three higher-confidence readings. OCR can still make mistakes; long card numbers are masked.';
+  const previous=selectedText;
+  selectedText=lines.includes(previous)?previous:lines[0];
+  for(const t of lines){
+    const b=document.createElement('button');
+    b.type='button'; b.className='ocrLineText';
+    b.textContent=t;
+    b.setAttribute('aria-pressed',String(t===selectedText));
+    b.addEventListener('click',()=>{
+      selectedText=t;
+      readContent.querySelectorAll('.ocrLineText').forEach(x=>x.setAttribute('aria-pressed', String(x===b)));
+    });
+    readContent.appendChild(b);
+  }
+  readHint.textContent = 'Tap a line to select it. READ ALOUD says it; SPELL IT speaks its characters one by one. Check uncertain readings.';
 }
 function setStatus(t){ detectValue.textContent = t; }
 function updateZoomText(){const t=`${zoom.toFixed(1)}×`;zoomValue.textContent=t;magValue.textContent=t; presetBtns.forEach(b=>b.classList.toggle('active', Math.abs(parseFloat(b.dataset.zoom)-zoom)<.06));}
@@ -95,7 +118,7 @@ function drawDetections(){
     ctx.shadowBlur=8;ctx.shadowColor=color;
     if(drawMode.value!=='label'){rr(x,y,w,h,9);ctx.stroke();}
     ctx.shadowBlur=0;
-    const name=d.class.replace(/^\w/,a=>a.toUpperCase());
+    const name=d.class==='book'?'Book-like?':d.class==='knife'?'Possible knife':d.class.replace(/^\w/,a=>a.toUpperCase());
     let lab=`${name} ${Math.round(d.score*100)}%`;
     const size=Number(labelSize.value);
     ctx.font=`700 ${size}px system-ui,-apple-system,sans-serif`;
@@ -152,51 +175,98 @@ async function scanObjects(){
   finally{detectionBusy=false;}
 }
 // Text recognition is intentionally separate from the live camera overlay.
+function maskSensitive(t){
+  // Avoid repeating full financial identifiers into speech or on screen.
+  return t.replace(/\b(?:\d[ -]?){12,19}\b/g,'[long number hidden]');
+}
+function plausibleText(text){
+  const clean=String(text||'').normalize('NFKC').replace(/\s+/g,' ').trim();
+  if(!clean || clean.length>80 || clean.length<2) return null;
+  const core=(clean.match(/[A-Za-z0-9]/g)||[]).length;
+  if(core<2 || core/clean.length<0.58) return null;
+  // Avoid mostly punctuation and repeatedly fragmented symbols.
+  if(/(?:[^A-Za-z0-9\s]){5,}/.test(clean))return null;
+  return maskSensitive(clean);
+}
 function filterOCR(data){
+  const entries=[];
+  const append=(text,conf,y)=>{
+    const t=plausibleText(text);
+    if(!t || (targetMode.value==='entry'&&!/\b(exit|entrance|enter|door|stairs)\b/i.test(t)))return;
+    if(entries.some(e=>e.text.toLowerCase()===t.toLowerCase()))return;
+    entries.push({text:t,score:Number.isFinite(+conf)?+conf:55,y:Number(y)||0});
+  };
   const lines=Array.isArray(data.lines)?data.lines:[];
-  let parts=lines.length?lines:(Array.isArray(data.words)?data.words:[]);
-  const out=[];
-  for(const part of parts){
-    const confidence=Number(part.confidence??part.conf??0);
-    if(confidence<76)continue;
-    let t=String(part.text||'').replace(/\s+/g,' ').trim();
-    if(t.length<3||t.length>68)continue;
-    if(/\b(?:[A-Za-z]\s+){3,}[A-Za-z]\b/.test(t))continue;
-    if((t.match(/[A-Za-z0-9]/g)||[]).length/Math.max(1,t.length)<.78)continue;
-    if(/^[\W_]+$/.test(t))continue;
-    if(targetMode.value==='entry'&&!/\b(exit|entrance|enter|door|stairs)\b/i.test(t))continue;
-    // Don't display full card/account numbers in a public-facing OCR overlay.
-    t=t.replace(/\b(?:\d[ -]?){8,19}\b/g,'•••• ••••');
-    if(out.includes(t))continue;
-    out.push({text:t,y:part.bbox?.y0??0,score:confidence});
+  const words=Array.isArray(data.words)?data.words:[];
+  for(const line of lines){
+    const confidence=Number(line.confidence??line.conf??data.confidence??0);
+    if(confidence>=49) append(line.text,confidence,line.bbox?.y0);
   }
-  out.sort((a,b)=>b.score-a.score);
-  return out.slice(0,3).sort((a,b)=>a.y-b.y).map(p=>p.text);
+  if(entries.length===0){
+    // OCR libraries don't always return word and line boxes by default.
+    for(const word of words){
+      const confidence=Number(word.confidence??word.conf??0);
+      if(confidence>=53)append(word.text,confidence,word.bbox?.y0);
+    }
+  }
+  if(entries.length===0 && typeof data.text==='string'){
+    // Tesseract.js v5/v6 always provides data.text, even when detailed boxes are disabled.
+    // Keep this conservative but don't suppress all readable text if confidence fields are missing.
+    const baseScore=Number(data.confidence??55);
+    if(baseScore>=43){
+      for(const line of data.text.split(/\n+/))append(line,baseScore,0);
+    }
+  }
+  return entries.sort((a,b)=>b.score-a.score).slice(0,5).sort((a,b)=>a.y-b.y).map(e=>e.text);
 }
 async function getOCRWorker(){
   if(!ocrWorkerPromise){
-    if(!window.Tesseract?.createWorker)throw new Error('Text AI library failed to load');
+    if(!window.Tesseract?.createWorker)throw new Error('Text recognition library failed to load');
     ocrWorkerPromise=Tesseract.createWorker('eng',1).catch(e=>{ocrWorkerPromise=null;throw e;});
   }
   return ocrWorkerPromise;
 }
-async function scanText(){
+async function scanText(force=false){
   if(!running||!ocrEnabled||ocrBusy||!video.videoWidth)return;
-  if(!['all','text','entry'].includes(targetMode.value))return;
+  if(!force && !['all','text','entry'].includes(targetMode.value))return;
   ocrBusy=true;
   const epoch=scanEpoch;
+  readScanBtn.disabled=true;
+  ocrQuality.textContent='Reading…';
   try{
     const worker=await getOCRWorker();
     const c=document.createElement('canvas');
-    const scale=Math.min(1,960/video.videoWidth);
-    c.width=Math.round(video.videoWidth*scale);c.height=Math.round(video.videoHeight*scale);
-    c.getContext('2d').drawImage(video,0,0,c.width,c.height);
+    // Read at camera resolution (limited for responsiveness on iPhone).
+    const scale=Math.min(1,1400/video.videoWidth);
+    c.width=Math.max(1,Math.round(video.videoWidth*scale));
+    c.height=Math.max(1,Math.round(video.videoHeight*scale));
+    const cctx=c.getContext('2d',{willReadFrequently:true});
+    cctx.drawImage(video,0,0,c.width,c.height);
     const out=await worker.recognize(c);
-    if(epoch===scanEpoch&&running&&ocrEnabled){ocrLast=filterOCR(out.data);readLines(ocrLast);}
+    if(epoch===scanEpoch&&running&&ocrEnabled){
+      ocrLast=filterOCR(out.data||{});
+      readLines(ocrLast);
+      ocrQuality.textContent=ocrLast.length?`${ocrLast.length} readings`:'No clear text';
+      lastOCRSnapshot=Date.now();
+    }
   }catch(err){
     console.warn('Text recognition failed',err);
-    if(epoch===scanEpoch&&running)readMessage('Text scanner is unavailable.','Check internet access and reload if it does not recover.');
-  }finally{ocrBusy=false;}
+    if(epoch===scanEpoch&&running){
+      ocrQuality.textContent='OCR unavailable';
+      readMessage('Text reader unavailable.','Check connection and try SCAN NOW again.');
+    }
+  }finally{ocrBusy=false;readScanBtn.disabled=false;}
+}
+function readSelected(spell=false){
+  const value=selectedText || ocrLast.join('. ');
+  if(!value){ readHint.textContent='Scan a word or number first.';return; }
+  if(!('speechSynthesis' in window)){readHint.textContent='Speech is unavailable in this browser.';return;}
+  window.speechSynthesis.cancel();
+  const phonetic={'.':'point',',':'comma','/':'slash','-':'dash','+':'plus','$':'dollar sign','%':'percent','#':'number sign','&':'and'};
+  const speech=spell?Array.from(value).filter(c=>c!==' ').map(c=>phonetic[c]||c).join(', '):value;
+  const utter=new SpeechSynthesisUtterance(speech);
+  utter.lang='en-US';utter.rate=spell?0.72:0.9;
+  window.speechSynthesis.speak(utter);
 }
 async function loadAI(){
   setStatus('LOADING');setMessage('Loading object recognition.');
@@ -306,7 +376,7 @@ function savePhoto(){
   const c=document.createElement('canvas');c.width=video.videoWidth;c.height=video.videoHeight;
   const cctx=c.getContext('2d');cctx.filter=video.style.filter||'none';cctx.drawImage(video,0,0);
   cctx.filter='none';cctx.drawImage(overlay,0,0,c.width,c.height);
-  const link=document.createElement('a');link.download=`recon-cam-v8-${Date.now()}.jpg`;link.href=c.toDataURL('image/jpeg',.92);link.click();
+  const link=document.createElement('a');link.download=`recon-cam-v9-${Date.now()}.jpg`;link.href=c.toDataURL('image/jpeg',.92);link.click();
 }
 
 startStopBtn.onclick=()=>running?(stopCamera(),setMessage('Camera off. Tap START CAMERA.')):startCamera();
@@ -320,12 +390,21 @@ presetBtns.forEach(b=>b.onclick=()=>changeZoom(Number(b.dataset.zoom)));
 modeBtns.forEach(b=>b.onclick=()=>setView(b.dataset.view));
 [lineStrength,labelSize,drawMode,colorMode].forEach(x=>x.addEventListener('input',drawDetections));
 accuracyMode.addEventListener('change',()=>{tracks=[];detections=[];drawDetections();});
-targetMode.addEventListener('change',()=>{tracks=[];detections=[];drawDetections();ocrLast=[];if(!['all','text','entry'].includes(targetMode.value))readMessage('Text reader paused in this target mode.','Choose All targets or Text / Numbers to read text.');else if(ocrEnabled)scanText();});
+targetMode.addEventListener('change',()=>{tracks=[];detections=[];drawDetections();ocrLast=[];selectedText='';if(!['all','text','entry'].includes(targetMode.value))readMessage('Text reader paused in this target mode.','Choose All targets or Text / Numbers to read text.');else if(ocrEnabled)scanText();});
 cameraMode.onchange=()=>{if(running)startCamera();};
 ocrToggle.onclick=()=>{
   ocrEnabled=!ocrEnabled;ocrToggle.textContent=ocrEnabled?'ON · PAUSE':'OFF · RESUME';ocrToggle.setAttribute('aria-pressed',String(ocrEnabled));
-  if(ocrEnabled){readMessage('Reading text…','Text appears here rather than across the image.');scanText();}
-  else{ocrLast=[];readMessage('Text reading paused.','Automatic object labels remain active.');}
+  if(ocrEnabled){readMessage('Reading text…','Text appears here rather than across the image.');scanText(true);}
+  else{ocrLast=[];selectedText='';readMessage('Text reading paused.','Automatic object labels remain active.');}
+};
+readSpeechBtn.onclick=()=>readSelected(false);
+spellSpeechBtn.onclick=()=>readSelected(true);
+readScanBtn.onclick=()=>scanText(true);
+readCopyBtn.onclick=async()=>{
+  const t=selectedText||ocrLast.join('\n');
+  if(!t){readHint.textContent='Scan some text first.';return;}
+  try{await navigator.clipboard.writeText(t);readHint.textContent='Selected text copied.';}
+  catch{readHint.textContent='Copy was blocked by Safari. You can select text from this panel.';}
 };
 el('refreshBtn').onclick=loadAI;
 el('photoBtn').onclick=savePhoto;

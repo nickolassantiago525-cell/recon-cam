@@ -1,18 +1,17 @@
-Recon Cam V8 — Clear Labels + Smart Text Reader
+Recon Cam V9 — Wider object categories + Word & Number Reader
 
-What's new:
-- Keeps object name + confidence labels (such as Bottle 59%).
-- Text/letters/numbers are shown in a separate readable panel BELOW the camera instead of dozens of overlapping blue labels.
-- OCR filters low-confidence text and shows up to three lines. Can be paused independently.
-- A strict detection option raises confidence thresholds and waits for repeated matches before showing object labels, especially people and vehicles.
-- Strong colored boxes remain over the live, normally colored camera.
-- Actual ultra-wide camera is requested only when Safari exposes an identifiable ultra-wide device. 0.5x is not simulated by a CSS scale.
+Free, static iPhone/Safari web application (GitHub Pages).
 
-Limitations:
-- Even repeated high-confidence predictions can be wrong. Object detections are NOT proof a person or car exists.
-- OCR still occasionally misreads signs; low-confidence results are hidden.
-- Coco-SSD doesn't identify weapons, coins, cash, cards, doors and many tiny objects reliably.
-- Thermal and night view are visual effects only, not heat/night sensors.
-- Free CDN-based AI download requires internet; camera itself is not dependent on AI.
+New:
+- Automatic detection of a larger set of common COCO categories: kitchen utensils including knives, scissors, food, home furniture, signs, electronics, vehicles, people and animals.
+- Still does NOT have a validated firearm detector. Never use to confirm that an area/object is safe.
+- A "book-like?" label rather than overclaiming a book, e.g. chip packaging.
+- Stronger thresholds and repeated detection for people, vehicles and knives.
+- Text reader preserves letters and numbers, shows readings as selectable lines below the video.
+- SCAN NOW, READ ALOUD, SPELL IT, COPY.
+- Masks 12-19-digit card/account-like number strings; OCR remains approximate.
+- UI layout adjustments for small iPhone screens.
 
-Upload all eight files to GitHub repo root, overriding V7, enable Pages from main root (existing setup remains).
+External model downloads are required for first use (COCO-SSD via TensorFlow.js, Tesseract.js OCR).
+Camera / ultrawide camera behavior depends on iOS Safari and hardware.
+Includes 8 files in repo root. Version label V9 for deployment verification.
