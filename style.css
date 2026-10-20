@@ -22,3 +22,13 @@
 .ocrPanel b{color:#b3f987;font-size:11px}
 .ocrPanel div{font-size:12px;color:#e1e8df;line-height:1.5;white-space:pre-wrap;word-break:break-word;margin-top:5px;max-height:96px;overflow:auto}
 @media(max-width:370px){.outlineTabs button{font-size:9px}.outlinePanel{padding:8px}}
+
+/* V4: hands-free multicolor auto silhouette controls */
+.paletteTabs{grid-template-columns:repeat(4,minmax(0,1fr))}
+.paletteTabs button{font-size:10px;min-height:42px}
+.paletteTabs button:nth-child(2){color:#74fa64}
+.paletteTabs button:nth-child(3){color:#ffe03d}
+.paletteTabs button:nth-child(4){color:#ff8677}
+.paletteTabs button.chosen{color:#0a220e}
+.outlinePanel .outlineActions button{min-width:100%;background:#213729;border:1px solid #678a61;font-size:12px}
+@media(max-width:390px){.paletteTabs button{font-size:9px;padding:3px 2px}}
