@@ -1,14 +1,12 @@
-RECON CAM V1 — Free iPhone Field Viewer
-=====================================
-UPLOAD TO GITHUB PAGES
-1. Create a PUBLIC GitHub repository named recon-cam.
-2. Upload these files INTO THE ROOT of the repository (not the zip or a nested folder):
-   index.html, style.css, app.js, sw.js, manifest.webmanifest, icon.svg, icon-180.png
-3. Go to Settings > Pages > Source: Deploy from a branch, Branch main, folder /(root), Save.
-4. After deployment, visit https://YOUR-USERNAME.github.io/recon-cam/ in Safari.
-5. Tap Share > Add to Home Screen.
-6. Tap ENABLE CAMERA and allow access.
+RECON CAM V3 — EXPANDED OUTLINING (FREE iPHONE WEB APP)
 
-FEATURES: Digital zoom (1–12×), outline/monochrome/simulated thermal/simulated night filters, photo capture, optional GPS and compass, two-tap *estimated* range using known height and assumed vertical camera field of view.
+UPLOAD: Unzip the archive in iPhone Files. Upload the 8 individual files to the root of your EXISTING recon-cam GitHub repository (not the ZIP itself), commit directly to main. Your existing GitHub Pages config remains main/(root). Refresh Safari after publishing.
 
-IMPORTANT: No true thermal sensing, night-vision infrared, extra optical zoom, calibrated distance measurement, or military-grade rangefinder. Range readings may be very wrong. Do NOT use for navigation, aiming, emergency or other safety-critical decisions. Camera and location data are not sent to a server by this app. Works over HTTPS. Browser permissions may vary; native iOS app could provide better camera/AR features.
+MODES:
+- AUTO SHAPES: automatic silhouette outlines using a limited 20-category MediaPipe model. Auto labels include person, car, dog, cat, TV, etc.; cannot automatically identify all objects.
+- TAP TO TRACE: tap an object to estimate its visual contour with the free MediaPipe Interactive Segmenter. It can attempt phones, pagers, laptops, screens, animals, weapons, money, coins, credit cards, signs, license plates, doors, and other objects even if it cannot name them. Not guaranteed. Press LIVE VIEW to resume after a tap.
+- READ TEXT: tap SCAN WORDS to run Tesseract OCR on the visible frame. Attempts signs, exit text, words, letters, license-plate characters and numbers. OCR displays text-region boxes, NOT silhouettes around every letter. Sensitive long numeric strings are masked in on-screen OCR output.
+
+NEITHER automatic detection nor tap-to-trace can verify a weapon, cash, credit card, legal exit, or authenticate a license plate. Use actual signs and personal judgment. Model downloads require internet when first used. Processing runs locally after loading; this app does not intentionally upload camera images.
+
+Other features: live camera, 12x digital zoom, simulated thermal/night vision, photos, compass, GPS and low-confidence distance estimates. Thermal is simulated and distance estimates are not actual measurements.
