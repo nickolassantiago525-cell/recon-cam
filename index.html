@@ -1,36 +1,152 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
-<meta name="theme-color" content="#080d0b"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Recon Cam">
-<title>Recon Cam — Field Viewer</title>
-<link rel="manifest" href="manifest.webmanifest?v=6.0"><link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="style.css?v=6.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#08110a" />
+  <title>Recon Cam V7</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon-180.png" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body>
-<div class="app" id="app">
-<header class="top"><div class="title"><div class="brandmark">R<span>◉</span></div><div><strong>RECON CAM</strong><small>FIELD VIEWER · V6</small></div></div><div class="headright"><span class="pill" id="camState"><i></i> CAMERA OFF</span><button class="square" id="helpBtn" aria-label="Help">?</button></div></header>
-<div class="telemetry"><div><span class="metricLabel">MAGNIFICATION</span><b id="zoomReadout">1.0×</b></div><div><span class="metricLabel">DISTANCE · EST.</span><b id="rangeReadout">—</b></div><div><span class="metricLabel">DIRECTION</span><b id="headingReadout">—</b></div></div>
-<main class="viewer" id="viewer"><video id="video" autoplay playsinline muted aria-hidden="true"></video><canvas id="viewCanvas"></canvas><canvas id="shapeCanvas" aria-hidden="true"></canvas><div class="gridOverlay" id="gridOverlay" aria-hidden="true"></div><div class="crosshair" id="crosshair" aria-hidden="true"><span></span><span></span><i></i></div><div id="measureMarks" aria-hidden="true"></div><div class="viewerTop"><span id="modeTag">NATURAL VIEW</span><span id="qualityTag">LIVE · DEVICE CAMERA</span></div><div class="viewerBottom"><span id="positionLabel">GPS: NOT REQUESTED</span><span id="rangeTag">NOT A MEASURED RANGE</span></div><div class="emptyState" id="emptyState"><div class="lensIcon">◎</div><strong>YOUR PRIVATE FIELD VIEWER</strong><p>Live camera, visual enhancements and approximate distance estimates. No account or subscription.</p><button class="primary" id="startCam">ENABLE CAMERA</button><small>Camera permission is required. Runs on your device.</small></div><div class="message hidden" id="message" role="status"></div></main>
-<section class="controlDock">
-<div class="modeRow" role="group" aria-label="Camera modes"><button class="mode active" data-mode="normal">NORMAL</button><button class="mode" data-mode="outline">OUTLINE</button><button class="mode" data-mode="thermal">THERMAL*</button><button class="mode" data-mode="night">NIGHT*</button><button class="mode" data-mode="mono">MONO</button></div>
-<div id="outlinePanel" class="outlinePanel hidden">
- <div class="outlineHeading"><b>LIVE AUTOMATIC SHAPE OUTLINES</b><span id="outlineStatus" role="status">Clear visual edges available · AI object silhouettes require download.</span></div>
- <div class="outlineTabs paletteTabs" role="group" aria-label="Outline colors">
-  <button type="button" data-palette="category" class="chosen">🟢🟡🔴 ALL COLORS</button>
-  <button type="button" data-palette="green">GREEN</button>
-  <button type="button" data-palette="yellow">YELLOW</button>
-  <button type="button" data-palette="red">RED</button>
- </div>
- <div class="detailRow"><label for="outlineDetail">LINE DETAIL <b id="detailReadout">60</b></label><input type="range" id="outlineDetail" min="0" max="100" value="60" step="5" aria-label="Line detail"></div><div class="outlineActions"><button id="resetOutline" type="button">REFRESH OUTLINES</button></div>
- <p class="traceHelp" id="traceHelp">Normal full-color live picture with thin lines on top. When AI loads, it tries object silhouettes. The fallback draws high-contrast visible edges, not recognized objects. Colors are visual only, not threat ratings.</p>
- </div>
-<div class="lensRow"><label for="lensSelect">CAMERA / WIDE VIEW</label><select id="lensSelect" aria-label="Camera lens"><option value="default">Default rear camera</option></select><span id="lensNote">Widest available lens is device-dependent</span></div><div class="zoomPresets" role="group" aria-label="Zoom presets"><button id="halfZoom" type="button" data-zoom-preset="0.5">0.5× <small>ULTRA-WIDE</small></button><button type="button" class="selected" data-zoom-preset="1">1×</button><button type="button" data-zoom-preset="2">2×</button><button type="button" data-zoom-preset="5">5×</button></div><div class="zoomRow"><button id="zoomMinus" class="mini" title="Zoom out">−</button><label for="zoom">ZOOM <b id="zoomInline">1.0×</b></label><input id="zoom" type="range" min="1" max="20" step="0.1" value="1" aria-label="Digital zoom"><button id="zoomPlus" class="mini" title="Zoom in">+</button><button id="resetZoom" class="mini">1×</button></div><div class="zoomTip" id="zoomTip">Digital zoom up to 20×. Higher zoom enlarges pixels; selecting a wider lens is only possible if Safari exposes one.</div>
-<div class="actionRow"><button class="action primaryOutline" id="measureBtn"><span>⌖</span> MARK OBJECT</button><button class="action" id="captureBtn"><span>◉</span> PHOTO</button><button class="action" id="locationBtn"><span>◈</span> GPS</button><button class="action" id="headingBtn"><span>↗</span> COMPASS</button></div>
-<div id="measurePanel" class="measurePanel hidden"><div class="measureTitle"><b>DISTANCE ESTIMATOR</b><button id="closeMeasure" aria-label="Close measurement">×</button></div><div class="subNote">Enter an object's actual height, then tap its <b>top</b> and <b>bottom</b> in the camera. Estimates require assumptions about the lens, so results may be very inaccurate.</div><div class="presets"><button data-height="1.7" class="selected">Person ~1.7 m</button><button data-height="1.5">Car ~1.5 m</button><button data-height="2">Door ~2 m</button><button data-height="custom">Custom</button></div><div class="fields"><label>HEIGHT (m)<input id="knownHeight" type="number" min="0.1" max="100" step="0.1" value="1.7" inputmode="decimal"></label><label>LENS FOV*<input id="fov" type="number" min="30" max="80" step="1" value="54" inputmode="numeric"></label><button id="clearMarks" class="mini">CLEAR</button></div><div class="measureResult" id="measureResult">Tap the TOP of the object to begin.</div><p class="finePrint">*54° vertical view is an approximate starting assumption for a 1× wide camera, not a measured calibration. Digital zoom adds no detail. Never use the estimate for safety-critical decisions.</p></div>
-<div class="footerRow"><span>*Visual effect only. Not heat sensing or true night vision.</span><button id="settingsBtn" aria-expanded="false">OPTIONS ▾</button></div>
-<div id="options" class="options hidden"><label><input id="reticleToggle" type="checkbox" checked> Crosshair</label><label><input id="gridToggle" type="checkbox"> Grid overlay</label><label><input id="switchCamera" type="checkbox"> Use front camera</label><button id="stopCam">STOP CAMERA</button><p>Camera and photo processing runs on your device, and the AI model is downloaded from external servers as needed. The app does not intentionally upload camera frames or location. GPS and compass require separate permission. For best operation, open the published HTTPS site in Safari.</p></div>
-</section>
-</div>
-<dialog id="helpDialog"><div class="dialogTitle"><strong>RECON CAM · V6</strong><button id="closeHelp">×</button></div><p><b>Automatic outlining:</b> Enable the camera and choose OUTLINE. The app overlays thin high-contrast visual edges on the normal full-color live camera picture without tapping. If the free AI model downloads and runs, it replaces visual edges with object silhouettes for supported categories.</p><p><b>AI mode—Green:</b> people and everyday objects. <b>Yellow:</b> animals. <b>Red:</b> vehicles. Offline contour colors are decorative only. These colors do not measure risk, threat, or safety. You can also choose one outline color for every detected shape.</p><p><b>Limits:</b> This model cannot reliably recognize weapons, cash, coins, phones, license plates, credit cards, text, exits, or every object. It may miss partly hidden or very small objects. No model identifies threats or measures actual heat here. Model processing may be slow on an iPhone.</p><p><b>Distance:</b> MARK OBJECT requires two taps for the separate rough distance estimator only. It does not control automatic outlines. Thermal and night are simulated filters, not sensors. Digital zoom cannot add optical detail. Maximum zoom is 20× digital crop. Actual 0.5× ultra-wide requires a lens Safari makes available; otherwise use the iPhone Camera app for 0.5× photos.</p><p><b>Privacy:</b> Video frames are processed on your device by this implementation, though the code and AI model are downloaded from external servers. Use screenshots only with others’ privacy in mind.</p><button class="primary" id="gotIt">GOT IT</button></dialog>
-<script src="app.js?v=6.0" defer></script>
-</body></html>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">R◉</div>
+        <div>
+          <div class="title">RECON CAM</div>
+          <div class="subtitle">FIELD VIEWER · V7</div>
+        </div>
+      </div>
+      <div class="statuswrap">
+        <button id="startStopBtn" class="status on">START CAMERA</button>
+        <button id="helpBtn" class="iconbtn">?</button>
+      </div>
+    </header>
+
+    <section class="stats">
+      <div class="stat"><span>MAGNIFICATION</span><strong id="magValue">1.0×</strong></div>
+      <div class="stat"><span>DETECTION</span><strong id="detectValue">OFF</strong></div>
+      <div class="stat"><span>DIRECTION</span><strong id="dirValue">—</strong></div>
+    </section>
+
+    <section class="viewer">
+      <div class="videoWrap" id="videoWrap">
+        <video id="video" playsinline autoplay muted></video>
+        <canvas id="overlay"></canvas>
+        <div class="crosshair"></div>
+        <div id="overlayMsg" class="overlayMsg">Camera off. Tap START CAMERA.</div>
+      </div>
+    </section>
+
+    <section class="panel compact">
+      <div class="row rowwrap">
+        <label class="wide">
+          <span>CAMERA / WIDE VIEW</span>
+          <select id="cameraMode">
+            <option value="rear-default">Default rear camera</option>
+            <option value="rear-ultrawide">Back ultra wide camera</option>
+          </select>
+        </label>
+        <div class="presetGroup">
+          <button class="preset" data-zoom="0.5">0.5×</button>
+          <button class="preset active" data-zoom="1">1×</button>
+          <button class="preset" data-zoom="2">2×</button>
+          <button class="preset" data-zoom="5">5×</button>
+        </div>
+      </div>
+
+      <div class="row rowwrap">
+        <div class="zoomBox">
+          <button id="zoomOutBtn" class="squareBtn">−</button>
+          <div class="zoomRead"><span>ZOOM</span><strong id="zoomValue">1.0×</strong></div>
+          <input id="zoomSlider" type="range" min="0.5" max="20" step="0.1" value="1" />
+          <button id="zoomInBtn" class="squareBtn">+</button>
+        </div>
+      </div>
+
+      <div class="row rowwrap">
+        <div class="seg">
+          <button class="modeBtn active" data-view="normal">NORMAL</button>
+          <button class="modeBtn" data-view="outline">OUTLINE</button>
+          <button class="modeBtn" data-view="night">NIGHT</button>
+          <button class="modeBtn" data-view="thermal">THERMAL*</button>
+        </div>
+      </div>
+
+      <div class="row rowwrap">
+        <label class="wide">
+          <span>TARGET MODE</span>
+          <select id="targetMode">
+            <option value="all">All targets</option>
+            <option value="living">People / Animals / Vehicles</option>
+            <option value="electronics">Electronics</option>
+            <option value="text">Text / Numbers</option>
+            <option value="entry">Entry / Exit</option>
+            <option value="money">Money / Card</option>
+          </select>
+        </label>
+        <label>
+          <span>HIGHLIGHT</span>
+          <select id="drawMode">
+            <option value="both">Outline + Box</option>
+            <option value="box">Box only</option>
+            <option value="label">Label only</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="row rowwrap">
+        <label>
+          <span>OUTLINE COLOR</span>
+          <select id="colorMode">
+            <option value="auto">Auto by type</option>
+            <option value="green">All green</option>
+            <option value="yellow">All yellow</option>
+            <option value="red">All red</option>
+          </select>
+        </label>
+        <label>
+          <span>LINE STRENGTH</span>
+          <input id="lineStrength" type="range" min="2" max="8" step="1" value="4" />
+        </label>
+        <label>
+          <span>LABEL SIZE</span>
+          <input id="labelSize" type="range" min="12" max="22" step="1" value="16" />
+        </label>
+      </div>
+
+      <div class="row actions">
+        <button id="gpsBtn">GPS</button>
+        <button id="compassBtn">COMPASS</button>
+        <button id="photoBtn">PHOTO</button>
+        <button id="refreshBtn">REFRESH AI</button>
+      </div>
+
+      <div class="note" id="noteBox">
+        V7 uses live object detection for common categories such as people, animals, vehicles, phones, laptops, bottles, cups, TVs, chairs, and text blocks. Some categories you requested remain experimental or unreliable in a free web app, especially weapons, coins, cash, cards, and tiny distant objects.
+      </div>
+    </section>
+  </div>
+
+  <dialog id="helpDialog">
+    <div class="dialogCard">
+      <h3>Recon Cam V7</h3>
+      <ul>
+        <li>For a clearer picture, use NORMAL or NIGHT. OUTLINE draws strong target boxes over the normal camera feed.</li>
+        <li>0.5× works only if Safari exposes the iPhone ultra-wide lens.</li>
+        <li>Auto target categories are limited in a free browser app.</li>
+        <li>Text / Numbers mode uses OCR and may take a few seconds.</li>
+      </ul>
+      <button id="closeHelpBtn">Close</button>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

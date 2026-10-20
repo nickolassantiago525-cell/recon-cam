@@ -1,301 +1,320 @@
-(()=>{'use strict';
-const $=id=>document.getElementById(id),video=$('video'),canvas=$('viewCanvas'),viewer=$('viewer'),ctx=canvas.getContext('2d',{willReadFrequently:true});
-const scratch=document.createElement('canvas'),sc=scratch.getContext('2d',{willReadFrequently:true});
-const shapeCanvas=$('shapeCanvas'),shapeCtx=shapeCanvas.getContext('2d');
-let stream=null,running=false,loop=0,lastFrame=0,mode='normal',zoom=1,rear=true,chosenDevice='default',lensScale=1,knownCameras=[],lastFallbackAt=0,measuring=false,marks=[],messageTimeout=null,currentPosition=null,currentHeading=null;
-const modeNames={normal:'NATURAL VIEW',outline:'COLOR OUTLINES · NATURAL VIDEO',thermal:'SIMULATED THERMAL — NOT HEAT',night:'SIMULATED NIGHT — NOT IR',mono:'MONOCHROME'};
-function toast(t,duration=4500){const el=$('message');el.textContent=t;el.classList.remove('hidden');clearTimeout(messageTimeout);messageTimeout=setTimeout(()=>el.classList.add('hidden'),duration)}
-function setCamState(active){$('camState').classList.toggle('live',active);$('camState').innerHTML='<i></i> '+(active?'CAMERA ON':'CAMERA OFF');$('emptyState').classList.toggle('hidden',active)}
-function resize(){const r=viewer.getBoundingClientRect(),width=Math.max(1,Math.round(Math.min(r.width,720))),height=Math.max(1,Math.round(width*r.height/Math.max(r.width,1)));if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;scratch.width=width;scratch.height=height;shapeCanvas.width=width;shapeCanvas.height=height;latestShapes=null;lastSegmentAt=0}};
-function updateVideoPresentation(){
- const nativeView=(mode==='normal'||mode==='outline');
- video.style.display=nativeView?'block':'none';
- canvas.style.display=nativeView?'none':'block';
- const factor=Math.max(1,zoom/lensScale);
- video.style.transform=(rear?'':'scaleX(-1) ')+'scale('+factor+')';
-}
-async function start(){try{if(!window.isSecureContext){toast('Camera needs HTTPS. Open the GitHub Pages link in Safari.',7500);return}if(!navigator.mediaDevices?.getUserMedia){toast('Camera access unavailable in this browser.',7000);return}stop(false);const videoSettings={facingMode:{ideal:rear?'environment':'user'},width:{ideal:1920},height:{ideal:1080}};if(chosenDevice!=='default'&&rear)videoSettings.deviceId={exact:chosenDevice};const constraints={audio:false,video:videoSettings};stream=await navigator.mediaDevices.getUserMedia(constraints);video.srcObject=stream;await video.play();running=true;setCamState(true);resize();updateVideoPresentation();refreshCameras().catch(()=>{});lastFrame=0;loop=requestAnimationFrame(frame)}catch(err){setCamState(false);let reason='Could not start camera.';if(err.name==='NotAllowedError')reason='Camera blocked. In Safari, allow camera access for this website.';else if(err.name==='NotFoundError')reason='No camera detected.';else if(err.name==='NotReadableError')reason='Camera is busy in another app.';toast(reason+' '+(err.message||''),8500)}}
-function stop(show=true){running=false;cancelAnimationFrame(loop);if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}video.srcObject=null;setCamState(false);clearMarks();clearShapeOverlay();if(show)toast('Camera stopped.')}
-function frame(now){if(!running)return;loop=requestAnimationFrame(frame);const fps=mode==='normal'?23:14;if(now-lastFrame<1000/fps)return;lastFrame=now;if(video.readyState<2||!video.videoWidth)return;resize();const w=canvas.width,h=canvas.height,vw=video.videoWidth,vh=video.videoHeight;if(w<1||h<1)return;
-// Cover the destination, crop the source to maintain aspect ratio, and apply simulated zoom.
-const sourceAspect=vw/vh,dstAspect=w/h;let cropW=vw,cropH=vh;if(sourceAspect>dstAspect)cropW=vh*dstAspect;else cropH=vw/dstAspect;const digitalCrop=Math.max(1,zoom/lensScale);cropW/=digitalCrop;cropH/=digitalCrop;const sx=(vw-cropW)/2,sy=(vh-cropH)/2;
-ctx.save();if(!rear){ctx.translate(w,0);ctx.scale(-1,1)}ctx.drawImage(video,sx,sy,cropW,cropH,0,0,w,h);ctx.restore();
-if(mode!=='normal'&&mode!=='outline')applyFilter(w,h);if(mode==='outline'){if(segmenter){scheduleSegmentation(now)}else if(now-lastFallbackAt>550){lastFallbackAt=now;renderOfflineContours();}}}
-function applyFilter(w,h){let image;try{image=ctx.getImageData(0,0,w,h)}catch{return}const a=image.data;if(mode==='mono'||mode==='night'||mode==='thermal'){
-for(let i=0;i<a.length;i+=4){const r=a[i],g=a[i+1],b=a[i+2];const lum=Math.max(0,Math.min(255,Math.round(.2126*r+.7152*g+.0722*b)));
-if(mode==='mono'){a[i]=lum;a[i+1]=lum;a[i+2]=lum}
-else if(mode==='night'){const v=Math.min(255,Math.round(lum*1.6+17));a[i]=Math.round(v*.15);a[i+1]=v;a[i+2]=Math.round(v*.22)}
-else{const v=lum/255;let R,G,B;if(v<.24){const t=v/.24;R=8+24*t;G=0+20*t;B=42+154*t}else if(v<.5){const t=(v-.24)/.26;R=32+164*t;G=20+6*t;B=196-142*t}else if(v<.76){const t=(v-.5)/.26;R=196+59*t;G=26+163*t;B=54-54*t}else{const t=(v-.76)/.24;R=255;G=189+66*t;B=0+240*t}a[i]=R;a[i+1]=G;a[i+2]=B}}
-ctx.putImageData(image,0,0);return}
-/* Object silhouettes are generated by the segmentation model, not by a Sobel edge filter. */
-}
+const videoWrap = document.getElementById('videoWrap');
+const video = document.getElementById('video');
+const overlay = document.getElementById('overlay');
+const ctx = overlay.getContext('2d');
+const overlayMsg = document.getElementById('overlayMsg');
+const startStopBtn = document.getElementById('startStopBtn');
+const helpBtn = document.getElementById('helpBtn');
+const helpDialog = document.getElementById('helpDialog');
+const closeHelpBtn = document.getElementById('closeHelpBtn');
+const zoomSlider = document.getElementById('zoomSlider');
+const zoomValue = document.getElementById('zoomValue');
+const magValue = document.getElementById('magValue');
+const detectValue = document.getElementById('detectValue');
+const dirValue = document.getElementById('dirValue');
+const lineStrength = document.getElementById('lineStrength');
+const labelSize = document.getElementById('labelSize');
+const targetMode = document.getElementById('targetMode');
+const drawMode = document.getElementById('drawMode');
+const colorMode = document.getElementById('colorMode');
+const cameraMode = document.getElementById('cameraMode');
+const gpsBtn = document.getElementById('gpsBtn');
+const compassBtn = document.getElementById('compassBtn');
+const photoBtn = document.getElementById('photoBtn');
+const refreshBtn = document.getElementById('refreshBtn');
+const zoomInBtn = document.getElementById('zoomInBtn');
+const zoomOutBtn = document.getElementById('zoomOutBtn');
+const noteBox = document.getElementById('noteBox');
+const presetBtns = [...document.querySelectorAll('.preset')];
+const modeBtns = [...document.querySelectorAll('.modeBtn')];
 
-// AUTO SHAPE OUTLINES. The app NEVER draws detection rectangles. It draws
-// class-colored silhouette borders generated from MediaPipe DeepLab V3's
-// per-pixel semantic category map. Classes are limited to VOC-21.
-const OBJECT_LABELS=['background','airplane','bicycle','bird','boat','bottle','bus','car','cat','chair','cow','table','dog','horse','motorcycle','person','plant','sheep','sofa','train','TV'];
-const GROUPS={people:new Set([15]),animals:new Set([3,8,10,12,13,17]),vehicles:new Set([1,2,4,6,7,14,19])};
-const SHAPE_COLORS={people:[100,255,83],animals:[255,223,53],vehicles:[255,105,80],objects:[100,255,83]};
-let segmenter=null,segmentLoading=null,segmentFailure=false,segmentBusy=false,lastSegmentAt=0,latestShapes=null,shapeStatusAt=0;
-let outlinePalette='category';
-const segInput=document.createElement('canvas'),segCtx=segInput.getContext('2d',{willReadFrequently:true});
-const maskBorder=document.createElement('canvas'),borderCtx=maskBorder.getContext('2d');
-function setShapeStatus(text){$('outlineStatus').textContent=text}
-function clearShapeOverlay(){shapeCtx.clearRect(0,0,shapeCanvas.width,shapeCanvas.height)}
-function clearCurrentShapes(){latestShapes=null;lastSegmentAt=0;clearShapeOverlay()}
-function categoryGroup(type){if(GROUPS.people.has(type))return 'people';if(GROUPS.animals.has(type))return 'animals';if(GROUPS.vehicles.has(type))return 'vehicles';return 'objects'}
-function colorFor(type,id){
- if(outlinePalette==='green')return [100,255,83];
- if(outlinePalette==='yellow')return [255,223,53];
- if(outlinePalette==='red')return [255,105,80];
- return SHAPE_COLORS[categoryGroup(type)];
-}
-async function loadShapeAI(){
- if(segmenter||segmentLoading||segmentFailure)return;
- setShapeStatus('CLEAR EDGES ACTIVE · loading optional AI object silhouettes…');
- segmentLoading=(async()=>{
-  const lib=await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/vision_bundle.mjs');
-  const vision=await lib.FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm');
-  segmenter=await lib.ImageSegmenter.createFromOptions(vision,{
-   baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/image_segmenter/deeplab_v3/float32/1/deeplab_v3.tflite',delegate:'CPU'},
-   runningMode:'IMAGE',outputCategoryMask:true,outputConfidenceMasks:false
-  });
-  setShapeStatus('AUTO ON · green people/objects · yellow animals · red vehicles');
-  lastSegmentAt=0;
- })();
- try{await segmentLoading}catch(e){console.warn('Automatic silhouette model unavailable',e);segmentFailure=true;setShapeStatus('CLEAR EDGES ACTIVE · AI model unavailable; visual edges are not object recognition.');$('resetOutline').textContent='RETRY AI MODEL';}finally{segmentLoading=null}
-}
-function scheduleSegmentation(now){
- if(!running||mode!=='outline'||!segmenter||segmentBusy||now-lastSegmentAt<1100)return;
- lastSegmentAt=now;segmentBusy=true;
- setTimeout(()=>{
-  try{
-   if(!running||mode!=='outline')return;
-   const iw=320,ih=Math.max(100,Math.round(canvas.height*iw/canvas.width));
-   if(segInput.width!==iw||segInput.height!==ih){segInput.width=iw;segInput.height=ih}
-   segCtx.drawImage(canvas,0,0,iw,ih);
-   // Prefer callback: copies the tiny category array before MediaPipe releases it.
-   const immediateResult=segmenter.segment(segInput,result=>{
-    const mask=result.categoryMask;
-    if(!mask)throw Error('No category mask returned');
-    const data=new Uint8Array(mask.getAsUint8Array());
-    latestShapes=detectShapes(data,mask.width,mask.height);
-   });
-   if(immediateResult?.categoryMask){const m=immediateResult.categoryMask;latestShapes=detectShapes(new Uint8Array(m.getAsUint8Array()),m.width,m.height);immediateResult.close?.();}
-   if(!latestShapes)throw Error('No outline data');
-   renderShapeOverlay();
-   if(now-shapeStatusAt>2600){
-    const n=latestShapes.parts.length;
-    setShapeStatus(n?`AUTO ON · ${n} outlined object${n===1?'':'s'} · green / yellow / red`:'AUTO ON · no supported objects found in view');
-    shapeStatusAt=now;
-   }
-  }catch(e){console.warn('Automatic outlines failed',e);setShapeStatus('Outline processing failed; try RETRY MODEL.');}
-  finally{segmentBusy=false}
- },0);
-}
-function detectShapes(mask,w,h){
- if(w<3||h<3||mask.length!==w*h)return {w,h,parts:[],labels:new Int32Array(0)};
- const count=w*h,labels=new Int32Array(count),queue=new Int32Array(count),parts=[];
- const minArea=Math.max(50,Math.round(count*.0008));
- let id=0;
- for(let i=0;i<count;i++){
-  const value=mask[i];if(!value||value>=OBJECT_LABELS.length||labels[i])continue;
-  const label=++id;let head=0,tail=0;queue[tail++]=i;labels[i]=label;
-  let left=w,top=h,right=0,bottom=0;
-  while(head<tail){const p=queue[head++],x=p%w,y=(p/w)|0;
-   if(x<left)left=x;if(x>right)right=x;if(y<top)top=y;if(y>bottom)bottom=y;
-   if(x>0&&!labels[p-1]&&mask[p-1]===value){labels[p-1]=label;queue[tail++]=p-1}
-   if(x<w-1&&!labels[p+1]&&mask[p+1]===value){labels[p+1]=label;queue[tail++]=p+1}
-   if(y>0&&!labels[p-w]&&mask[p-w]===value){labels[p-w]=label;queue[tail++]=p-w}
-   if(y<h-1&&!labels[p+w]&&mask[p+w]===value){labels[p+w]=label;queue[tail++]=p+w}
-  }
-  // Skip tiny noisy fragments and nearly full-image false positives.
-  if(tail>=minArea && tail<count*.94 && right-left>=5 && bottom-top>=5 && parts.length<35){
-   parts.push({id:label,type:value,size:tail,left,top,right,bottom});
-  }
- }
- return {w,h,parts,labels};
-}
-function renderShapeOverlay(){
- clearShapeOverlay();if(mode!=='outline'||!latestShapes)return;
- const {w,h,parts,labels}=latestShapes;if(!w||!h||!parts.length)return;
- const active=new Uint8Array(Math.max(1,Math.max(...parts.map(p=>p.id))+1));
- const groups=new Map();
- for(const part of parts){active[part.id]=1;groups.set(part.id,part)}
- maskBorder.width=w;maskBorder.height=h;
- const im=borderCtx.createImageData(w,h),d=im.data;
- for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-  const i=y*w+x,id=labels[i];if(!id||!active[id])continue;
-  if(labels[i-1]===id&&labels[i+1]===id&&labels[i-w]===id&&labels[i+w]===id)continue;
-  const color=colorFor(groups.get(id).type,id),k=i*4;
-  d[k]=color[0];d[k+1]=color[1];d[k+2]=color[2];d[k+3]=255;
- }
- borderCtx.putImageData(im,0,0);
- // One smooth, restrained outline on a clear, unfiltered camera picture.
- shapeCtx.save();shapeCtx.imageSmoothingEnabled=true;shapeCtx.imageSmoothingQuality='high';
- shapeCtx.globalAlpha=.95;
- shapeCtx.drawImage(maskBorder,0,0,shapeCanvas.width,shapeCanvas.height);
- shapeCtx.restore();
-}
+let stream = null;
+let model = null;
+let detectTimer = null;
+let ocrTimer = null;
+let running = false;
+let currentView = 'normal';
+let currentZoom = 1;
+let currentTrack = null;
+let deviceDirection = '—';
+let ocrBusy = false;
+let lastDetections = [];
+let cameraFacing = 'rear-default';
 
-// CLEAR CONTOURS: a small, single-pixel, smoothed gradient overlay. Unlike AI
-// semantic masks these show high-contrast visible edges, NOT individual objects.
-// No blocks, huge glow or full-frame color treatments are ever applied to video.
-const fallbackCanvas=document.createElement('canvas');
-const fallbackCtx=fallbackCanvas.getContext('2d',{willReadFrequently:true});
-let outlineDetail=60;
-function renderOfflineContours(){
- if(!running||mode!=='outline'||segmenter)return;
- try{
-  const w=Math.min(380,Math.max(260,canvas.width)),h=Math.round(canvas.height*w/canvas.width),n=w*h;
-  if(fallbackCanvas.width!==w||fallbackCanvas.height!==h){fallbackCanvas.width=w;fallbackCanvas.height=h}
-  fallbackCtx.drawImage(canvas,0,0,w,h);
-  const pixels=fallbackCtx.getImageData(0,0,w,h).data;
-  const gray=new Float32Array(n),smooth=new Float32Array(n),magnitudes=new Float32Array(n),angles=new Uint8Array(n),strong=new Uint8Array(n);
-  for(let i=0;i<n;i++){const k=i*4;gray[i]=pixels[k]*.299+pixels[k+1]*.587+pixels[k+2]*.114}
-  // 3x3 Gaussian pre-blur removes most fine sensor noise without losing distinct borders.
-  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-   const i=y*w+x;
-   smooth[i]=(gray[i-w-1]+2*gray[i-w]+gray[i-w+1]+2*gray[i-1]+4*gray[i]+2*gray[i+1]+gray[i+w-1]+2*gray[i+w]+gray[i+w+1])/16;
-  }
-  const thresh=280-outlineDetail*1.65;
-  for(let y=2;y<h-2;y++)for(let x=2;x<w-2;x++){
-   const i=y*w+x;
-   const gx=(-smooth[i-w-1]+smooth[i-w+1]-2*smooth[i-1]+2*smooth[i+1]-smooth[i+w-1]+smooth[i+w+1]);
-   const gy=(-smooth[i-w-1]-2*smooth[i-w]-smooth[i-w+1]+smooth[i+w-1]+2*smooth[i+w]+smooth[i+w+1]);
-   const val=Math.hypot(gx,gy);if(val<thresh)continue;
-   magnitudes[i]=val;
-   const a=Math.abs(gx),b=Math.abs(gy);
-   angles[i]=b<a*.414?0:a<b*.414?2:gx*gy>0?1:3;
-  }
-  // Nonmaximum suppression keeps a single thin contour line, not a fat edge.
-  for(let y=3;y<h-3;y++)for(let x=3;x<w-3;x++){
-   const i=y*w+x,v=magnitudes[i];if(!v)continue;
-   const off=[1,w+1,w,w-1][angles[i]];
-   if(v>=magnitudes[i-off]&&v>=magnitudes[i+off])strong[i]=1;
-  }
-  // Drop scattered single pixels and tiny isolated segments.
-  const visited=new Uint8Array(n),queue=new Int32Array(n),kept=new Uint8Array(n);
-  for(let i=0;i<n;i++){
-   if(!strong[i]||visited[i])continue;
-   let head=0,tail=1;queue[0]=i;visited[i]=1;
-   while(head<tail){const p=queue[head++];
-    for(const off of [-w-1,-w,-w+1,-1,1,w-1,w,w+1]){
-     const q=p+off;if(q<0||q>=n||visited[q]||!strong[q])continue;
-     if(Math.abs((q%w)-(p%w))>1)continue;
-     visited[q]=1;queue[tail++]=q;
+const SUPPORTED_CLASSES = {
+  all: ['person','dog','cat','bird','horse','sheep','cow','elephant','bear','zebra','giraffe','car','bus','truck','motorcycle','bicycle','boat','cell phone','laptop','tv','remote','keyboard','mouse','bottle','cup','chair','book','backpack','handbag','suitcase'],
+  living: ['person','dog','cat','bird','horse','sheep','cow','elephant','bear','zebra','giraffe','car','bus','truck','motorcycle','bicycle','boat'],
+  electronics: ['cell phone','laptop','tv','remote','keyboard','mouse'],
+  text: [],
+  entry: [],
+  money: []
+};
+const COLOR_MAP = {
+  person: '#77ff66', dog: '#77ff66', cat: '#77ff66', bird: '#77ff66', horse: '#77ff66', sheep: '#77ff66', cow:'#77ff66', elephant:'#77ff66', bear:'#77ff66', zebra:'#77ff66', giraffe:'#77ff66',
+  car: '#ff6060', bus:'#ff6060', truck:'#ff6060', motorcycle:'#ff6060', bicycle:'#ffce45', boat:'#ff6060',
+  'cell phone':'#f8e85a', laptop:'#f8e85a', tv:'#f8e85a', remote:'#f8e85a', keyboard:'#f8e85a', mouse:'#f8e85a',
+  bottle:'#66f0ff', cup:'#66f0ff', chair:'#c87bff', book:'#c87bff', backpack:'#c87bff', handbag:'#c87bff', suitcase:'#c87bff',
+  text:'#66d0ff', exit:'#66d0ff', money:'#f8e85a'
+};
+
+function setMessage(msg){ overlayMsg.textContent = msg; }
+function resizeCanvas(){ overlay.width = video.clientWidth * devicePixelRatio; overlay.height = video.clientHeight * devicePixelRatio; ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); }
+function applyView(){
+  video.style.filter = 'none';
+  if(currentView === 'night') video.style.filter = 'brightness(1.15) contrast(1.18) saturate(0.9)';
+  if(currentView === 'thermal') video.style.filter = 'contrast(1.22) saturate(1.3) hue-rotate(-35deg)';
+}
+function updateZoomUI(){ zoomValue.textContent = `${currentZoom.toFixed(1)}×`; magValue.textContent = `${currentZoom.toFixed(1)}×`; }
+function selectPresetButton(){ presetBtns.forEach(b=>b.classList.toggle('active', Math.abs(parseFloat(b.dataset.zoom)-currentZoom)<0.06)); }
+function updateDetectionStatus(text){ detectValue.textContent = text; }
+function getChosenColor(cls){
+  if(colorMode.value==='green') return '#7CFF4C';
+  if(colorMode.value==='yellow') return '#FFE34D';
+  if(colorMode.value==='red') return '#FF5B5B';
+  return COLOR_MAP[cls] || '#7CFF4C';
+}
+function roundedRect(x,y,w,h,r){
+  ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+}
+function drawDetections(){
+  ctx.clearRect(0,0,overlay.clientWidth,overlay.clientHeight);
+  const lineW = Number(lineStrength.value);
+  const fontSize = Number(labelSize.value);
+  const sx = overlay.clientWidth / video.videoWidth || 1;
+  const sy = overlay.clientHeight / video.videoHeight || 1;
+  for(const det of lastDetections){
+    const [x,y,w,h] = det.bbox;
+    const dx = x*sx, dy=y*sy, dw=w*sx, dh=h*sy;
+    const color = getChosenColor(det.class);
+    ctx.lineWidth = lineW;
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    if(drawMode.value !== 'label'){
+      roundedRect(dx,dy,dw,dh,12);
+      ctx.stroke();
+      if(drawMode.value === 'both'){
+        const corner = Math.max(14, Math.min(dw,dh)*0.12);
+        ctx.beginPath();
+        // corners
+        ctx.moveTo(dx, dy+corner); ctx.lineTo(dx, dy); ctx.lineTo(dx+corner, dy);
+        ctx.moveTo(dx+dw-corner, dy); ctx.lineTo(dx+dw, dy); ctx.lineTo(dx+dw, dy+corner);
+        ctx.moveTo(dx, dy+dh-corner); ctx.lineTo(dx, dy+dh); ctx.lineTo(dx+corner, dy+dh);
+        ctx.moveTo(dx+dw-corner, dy+dh); ctx.lineTo(dx+dw, dy+dh); ctx.lineTo(dx+dw, dy+dh-corner);
+        ctx.stroke();
+      }
     }
-   }
-   if(tail>=8)for(let k=0;k<tail;k++)kept[queue[k]]=1;
+    const label = det.score ? `${det.label || det.class} ${(det.score*100).toFixed(0)}%` : (det.label || det.class);
+    ctx.font = `700 ${fontSize}px system-ui, -apple-system, sans-serif`;
+    const tw = ctx.measureText(label).width + 18;
+    const th = fontSize + 12;
+    const ly = Math.max(6, dy - th - 4);
+    roundedRect(dx, ly, tw, th, 10);
+    ctx.globalAlpha = 0.9;
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#0A130A';
+    ctx.fillText(label, dx + 9, ly + fontSize + 1);
   }
-  const bitmap=fallbackCtx.createImageData(w,h),out=bitmap.data;
-  const colors=outlinePalette==='yellow'?[[255,226,51]]:outlinePalette==='red'?[[255,80,72]]:outlinePalette==='green'?[[103,255,74]]:[[103,255,74],[255,226,51]];
-  for(let i=0;i<n;i++){
-   if(!kept[i])continue;
-   const c=colors.length===2&&magnitudes[i]>thresh*2.4?colors[1]:colors[0],p=i*4;
-   out[p]=c[0];out[p+1]=c[1];out[p+2]=c[2];out[p+3]=240;
+}
+function filterByMode(preds){
+  const mode = targetMode.value;
+  if(mode === 'text' || mode === 'entry' || mode === 'money') return preds.filter(()=>false);
+  const classes = SUPPORTED_CLASSES[mode] || SUPPORTED_CLASSES.all;
+  return preds.filter(p => classes.includes(p.class) && p.score > 0.45);
+}
+function enrichTextDetections(words){
+  const mode = targetMode.value;
+  if(!(mode === 'text' || mode === 'entry' || mode === 'all')) return [];
+  return words.filter(w => w.text && w.text.trim().length > 1).map(w => {
+    const txt = w.text.trim();
+    const isExit = /exit|entrance|door/i.test(txt);
+    if(mode === 'entry' && !isExit) return null;
+    return {
+      class: isExit ? 'exit' : 'text',
+      label: txt.slice(0,18),
+      score: null,
+      bbox: [w.bbox.x0, w.bbox.y0, Math.max(10, w.bbox.x1 - w.bbox.x0), Math.max(10, w.bbox.y1 - w.bbox.y0)]
+    };
+  }).filter(Boolean);
+}
+async function runOCR(){
+  if(!running || ocrBusy || !video.videoWidth) return;
+  const mode = targetMode.value;
+  if(!['text','entry','all'].includes(mode)) return;
+  ocrBusy = true;
+  try{
+    const snap = document.createElement('canvas');
+    snap.width = video.videoWidth; snap.height = video.videoHeight;
+    const sctx = snap.getContext('2d');
+    sctx.drawImage(video,0,0,snap.width,snap.height);
+    const { data } = await Tesseract.recognize(snap, 'eng', { logger: ()=>{} });
+    const textDets = enrichTextDetections(data.words || []);
+    // merge: keep non-text + new text blocks
+    const nonText = lastDetections.filter(d => d.class !== 'text' && d.class !== 'exit');
+    lastDetections = [...nonText, ...textDets];
+    drawDetections();
+  }catch(err){ console.error(err); }
+  ocrBusy = false;
+}
+async function detectionLoop(){
+  if(!running || !model || video.readyState < 2) return;
+  try{
+    const preds = await model.detect(video, 18);
+    lastDetections = filterByMode(preds);
+    if(targetMode.value === 'money'){
+      // Experimental heuristics: just relabel phone/book/card-sized items if found.
+      lastDetections = preds.filter(p => ['cell phone','book','remote'].includes(p.class) && p.score > 0.35).map(p=>({...p, label:'possible card/cash item'}));
+    }
+    drawDetections();
+    updateDetectionStatus(lastDetections.length ? `${lastDetections.length} TARGETS` : 'SCANNING');
+  }catch(err){
+    console.error(err);
+    updateDetectionStatus('AI ERROR');
   }
-  fallbackCtx.putImageData(bitmap,0,0);
-  clearShapeOverlay();shapeCtx.save();shapeCtx.imageSmoothingEnabled=true;shapeCtx.imageSmoothingQuality='high';
-  shapeCtx.drawImage(fallbackCanvas,0,0,shapeCanvas.width,shapeCanvas.height);shapeCtx.restore();
-  if(!segmentLoading){setShapeStatus('CLEAR EDGES · normal camera visible · AI objects '+(segmentFailure?'unavailable':'loading…'));}
- }catch(e){console.warn('Visual outlines:',e);setShapeStatus('Outline drawing unavailable; camera still active.');}
 }
-function retryShapeModel(){
- if(segmentFailure){segmentFailure=false;segmenter=null;loadShapeAI();}
- else {clearCurrentShapes();setShapeStatus('AUTO ON · refreshing visible objects…')}
-}
-function selectOutlineColor(palette){outlinePalette=palette;document.querySelectorAll('[data-palette]').forEach(b=>b.classList.toggle('chosen',b.dataset.palette===palette));if(segmenter)renderShapeOverlay();else{lastFallbackAt=0;renderOfflineContours()}}
-function selectMode(m){mode=m;updateVideoPresentation();document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));$('modeTag').textContent=modeNames[m];$('rangeTag').textContent=(m==='thermal'||m==='night')?'SIMULATED FILTER':'NOT A MEASURED RANGE';$('outlinePanel').classList.toggle('hidden',m!=='outline');if(m==='outline'){clearCurrentShapes();lastFallbackAt=0;setShapeStatus('CLEAR EDGES ACTIVE · trying optional AI model…');loadShapeAI()}else clearShapeOverlay()}
-function clearMarks(){marks=[];$('measureMarks').innerHTML='';$('rangeReadout').textContent='—';$('measureResult').textContent=measuring?'Tap the TOP of the object to begin.':'Activate Mark Object to estimate range.'}
-function drawMarks(){const layer=$('measureMarks');layer.innerHTML='';marks.forEach((p,i)=>{let e=document.createElement('div');e.className='point';e.style.left=(p.x*100)+'%';e.style.top=(p.y*100)+'%';e.dataset.title=i===0?'TOP':'BOTTOM';layer.appendChild(e)});if(marks.length===2){const a=marks[0],b=marks[1],r=viewer.getBoundingClientRect(),dx=(b.x-a.x)*r.width,dy=(b.y-a.y)*r.height;const line=document.createElement('div');line.className='measureLine';line.style.left=(a.x*100)+'%';line.style.top=(a.y*100)+'%';line.style.width=Math.hypot(dx,dy)+'px';line.style.transform='rotate('+Math.atan2(dy,dx)+'rad)';layer.appendChild(line)}}
-function updateEstimate(){if(marks.length!==2)return;const h=Number($('knownHeight').value),fov=Number($('fov').value);const delta=Math.abs(marks[1].y-marks[0].y);if(!Number.isFinite(h)||h<=0||h>100||!Number.isFinite(fov)||fov<30||fov>80){$('rangeReadout').textContent='—';$('measureResult').textContent='Enter a height greater than 0 m and FOV between 30°–80°.';return}if(delta<.015){$('rangeReadout').textContent='—';$('measureResult').textContent='Points too close. Mark a larger visible section.';return}const effectiveHalfTan=Math.tan(fov*Math.PI/360)/(zoom/lensScale);const d=h/(2*effectiveHalfTan*delta);if(!Number.isFinite(d)||d>99999){$('measureResult').textContent='Estimate is outside a useful range.';return}const ft=d*3.28084,yd=ft/3;const format=n=>n>=100?Math.round(n).toLocaleString():n.toFixed(1);$('rangeReadout').textContent=format(yd)+' yd';$('measureResult').textContent='ROUGH ESTIMATE: '+format(d)+' m · '+format(ft)+' ft · '+format(yd)+' yd';$('rangeTag').textContent='LOW CONFIDENCE · ESTIMATE ONLY'}
-function markObject(){if(!running){toast('Enable the camera before measuring.');return}measuring=!measuring;$('measurePanel').classList.toggle('hidden',!measuring);$('measureBtn').classList.toggle('pressed',measuring);clearMarks();if(measuring)toast('Tap the TOP of an object, then its BOTTOM in the camera view.',5500)}
-viewer.addEventListener('pointerup',e=>{if(!running||!measuring)return;const r=viewer.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;if(x<0||x>1||y<0||y>1)return;if(marks.length>=2)marks=[];marks.push({x,y});drawMarks();if(marks.length===1)$('measureResult').textContent='Now tap the BOTTOM of the same object.';else updateEstimate()});
-function setZoom(v){const n=Number(v);if(!Number.isFinite(n))return;zoom=Math.max(lensScale,Math.min(20,n));$('zoom').min=String(lensScale);$('zoom').max='20';$('zoom').value=String(zoom);$('zoomReadout').textContent=zoom.toFixed(1)+'×';$('zoomInline').textContent=zoom.toFixed(1)+'×';$('resetZoom').textContent=lensScale.toFixed(1)+'×';clearMarks();clearCurrentShapes();lastFallbackAt=0;updateVideoPresentation();updateZoomPresets();if(zoom>=8)$('zoomTip').textContent='HIGH DIGITAL ZOOM · cropped pixels only, no new optical detail.';else $('zoomTip').textContent='Pinch on the camera or use + / −. Camera choices depend on what Safari exposes.';}
-function updateZoomPresets(){
- document.querySelectorAll('[data-zoom-preset]').forEach(b=>{
-  const desired=Number(b.dataset.zoomPreset);
-  b.classList.toggle('selected',Math.abs(zoom-desired)<.08);
-  b.setAttribute('aria-pressed',String(Math.abs(zoom-desired)<.08));
- });
- const half=$('halfZoom');
- if(half){half.title=lensScale===0.5?'Ultra-wide active':'Try 0.5× ultra-wide lens (depends on Safari)';}
-}
-async function requestHalfZoom(){
- if(!rear){toast('Switch to the rear camera to try 0.5×.',5000);return}
- if(lensScale===.5){setZoom(.5);return}
- const candidate=knownCameras.find(d=>/ultra[ -]?wide|0[.,]5\s?[×x]?/i.test(d.label||''));
- if(candidate){chosenDevice=candidate.deviceId;lensScale=.5;setZoom(.5);await start();
-  if(running){toast('Ultra-wide camera selected.');return;}
-  chosenDevice='default';lensScale=1;setZoom(1);
- }
- const track=stream?.getVideoTracks()[0],cap=track?.getCapabilities?.();
- if(track&&cap?.zoom&&Number(cap.zoom.min)<.75){
-  try{await track.applyConstraints({advanced:[{zoom:.5}]});
-   const applied=track.getSettings?.().zoom;
-   if(typeof applied==='number'&&applied<.75){lensScale=.5;setZoom(.5);toast('0.5× lens range accepted by Safari.');return;}
-  }catch(e){console.warn('Ultra-wide not selectable',e)}
- }
- toast('Safari is not exposing the iPhone ultra-wide lens. True 0.5× is available in the built-in Camera app; this web app cannot manufacture the wider image.',9000);
-}
-async function refreshCameras(){
- try{const devices=await navigator.mediaDevices.enumerateDevices();const cameras=devices.filter(d=>d.kind==='videoinput');knownCameras=cameras;
- const select=$('lensSelect'),previous=chosenDevice;select.replaceChildren();
- const opt=document.createElement('option');opt.value='default';opt.textContent='Default '+(rear?'rear':'front')+' camera';select.appendChild(opt);
- cameras.forEach((d,i)=>{if(!d.deviceId)return;const option=document.createElement('option');option.value=d.deviceId;option.textContent=(d.label||'Camera '+(i+1)).slice(0,65);select.appendChild(option)});
- select.value=Array.from(select.options).some(o=>o.value===previous)?previous:'default';
- const wide=cameras.some(d=>/ultra[ -]?wide|0[.,]5/i.test(d.label||''));
- $('lensNote').textContent=wide?'Ultra-wide camera found; select it or tap 0.5× below.': 'Safari '+(cameras.length>1?'has listed '+cameras.length+' cameras but no confirmed ultra-wide lens.':'does not expose a separate ultra-wide lens.')+' Tap 0.5× to test availability.';
- updateZoomPresets();
- }catch{$('lensNote').textContent='Camera selection unavailable in this browser.'}
-}
-async function selectCamera(){chosenDevice=$('lensSelect').value;const label=$('lensSelect').selectedOptions[0]?.textContent||'';lensScale=/ultra.?wide|0[.,]5|0[.,]6/i.test(label)?0.5:1;setZoom(lensScale);if(running)await start();}
-let gestureDist=0,gestureZoom=1;
-viewer.addEventListener('touchstart',e=>{if(e.touches.length===2&&!measuring){gestureDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);gestureZoom=zoom;}},{passive:true});
-viewer.addEventListener('touchmove',e=>{if(e.touches.length===2&&gestureDist&&!measuring){const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);setZoom(gestureZoom*dist/gestureDist);}},{passive:true});
-viewer.addEventListener('touchend',e=>{if(e.touches.length<2)gestureDist=0},{passive:true});
-async function photo(){
- if(!running){toast('Start the camera first.');return}
- try{
-  const nativeView=mode==='normal'||mode==='outline';
-  const shot=document.createElement('canvas');
-  const pictureW=nativeView?Math.min(1600,Math.max(960,video.videoWidth||1280)):canvas.width;
-  shot.width=pictureW;shot.height=Math.max(1,Math.round(pictureW*canvas.height/canvas.width));
-  const c=shot.getContext('2d');
-  if(nativeView&&video.videoWidth&&video.videoHeight){
-   const vw=video.videoWidth,vh=video.videoHeight,aspect=shot.width/shot.height;
-   let cropW=vw,cropH=vh;if(vw/vh>aspect)cropW=vh*aspect;else cropH=vw/aspect;
-   const dz=Math.max(1,zoom/lensScale);cropW/=dz;cropH/=dz;
-   c.save();if(!rear){c.translate(shot.width,0);c.scale(-1,1)}
-   c.drawImage(video,(vw-cropW)/2,(vh-cropH)/2,cropW,cropH,0,0,shot.width,shot.height);c.restore();
-  }else c.drawImage(canvas,0,0,shot.width,shot.height);
-  if(mode==='outline')c.drawImage(shapeCanvas,0,0,shot.width,shot.height);
-  const bannerH=Math.max(26,Math.round(shot.width*.028));
-  c.fillStyle='#06120ada';c.fillRect(0,shot.height-bannerH,shot.width,bannerH);
-  c.fillStyle='#b1f08a';c.font='bold '+Math.round(shot.width*.016)+'px sans-serif';
-  c.fillText('RECON CAM · '+modeNames[mode],Math.round(shot.width*.014),shot.height-bannerH*.28);
-  const blob=await new Promise(resolve=>shot.toBlob(resolve,'image/png'));if(!blob)throw Error('No image');
-  const filename='recon-cam-'+new Date().toISOString().replace(/[:.]/g,'-')+'.png';
-  const file=new File([blob],filename,{type:'image/png'});
-  if(navigator.canShare?.({files:[file]})){
-   try{await navigator.share({files:[file],title:'Recon Cam photo'});return}
-   catch(e){if(e.name==='AbortError')return}
+async function loadAI(){
+  updateDetectionStatus('LOADING');
+  setMessage('Loading AI models... first run may take a moment.');
+  try{
+    model = await cocoSsd.load({base:'lite_mobilenet_v2'});
+    updateDetectionStatus('READY');
+    setMessage('AI ready. Normal camera with strong target highlights.');
+  }catch(err){
+    console.error(err);
+    updateDetectionStatus('OFFLINE');
+    setMessage('Could not load AI. Check internet, then tap REFRESH AI. Camera can still run.');
   }
-  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();
-  setTimeout(()=>URL.revokeObjectURL(url),20000);toast('Snapshot ready. If it opens, use Share → Save Image.');
- }catch(e){toast('Could not save image: '+(e.message||'Unknown error'))}
 }
-function gps(){if(!navigator.geolocation){toast('Location is unavailable.');return}toast('Requesting location permission…');navigator.geolocation.getCurrentPosition(p=>{currentPosition=p;$('positionLabel').textContent='GPS: '+p.coords.latitude.toFixed(4)+', '+p.coords.longitude.toFixed(4)+' · ±'+Math.round(p.coords.accuracy)+'m';toast('GPS location available. Coordinates remain on your phone.')},e=>toast('GPS unavailable: '+e.message,6500),{enableHighAccuracy:true,timeout:12000,maximumAge:10000})}
-async function compass(){if(!window.DeviceOrientationEvent){toast('Compass is unavailable in this browser.');return}try{if(typeof DeviceOrientationEvent.requestPermission==='function'){const answer=await DeviceOrientationEvent.requestPermission();if(answer!=='granted'){toast('Compass permission was not granted.');return}}window.addEventListener('deviceorientation',orientation,true);toast('Compass enabled. Rotate the phone to update heading.')}catch(e){toast('Compass unavailable: '+(e.message||'Permission denied'))}}
-function orientation(e){let val=null;if(typeof e.webkitCompassHeading==='number')val=e.webkitCompassHeading;else if(typeof e.alpha==='number')val=(360-e.alpha)%360;if(val!==null){currentHeading=Math.round(val);$('headingReadout').textContent=currentHeading+'°';}}
+function getTrackCapabilitiesSafe(track){ try { return track.getCapabilities ? track.getCapabilities() : {}; } catch { return {}; } }
+async function applyTrackZoom(){
+  if(!currentTrack) return;
+  const caps = getTrackCapabilitiesSafe(currentTrack);
+  if(caps.zoom){
+    const z = Math.max(caps.zoom.min || 1, Math.min(caps.zoom.max || currentZoom, currentZoom));
+    try { await currentTrack.applyConstraints({advanced:[{zoom:z}]}); } catch(e){ console.warn(e); }
+  } else {
+    video.style.transform = `scale(${Math.max(1, currentZoom)})`;
+    video.style.transformOrigin = 'center center';
+  }
+}
+async function startCamera(){
+  stopCamera();
+  setMessage('Starting camera...');
+  const wantUltra = cameraMode.value === 'rear-ultrawide';
+  cameraFacing = cameraMode.value;
+  const tryConstraints = [];
+  if(wantUltra){
+    tryConstraints.push({video:{facingMode:{ideal:'environment'}, width:{ideal:1920}, height:{ideal:1080}, advanced:[{focalLengthX:0.5}]}, audio:false});
+    tryConstraints.push({video:{facingMode:{ideal:'environment'}, width:{ideal:1920}, height:{ideal:1080}}, audio:false});
+  } else {
+    tryConstraints.push({video:{facingMode:{ideal:'environment'}, width:{ideal:1920}, height:{ideal:1080}}, audio:false});
+  }
+  let lastErr;
+  for(const constraints of tryConstraints){
+    try{
+      stream = await navigator.mediaDevices.getUserMedia(constraints);
+      break;
+    }catch(err){ lastErr = err; }
+  }
+  if(!stream){
+    setMessage('Camera access failed. Check Safari camera permissions.');
+    throw lastErr || new Error('camera failed');
+  }
+  video.srcObject = stream;
+  currentTrack = stream.getVideoTracks()[0];
+  await video.play();
+  resizeCanvas();
+  running = true;
+  startStopBtn.textContent = 'STOP CAMERA';
+  setMessage(wantUltra ? 'Ultra-wide requested. If available, 0.5× is active.' : 'Camera on.');
+  applyView();
+  updateZoomUI();
+  await applyTrackZoom();
+  detectTimer = setInterval(detectionLoop, 900);
+  ocrTimer = setInterval(runOCR, 3500);
+  detectionLoop();
+}
+function stopCamera(){
+  running = false;
+  if(detectTimer) clearInterval(detectTimer);
+  if(ocrTimer) clearInterval(ocrTimer);
+  detectTimer = null; ocrTimer = null;
+  if(stream){ stream.getTracks().forEach(t=>t.stop()); }
+  stream = null; currentTrack = null; lastDetections = [];
+  if(video) video.srcObject = null;
+  ctx.clearRect(0,0,overlay.width,overlay.height);
+  startStopBtn.textContent = 'START CAMERA';
+  updateDetectionStatus('OFF');
+  setMessage('Camera off. Tap START CAMERA.');
+}
+function syncPreset(v){ currentZoom = v; zoomSlider.value = v; updateZoomUI(); selectPresetButton(); applyTrackZoom(); }
 
-// Outline contours are automatic. No touching, selection, or manual freezing.
-for(const b of document.querySelectorAll('[data-palette]'))b.addEventListener('click',()=>selectOutlineColor(b.dataset.palette));
-$('resetOutline').addEventListener('click',retryShapeModel);$('startCam').addEventListener('click',start);$('stopCam').addEventListener('click',()=>stop());$('zoom').addEventListener('input',e=>setZoom(e.target.value));document.querySelectorAll('[data-zoom-preset]').forEach(btn=>btn.addEventListener('click',()=>{
- const v=Number(btn.dataset.zoomPreset);if(v===.5)requestHalfZoom();else setZoom(v);
- }));
- $('outlineDetail').addEventListener('input',e=>{outlineDetail=Number(e.target.value);$('detailReadout').textContent=String(outlineDetail);lastFallbackAt=0;});
- $('zoomMinus').addEventListener('click',()=>setZoom(zoom-(zoom>3?1:0.5)));$('zoomPlus').addEventListener('click',()=>setZoom(zoom+(zoom>=3?1:0.5)));$('lensSelect').addEventListener('change',selectCamera);$('resetZoom').addEventListener('click',()=>setZoom(lensScale));document.querySelectorAll('.mode').forEach(b=>b.addEventListener('click',()=>selectMode(b.dataset.mode)));$('measureBtn').addEventListener('click',markObject);$('closeMeasure').addEventListener('click',()=>{measuring=false;$('measurePanel').classList.add('hidden');$('measureBtn').classList.remove('pressed');clearMarks()});$('captureBtn').addEventListener('click',photo);$('locationBtn').addEventListener('click',gps);$('headingBtn').addEventListener('click',compass);$('clearMarks').addEventListener('click',clearMarks);$('knownHeight').addEventListener('input',updateEstimate);$('fov').addEventListener('input',updateEstimate);document.querySelectorAll('[data-height]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-height]').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');if(b.dataset.height!=='custom'){$('knownHeight').value=b.dataset.height;updateEstimate()}else $('knownHeight').focus()}));$('settingsBtn').addEventListener('click',()=>{const p=$('options');p.classList.toggle('hidden');$('settingsBtn').setAttribute('aria-expanded',String(!p.classList.contains('hidden')));$('settingsBtn').textContent=p.classList.contains('hidden')?'OPTIONS ▾':'OPTIONS ▴'});$('reticleToggle').addEventListener('change',e=>$('crosshair').classList.toggle('hidden',!e.target.checked));$('gridToggle').addEventListener('change',e=>$('gridOverlay').style.display=e.target.checked?'block':'none');$('switchCamera').addEventListener('change',e=>{rear=!e.target.checked;chosenDevice='default';lensScale=1;setZoom(1);clearMarks();if(running)start()});
-$('helpBtn').addEventListener('click',()=>$('helpDialog').showModal());$('closeHelp').addEventListener('click',()=>$('helpDialog').close());$('gotIt').addEventListener('click',()=>$('helpDialog').close());window.addEventListener('resize',()=>{resize();drawMarks();clearMarks()});document.addEventListener('visibilitychange',()=>{if(document.hidden){lastFrame=0}});setCamState(false);resize();if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-})();
+startStopBtn.addEventListener('click', async ()=>{
+  try{
+    if(running) stopCamera(); else await startCamera();
+  }catch(err){ console.error(err); }
+});
+helpBtn.addEventListener('click',()=>helpDialog.showModal());
+closeHelpBtn.addEventListener('click',()=>helpDialog.close());
+window.addEventListener('resize',resizeCanvas);
+video.addEventListener('loadedmetadata',resizeCanvas);
+zoomSlider.addEventListener('input',()=>{ currentZoom = parseFloat(zoomSlider.value); updateZoomUI(); selectPresetButton(); applyTrackZoom(); });
+zoomInBtn.addEventListener('click',()=>{ currentZoom = Math.min(20, +(currentZoom+0.5).toFixed(1)); syncPreset(currentZoom); });
+zoomOutBtn.addEventListener('click',()=>{ currentZoom = Math.max(0.5, +(currentZoom-0.5).toFixed(1)); syncPreset(currentZoom); });
+presetBtns.forEach(btn=>btn.addEventListener('click',()=> syncPreset(parseFloat(btn.dataset.zoom))));
+modeBtns.forEach(btn=>btn.addEventListener('click',()=>{
+  modeBtns.forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentView = btn.dataset.view; applyView();
+}));
+[colorMode, drawMode, lineStrength, labelSize, targetMode].forEach(el=>el.addEventListener('change',()=>{ drawDetections(); detectionLoop(); }));
+cameraMode.addEventListener('change', async ()=>{ if(running){ await startCamera(); }});
+refreshBtn.addEventListener('click', loadAI);
+photoBtn.addEventListener('click',()=>{
+  if(!running || !video.videoWidth) return;
+  const snap = document.createElement('canvas'); snap.width = video.videoWidth; snap.height = video.videoHeight;
+  const sctx = snap.getContext('2d');
+  sctx.filter = video.style.filter || 'none';
+  sctx.drawImage(video,0,0,snap.width,snap.height);
+  // draw overlay scaled
+  sctx.drawImage(overlay,0,0,snap.width,snap.height);
+  const a = document.createElement('a'); a.href = snap.toDataURL('image/jpeg',0.92); a.download = `reconcam-v7-${Date.now()}.jpg`; a.click();
+});
+gpsBtn.addEventListener('click',()=>{
+  if(!navigator.geolocation) return setMessage('GPS not supported in this browser.');
+  navigator.geolocation.getCurrentPosition(pos=>{
+    setMessage(`GPS: ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)} accuracy ${Math.round(pos.coords.accuracy)} m`);
+  },err=> setMessage(`GPS error: ${err.message}`), {enableHighAccuracy:true, timeout:10000});
+});
+compassBtn.addEventListener('click', async ()=>{
+  try{
+    if(typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
+      const res = await DeviceOrientationEvent.requestPermission();
+      if(res !== 'granted') throw new Error('permission denied');
+    }
+    setMessage('Compass enabled if supported. Turn device to update direction.');
+  }catch(err){ setMessage('Compass permission denied or unsupported.'); }
+});
+window.addEventListener('deviceorientation', (e)=>{
+  let heading = null;
+  if(typeof e.webkitCompassHeading === 'number') heading = e.webkitCompassHeading;
+  else if(typeof e.alpha === 'number') heading = 360 - e.alpha;
+  if(heading != null){
+    const dirs = ['N','NE','E','SE','S','SW','W','NW'];
+    const i = Math.round(((heading%360)+360)%360 / 45) % 8;
+    deviceDirection = `${dirs[i]} ${Math.round(heading)}°`;
+    dirValue.textContent = deviceDirection;
+  }
+});
+videoWrap.addEventListener('touchmove', (e)=>{
+  if(e.touches.length===2){
+    const [a,b] = [e.touches[0], e.touches[1]];
+    const dist = Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY);
+    if(!window._pinchStart){ window._pinchStart = {dist, zoom: currentZoom}; }
+    const factor = dist / window._pinchStart.dist;
+    currentZoom = Math.max(0.5, Math.min(20, +(window._pinchStart.zoom * factor).toFixed(1)));
+    zoomSlider.value = currentZoom; updateZoomUI(); selectPresetButton(); applyTrackZoom();
+  }
+}, {passive:true});
+videoWrap.addEventListener('touchend', ()=>{ window._pinchStart = null; }, {passive:true});
+if('serviceWorker' in navigator){ window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js').catch(()=>{})); }
+loadAI();
