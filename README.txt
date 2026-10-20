@@ -1,9 +1,12 @@
-RECON CAM V4 — AUTOMATIC COLOR SILHOUETTES
+RECON CAM V5 — Wide View + Auto Outlines
 
-UPLOAD: Extract this ZIP and upload all eight files into the root of the existing recon-cam GitHub repository. Overwrite same-named files by committing to the main branch. GitHub Pages uses main/(root).
+Changes:
+• Offline automatic VISUAL CONTOURS activate immediately; colors decorative. These are broad color-region boundaries, not object recognition.
+• When the optional MediaPipe model can download, it replaces fallback contours with class-specific AI silhouettes for supported categories.
+• 1–20× DIGITAL zoom, plus/minus buttons and pinch-to-zoom. Zoom does not create optical detail.
+• Camera selection lists lenses exposed by Safari; an ultra-wide lens may appear on supported devices. If not, app cannot zoom out below 1×.
+• Cache/version busting for V5.
+• Keeps GPS, compass, distance estimator, simulated thermal/night filters, and photos.
 
-HOW TO USE: Open HTTPS site in Safari, ENABLE CAMERA, tap OUTLINE. The free MediaPipe DeepLab V3 segmentation model loads on first use. Recognized objects are outlined automatically in green, yellow, red. No tapping needed to outline anything. Color modes apply across all recognized objects.
-
-MODEL LIMITS: Only ~20 VOC object categories are supported: people, some animals, vehicles, bottles, chairs, tables, plants, TV etc. Weapons, phones, license plates, money, coins, credit cards, text and exits are not reliably identified in V4. Shape boundaries and class labels may be inaccurate or miss objects. No safety decisions. No actual thermal or radar capabilities. Initial model download needs internet.
-
-Camera filters, photo capture, digital zoom, compass, GPS, approximate distance estimator remain.
+NOT a weapon detector, thermal imager, actual rangefinder, or certified identification system.
+Upload all eight files to repository root on GitHub Pages.

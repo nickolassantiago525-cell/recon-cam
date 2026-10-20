@@ -2,18 +2,18 @@
 const $=id=>document.getElementById(id),video=$('video'),canvas=$('viewCanvas'),viewer=$('viewer'),ctx=canvas.getContext('2d',{willReadFrequently:true});
 const scratch=document.createElement('canvas'),sc=scratch.getContext('2d',{willReadFrequently:true});
 const shapeCanvas=$('shapeCanvas'),shapeCtx=shapeCanvas.getContext('2d');
-let stream=null,running=false,loop=0,lastFrame=0,mode='normal',zoom=1,rear=true,measuring=false,marks=[],messageTimeout=null,currentPosition=null,currentHeading=null;
+let stream=null,running=false,loop=0,lastFrame=0,mode='normal',zoom=1,rear=true,chosenDevice='default',lensScale=1,knownCameras=[],lastFallbackAt=0,measuring=false,marks=[],messageTimeout=null,currentPosition=null,currentHeading=null;
 const modeNames={normal:'NATURAL VIEW',outline:'AI OBJECT SILHOUETTES',thermal:'SIMULATED THERMAL — NOT HEAT',night:'SIMULATED NIGHT — NOT IR',mono:'MONOCHROME'};
 function toast(t,duration=4500){const el=$('message');el.textContent=t;el.classList.remove('hidden');clearTimeout(messageTimeout);messageTimeout=setTimeout(()=>el.classList.add('hidden'),duration)}
 function setCamState(active){$('camState').classList.toggle('live',active);$('camState').innerHTML='<i></i> '+(active?'CAMERA ON':'CAMERA OFF');$('emptyState').classList.toggle('hidden',active)}
 function resize(){const r=viewer.getBoundingClientRect(),width=Math.max(1,Math.round(Math.min(r.width,720))),height=Math.max(1,Math.round(width*r.height/Math.max(r.width,1)));if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;scratch.width=width;scratch.height=height;shapeCanvas.width=width;shapeCanvas.height=height;latestShapes=null;lastSegmentAt=0}};
-async function start(){try{if(!window.isSecureContext){toast('Camera needs HTTPS. Open the GitHub Pages link in Safari.',7500);return}if(!navigator.mediaDevices?.getUserMedia){toast('Camera access unavailable in this browser.',7000);return}stop(false);const constraints={audio:false,video:{facingMode:{ideal:rear?'environment':'user'},width:{ideal:1280},height:{ideal:720}}};stream=await navigator.mediaDevices.getUserMedia(constraints);video.srcObject=stream;await video.play();running=true;setCamState(true);resize();lastFrame=0;loop=requestAnimationFrame(frame)}catch(err){setCamState(false);let reason='Could not start camera.';if(err.name==='NotAllowedError')reason='Camera blocked. In Safari, allow camera access for this website.';else if(err.name==='NotFoundError')reason='No camera detected.';else if(err.name==='NotReadableError')reason='Camera is busy in another app.';toast(reason+' '+(err.message||''),8500)}}
+async function start(){try{if(!window.isSecureContext){toast('Camera needs HTTPS. Open the GitHub Pages link in Safari.',7500);return}if(!navigator.mediaDevices?.getUserMedia){toast('Camera access unavailable in this browser.',7000);return}stop(false);const videoSettings={facingMode:{ideal:rear?'environment':'user'},width:{ideal:1920},height:{ideal:1080}};if(chosenDevice!=='default'&&rear)videoSettings.deviceId={exact:chosenDevice};const constraints={audio:false,video:videoSettings};stream=await navigator.mediaDevices.getUserMedia(constraints);video.srcObject=stream;await video.play();running=true;setCamState(true);resize();refreshCameras().catch(()=>{});lastFrame=0;loop=requestAnimationFrame(frame)}catch(err){setCamState(false);let reason='Could not start camera.';if(err.name==='NotAllowedError')reason='Camera blocked. In Safari, allow camera access for this website.';else if(err.name==='NotFoundError')reason='No camera detected.';else if(err.name==='NotReadableError')reason='Camera is busy in another app.';toast(reason+' '+(err.message||''),8500)}}
 function stop(show=true){running=false;cancelAnimationFrame(loop);if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}video.srcObject=null;setCamState(false);clearMarks();clearShapeOverlay();if(show)toast('Camera stopped.')}
 function frame(now){if(!running)return;loop=requestAnimationFrame(frame);const fps=mode==='normal'?23:14;if(now-lastFrame<1000/fps)return;lastFrame=now;if(video.readyState<2||!video.videoWidth)return;resize();const w=canvas.width,h=canvas.height,vw=video.videoWidth,vh=video.videoHeight;if(w<1||h<1)return;
 // Cover the destination, crop the source to maintain aspect ratio, and apply simulated zoom.
-const sourceAspect=vw/vh,dstAspect=w/h;let cropW=vw,cropH=vh;if(sourceAspect>dstAspect)cropW=vh*dstAspect;else cropH=vw/dstAspect;cropW/=zoom;cropH/=zoom;const sx=(vw-cropW)/2,sy=(vh-cropH)/2;
+const sourceAspect=vw/vh,dstAspect=w/h;let cropW=vw,cropH=vh;if(sourceAspect>dstAspect)cropW=vh*dstAspect;else cropH=vw/dstAspect;const digitalCrop=Math.max(1,zoom/lensScale);cropW/=digitalCrop;cropH/=digitalCrop;const sx=(vw-cropW)/2,sy=(vh-cropH)/2;
 ctx.save();if(!rear){ctx.translate(w,0);ctx.scale(-1,1)}ctx.drawImage(video,sx,sy,cropW,cropH,0,0,w,h);ctx.restore();
-if(mode!=='normal'&&mode!=='outline')applyFilter(w,h);if(mode==='outline')scheduleSegmentation(now);}
+if(mode!=='normal'&&mode!=='outline')applyFilter(w,h);if(mode==='outline'){if(segmenter){scheduleSegmentation(now)}else if(now-lastFallbackAt>500){lastFallbackAt=now;renderOfflineContours();}}}
 function applyFilter(w,h){let image;try{image=ctx.getImageData(0,0,w,h)}catch{return}const a=image.data;if(mode==='mono'||mode==='night'||mode==='thermal'){
 for(let i=0;i<a.length;i+=4){const r=a[i],g=a[i+1],b=a[i+2];const lum=Math.max(0,Math.min(255,Math.round(.2126*r+.7152*g+.0722*b)));
 if(mode==='mono'){a[i]=lum;a[i+1]=lum;a[i+2]=lum}
@@ -45,9 +45,9 @@ function colorFor(type,id){
 }
 async function loadShapeAI(){
  if(segmenter||segmentLoading||segmentFailure)return;
- setShapeStatus('Downloading automatic outline model… First use needs internet.');
+ setShapeStatus('AUTO CONTOURS ACTIVE · loading optional AI silhouettes…');
  segmentLoading=(async()=>{
-  const lib=await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/+esm');
+  const lib=await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/vision_bundle.mjs');
   const vision=await lib.FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm');
   segmenter=await lib.ImageSegmenter.createFromOptions(vision,{
    baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/image_segmenter/deeplab_v3/float32/1/deeplab_v3.tflite',delegate:'CPU'},
@@ -56,7 +56,7 @@ async function loadShapeAI(){
   setShapeStatus('AUTO ON · green people/objects · yellow animals · red vehicles');
   lastSegmentAt=0;
  })();
- try{await segmentLoading}catch(e){console.warn('Automatic silhouette model unavailable',e);segmentFailure=true;setShapeStatus('AI could not load. Check internet, then tap RETRY MODEL.');$('resetOutline').textContent='RETRY MODEL';toast('The outline model did not load. Other camera features still work.',6500)}finally{segmentLoading=null}
+ try{await segmentLoading}catch(e){console.warn('Automatic silhouette model unavailable',e);segmentFailure=true;setShapeStatus('OFFLINE CONTOURS ACTIVE · AI model unavailable. Colors do not identify objects.');$('resetOutline').textContent='RETRY AI MODEL';}finally{segmentLoading=null}
 }
 function scheduleSegmentation(now){
  if(!running||mode!=='outline'||!segmenter||segmentBusy||now-lastSegmentAt<1100)return;
@@ -68,12 +68,13 @@ function scheduleSegmentation(now){
    if(segInput.width!==iw||segInput.height!==ih){segInput.width=iw;segInput.height=ih}
    segCtx.drawImage(canvas,0,0,iw,ih);
    // Prefer callback: copies the tiny category array before MediaPipe releases it.
-   segmenter.segment(segInput,result=>{
+   const immediateResult=segmenter.segment(segInput,result=>{
     const mask=result.categoryMask;
     if(!mask)throw Error('No category mask returned');
     const data=new Uint8Array(mask.getAsUint8Array());
     latestShapes=detectShapes(data,mask.width,mask.height);
    });
+   if(immediateResult?.categoryMask){const m=immediateResult.categoryMask;latestShapes=detectShapes(new Uint8Array(m.getAsUint8Array()),m.width,m.height);immediateResult.close?.();}
    if(!latestShapes)throw Error('No outline data');
    renderShapeOverlay();
    if(now-shapeStatusAt>2600){
@@ -141,18 +142,81 @@ function renderShapeOverlay(){
  }
  shapeCtx.restore();
 }
+
+// OFFLINE VISUAL CONTOUR fallback. Not semantic recognition. Colors only help
+// separate neighboring large areas; they do not indicate object class or threat.
+const fallbackCanvas=document.createElement('canvas');const fallbackCtx=fallbackCanvas.getContext('2d',{willReadFrequently:true});
+function renderOfflineContours(){
+ if(!running||mode!=='outline'||segmenter)return;
+ try{
+  const w=120,h=Math.max(80,Math.round(canvas.height*120/canvas.width));
+  if(fallbackCanvas.width!==w||fallbackCanvas.height!==h){fallbackCanvas.width=w;fallbackCanvas.height=h;}
+  // Small downscale softens fine texture and prioritizes large visual regions.
+  fallbackCtx.clearRect(0,0,w,h);fallbackCtx.drawImage(canvas,0,0,w,h);
+  const rgb=fallbackCtx.getImageData(0,0,w,h).data,size=w*h;
+  const pix=new Uint8Array(size),tags=new Int32Array(size),queue=new Int32Array(size),parts=[];
+  for(let i=0;i<size;i++){
+   const k=i*4,r=rgb[k],g=rgb[k+1],b=rgb[k+2];const mx=Math.max(r,g,b),mn=Math.min(r,g,b),df=mx-mn;
+   // Bucket by luminance and dominant hue rather than every image edge.
+   const lum=Math.round((r*0.24+g*0.65+b*0.11)/50);
+   const hue=df<25?0:(r>=g&&r>=b?1:(g>=r&&g>=b?2:3));
+   pix[i]=1+lum*4+hue;
+  }
+  let region=0;
+  const minArea=Math.max(95,Math.round(size*.008));
+  for(let i=0;i<size;i++){
+   if(tags[i])continue;const value=pix[i],id=++region;let head=0,tail=0;queue[tail++]=i;tags[i]=id;
+   let left=w,top=h,right=0,bottom=0;
+   while(head<tail){const p=queue[head++],x=p%w,y=(p/w)|0;
+    if(x<left)left=x;if(x>right)right=x;if(y<top)top=y;if(y>bottom)bottom=y;
+    for(const n of [x>0?p-1:-1,x<w-1?p+1:-1,y>0?p-w:-1,y<h-1?p+w:-1]){
+     if(n>=0&&!tags[n]&&pix[n]===value){tags[n]=id;queue[tail++]=n}
+    }
+   }
+   if(tail>=minArea&&tail<size*.75&&right-left>=6&&bottom-top>=6)parts.push({id,size:tail,left,top,right,bottom});
+  }
+  parts.sort((a,b)=>b.size-a.size);const keep=parts.slice(0,18);
+  const selected=new Uint8Array(region+1);keep.forEach(p=>selected[p.id]=1);
+  const bm=fallbackCtx.createImageData(w,h),dst=bm.data;
+  const colors=outlinePalette==='green'?[[95,255,96]]:outlinePalette==='yellow'?[[255,232,43]]:outlinePalette==='red'?[[255,87,80]]:[[95,255,96],[255,232,43],[255,87,80]];
+  const colorId=new Int8Array(region+1);keep.forEach((p,i)=>colorId[p.id]=i%colors.length);
+  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
+   const i=y*w+x,id=tags[i];if(!selected[id])continue;
+   if(tags[i-1]===id&&tags[i+1]===id&&tags[i-w]===id&&tags[i+w]===id)continue;
+   const c=colors[colorId[id]],o=i*4;dst[o]=c[0];dst[o+1]=c[1];dst[o+2]=c[2];dst[o+3]=255;
+  }
+  fallbackCtx.putImageData(bm,0,0);shapeCtx.clearRect(0,0,shapeCanvas.width,shapeCanvas.height);
+  shapeCtx.save();shapeCtx.imageSmoothingEnabled=false;shapeCtx.globalAlpha=.95;shapeCtx.shadowColor='#7fff87';shapeCtx.shadowBlur=6;
+  shapeCtx.drawImage(fallbackCanvas,0,0,shapeCanvas.width,shapeCanvas.height);shapeCtx.restore();
+  if(!segmentLoading){setShapeStatus('OFFLINE VISUAL CONTOURS · '+keep.length+' regions. Not AI object recognition.');}
+ }catch(e){console.warn('Offline outlines:',e);setShapeStatus('Contour processing unavailable on this device.');}
+}
 function retryShapeModel(){
  if(segmentFailure){segmentFailure=false;segmenter=null;loadShapeAI();}
  else {clearCurrentShapes();setShapeStatus('AUTO ON · refreshing visible objects…')}
 }
-function selectOutlineColor(palette){outlinePalette=palette;document.querySelectorAll('[data-palette]').forEach(b=>b.classList.toggle('chosen',b.dataset.palette===palette));renderShapeOverlay()}
-function selectMode(m){mode=m;document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));$('modeTag').textContent=modeNames[m];$('rangeTag').textContent=(m==='thermal'||m==='night')?'SIMULATED FILTER':'NOT A MEASURED RANGE';$('outlinePanel').classList.toggle('hidden',m!=='outline');if(m==='outline'){clearCurrentShapes();loadShapeAI()}else clearShapeOverlay()}
+function selectOutlineColor(palette){outlinePalette=palette;document.querySelectorAll('[data-palette]').forEach(b=>b.classList.toggle('chosen',b.dataset.palette===palette));if(segmenter)renderShapeOverlay();else{lastFallbackAt=0;renderOfflineContours()}}
+function selectMode(m){mode=m;document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));$('modeTag').textContent=modeNames[m];$('rangeTag').textContent=(m==='thermal'||m==='night')?'SIMULATED FILTER':'NOT A MEASURED RANGE';$('outlinePanel').classList.toggle('hidden',m!=='outline');if(m==='outline'){clearCurrentShapes();lastFallbackAt=0;setShapeStatus('OFFLINE CONTOURS ACTIVE · trying optional AI model…');loadShapeAI()}else clearShapeOverlay()}
 function clearMarks(){marks=[];$('measureMarks').innerHTML='';$('rangeReadout').textContent='—';$('measureResult').textContent=measuring?'Tap the TOP of the object to begin.':'Activate Mark Object to estimate range.'}
 function drawMarks(){const layer=$('measureMarks');layer.innerHTML='';marks.forEach((p,i)=>{let e=document.createElement('div');e.className='point';e.style.left=(p.x*100)+'%';e.style.top=(p.y*100)+'%';e.dataset.title=i===0?'TOP':'BOTTOM';layer.appendChild(e)});if(marks.length===2){const a=marks[0],b=marks[1],r=viewer.getBoundingClientRect(),dx=(b.x-a.x)*r.width,dy=(b.y-a.y)*r.height;const line=document.createElement('div');line.className='measureLine';line.style.left=(a.x*100)+'%';line.style.top=(a.y*100)+'%';line.style.width=Math.hypot(dx,dy)+'px';line.style.transform='rotate('+Math.atan2(dy,dx)+'rad)';layer.appendChild(line)}}
-function updateEstimate(){if(marks.length!==2)return;const h=Number($('knownHeight').value),fov=Number($('fov').value);const delta=Math.abs(marks[1].y-marks[0].y);if(!Number.isFinite(h)||h<=0||h>100||!Number.isFinite(fov)||fov<30||fov>80){$('rangeReadout').textContent='—';$('measureResult').textContent='Enter a height greater than 0 m and FOV between 30°–80°.';return}if(delta<.015){$('rangeReadout').textContent='—';$('measureResult').textContent='Points too close. Mark a larger visible section.';return}const effectiveHalfTan=Math.tan(fov*Math.PI/360)/zoom;const d=h/(2*effectiveHalfTan*delta);if(!Number.isFinite(d)||d>99999){$('measureResult').textContent='Estimate is outside a useful range.';return}const ft=d*3.28084,yd=ft/3;const format=n=>n>=100?Math.round(n).toLocaleString():n.toFixed(1);$('rangeReadout').textContent=format(yd)+' yd';$('measureResult').textContent='ROUGH ESTIMATE: '+format(d)+' m · '+format(ft)+' ft · '+format(yd)+' yd';$('rangeTag').textContent='LOW CONFIDENCE · ESTIMATE ONLY'}
+function updateEstimate(){if(marks.length!==2)return;const h=Number($('knownHeight').value),fov=Number($('fov').value);const delta=Math.abs(marks[1].y-marks[0].y);if(!Number.isFinite(h)||h<=0||h>100||!Number.isFinite(fov)||fov<30||fov>80){$('rangeReadout').textContent='—';$('measureResult').textContent='Enter a height greater than 0 m and FOV between 30°–80°.';return}if(delta<.015){$('rangeReadout').textContent='—';$('measureResult').textContent='Points too close. Mark a larger visible section.';return}const effectiveHalfTan=Math.tan(fov*Math.PI/360)/(zoom/lensScale);const d=h/(2*effectiveHalfTan*delta);if(!Number.isFinite(d)||d>99999){$('measureResult').textContent='Estimate is outside a useful range.';return}const ft=d*3.28084,yd=ft/3;const format=n=>n>=100?Math.round(n).toLocaleString():n.toFixed(1);$('rangeReadout').textContent=format(yd)+' yd';$('measureResult').textContent='ROUGH ESTIMATE: '+format(d)+' m · '+format(ft)+' ft · '+format(yd)+' yd';$('rangeTag').textContent='LOW CONFIDENCE · ESTIMATE ONLY'}
 function markObject(){if(!running){toast('Enable the camera before measuring.');return}measuring=!measuring;$('measurePanel').classList.toggle('hidden',!measuring);$('measureBtn').classList.toggle('pressed',measuring);clearMarks();if(measuring)toast('Tap the TOP of an object, then its BOTTOM in the camera view.',5500)}
 viewer.addEventListener('pointerup',e=>{if(!running||!measuring)return;const r=viewer.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;if(x<0||x>1||y<0||y>1)return;if(marks.length>=2)marks=[];marks.push({x,y});drawMarks();if(marks.length===1)$('measureResult').textContent='Now tap the BOTTOM of the same object.';else updateEstimate()});
-function setZoom(v){const n=Number(v);if(!Number.isFinite(n))return;zoom=Math.max(1,Math.min(12,n));$('zoom').value=String(zoom);$('zoomReadout').textContent=zoom.toFixed(1)+'×';$('zoomInline').textContent=zoom.toFixed(1)+'×';clearMarks();clearCurrentShapes()}
+function setZoom(v){const n=Number(v);if(!Number.isFinite(n))return;zoom=Math.max(lensScale,Math.min(20,n));$('zoom').min=String(lensScale);$('zoom').max='20';$('zoom').value=String(zoom);$('zoomReadout').textContent=zoom.toFixed(1)+'×';$('zoomInline').textContent=zoom.toFixed(1)+'×';$('resetZoom').textContent=lensScale.toFixed(1)+'×';clearMarks();clearCurrentShapes();lastFallbackAt=0;if(zoom>=8)$('zoomTip').textContent='HIGH DIGITAL ZOOM · cropped pixels only, no new optical detail.';else $('zoomTip').textContent='Pinch on the camera or use + / −. Camera choices depend on what Safari exposes.';}
+async function refreshCameras(){
+ try{const devices=await navigator.mediaDevices.enumerateDevices();const cameras=devices.filter(d=>d.kind==='videoinput');knownCameras=cameras;
+ const select=$('lensSelect'),previous=chosenDevice;select.replaceChildren();
+ const opt=document.createElement('option');opt.value='default';opt.textContent='Default '+(rear?'rear':'front')+' camera';select.appendChild(opt);
+ cameras.forEach((d,i)=>{if(!d.deviceId)return;const option=document.createElement('option');option.value=d.deviceId;option.textContent=(d.label||'Camera '+(i+1)).slice(0,65);select.appendChild(option)});
+ select.value=Array.from(select.options).some(o=>o.value===previous)?previous:'default';
+ $('lensNote').textContent=cameras.length>1?'Choose an ultra-wide camera IF one appears; otherwise the widest available view is 1×.':'Browser exposes only one camera: 1× is the widest available view.';
+ }catch{$('lensNote').textContent='Camera selection unavailable in this browser.'}
+}
+async function selectCamera(){chosenDevice=$('lensSelect').value;const label=$('lensSelect').selectedOptions[0]?.textContent||'';lensScale=/ultra.?wide|0[.,]5|0[.,]6/i.test(label)?0.5:1;setZoom(lensScale);if(running)await start();}
+let gestureDist=0,gestureZoom=1;
+viewer.addEventListener('touchstart',e=>{if(e.touches.length===2&&!measuring){gestureDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);gestureZoom=zoom;}},{passive:true});
+viewer.addEventListener('touchmove',e=>{if(e.touches.length===2&&gestureDist&&!measuring){const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);setZoom(gestureZoom*dist/gestureDist);}},{passive:true});
+viewer.addEventListener('touchend',e=>{if(e.touches.length<2)gestureDist=0},{passive:true});
 async function photo(){if(!running){toast('Start the camera first.');return}try{const shot=document.createElement('canvas');shot.width=canvas.width;shot.height=canvas.height;const c=shot.getContext('2d');c.drawImage(canvas,0,0);if(mode==='outline')c.drawImage(shapeCanvas,0,0,shot.width,shot.height);c.fillStyle='#05170ad9';c.fillRect(0,shot.height-26,shot.width,26);c.fillStyle='#b1f08a';c.font='bold 12px sans-serif';c.fillText('RECON CAM · '+modeNames[mode],8,shot.height-9);const blob=await new Promise(resolve=>shot.toBlob(resolve,'image/png'));if(!blob)throw Error('No image');const filename='recon-cam-'+new Date().toISOString().replace(/[:.]/g,'-')+'.png';const file=new File([blob],filename,{type:'image/png'});if(navigator.canShare?.({files:[file]})){try{await navigator.share({files:[file],title:'Recon Cam photo'});return}catch(e){if(e.name==='AbortError')return}}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),20000);toast('Snapshot ready. If it opens, use Share → Save Image.')}catch(e){toast('Could not save image: '+(e.message||'Unknown error'))}}
 function gps(){if(!navigator.geolocation){toast('Location is unavailable.');return}toast('Requesting location permission…');navigator.geolocation.getCurrentPosition(p=>{currentPosition=p;$('positionLabel').textContent='GPS: '+p.coords.latitude.toFixed(4)+', '+p.coords.longitude.toFixed(4)+' · ±'+Math.round(p.coords.accuracy)+'m';toast('GPS location available. Coordinates remain on your phone.')},e=>toast('GPS unavailable: '+e.message,6500),{enableHighAccuracy:true,timeout:12000,maximumAge:10000})}
 async function compass(){if(!window.DeviceOrientationEvent){toast('Compass is unavailable in this browser.');return}try{if(typeof DeviceOrientationEvent.requestPermission==='function'){const answer=await DeviceOrientationEvent.requestPermission();if(answer!=='granted'){toast('Compass permission was not granted.');return}}window.addEventListener('deviceorientation',orientation,true);toast('Compass enabled. Rotate the phone to update heading.')}catch(e){toast('Compass unavailable: '+(e.message||'Permission denied'))}}
@@ -160,6 +224,6 @@ function orientation(e){let val=null;if(typeof e.webkitCompassHeading==='number'
 
 // Outline contours are automatic. No touching, selection, or manual freezing.
 for(const b of document.querySelectorAll('[data-palette]'))b.addEventListener('click',()=>selectOutlineColor(b.dataset.palette));
-$('resetOutline').addEventListener('click',retryShapeModel);$('startCam').addEventListener('click',start);$('stopCam').addEventListener('click',()=>stop());$('zoom').addEventListener('input',e=>setZoom(e.target.value));$('resetZoom').addEventListener('click',()=>setZoom(1));document.querySelectorAll('.mode').forEach(b=>b.addEventListener('click',()=>selectMode(b.dataset.mode)));$('measureBtn').addEventListener('click',markObject);$('closeMeasure').addEventListener('click',()=>{measuring=false;$('measurePanel').classList.add('hidden');$('measureBtn').classList.remove('pressed');clearMarks()});$('captureBtn').addEventListener('click',photo);$('locationBtn').addEventListener('click',gps);$('headingBtn').addEventListener('click',compass);$('clearMarks').addEventListener('click',clearMarks);$('knownHeight').addEventListener('input',updateEstimate);$('fov').addEventListener('input',updateEstimate);document.querySelectorAll('[data-height]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-height]').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');if(b.dataset.height!=='custom'){$('knownHeight').value=b.dataset.height;updateEstimate()}else $('knownHeight').focus()}));$('settingsBtn').addEventListener('click',()=>{const p=$('options');p.classList.toggle('hidden');$('settingsBtn').setAttribute('aria-expanded',String(!p.classList.contains('hidden')));$('settingsBtn').textContent=p.classList.contains('hidden')?'OPTIONS ▾':'OPTIONS ▴'});$('reticleToggle').addEventListener('change',e=>$('crosshair').classList.toggle('hidden',!e.target.checked));$('gridToggle').addEventListener('change',e=>$('gridOverlay').style.display=e.target.checked?'block':'none');$('switchCamera').addEventListener('change',e=>{rear=!e.target.checked;clearMarks();if(running)start()});
+$('resetOutline').addEventListener('click',retryShapeModel);$('startCam').addEventListener('click',start);$('stopCam').addEventListener('click',()=>stop());$('zoom').addEventListener('input',e=>setZoom(e.target.value));$('zoomMinus').addEventListener('click',()=>setZoom(zoom-(zoom>3?1:0.5)));$('zoomPlus').addEventListener('click',()=>setZoom(zoom+(zoom>=3?1:0.5)));$('lensSelect').addEventListener('change',selectCamera);$('resetZoom').addEventListener('click',()=>setZoom(lensScale));document.querySelectorAll('.mode').forEach(b=>b.addEventListener('click',()=>selectMode(b.dataset.mode)));$('measureBtn').addEventListener('click',markObject);$('closeMeasure').addEventListener('click',()=>{measuring=false;$('measurePanel').classList.add('hidden');$('measureBtn').classList.remove('pressed');clearMarks()});$('captureBtn').addEventListener('click',photo);$('locationBtn').addEventListener('click',gps);$('headingBtn').addEventListener('click',compass);$('clearMarks').addEventListener('click',clearMarks);$('knownHeight').addEventListener('input',updateEstimate);$('fov').addEventListener('input',updateEstimate);document.querySelectorAll('[data-height]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-height]').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');if(b.dataset.height!=='custom'){$('knownHeight').value=b.dataset.height;updateEstimate()}else $('knownHeight').focus()}));$('settingsBtn').addEventListener('click',()=>{const p=$('options');p.classList.toggle('hidden');$('settingsBtn').setAttribute('aria-expanded',String(!p.classList.contains('hidden')));$('settingsBtn').textContent=p.classList.contains('hidden')?'OPTIONS ▾':'OPTIONS ▴'});$('reticleToggle').addEventListener('change',e=>$('crosshair').classList.toggle('hidden',!e.target.checked));$('gridToggle').addEventListener('change',e=>$('gridOverlay').style.display=e.target.checked?'block':'none');$('switchCamera').addEventListener('change',e=>{rear=!e.target.checked;chosenDevice='default';lensScale=1;setZoom(1);clearMarks();if(running)start()});
 $('helpBtn').addEventListener('click',()=>$('helpDialog').showModal());$('closeHelp').addEventListener('click',()=>$('helpDialog').close());$('gotIt').addEventListener('click',()=>$('helpDialog').close());window.addEventListener('resize',()=>{resize();drawMarks();clearMarks()});document.addEventListener('visibilitychange',()=>{if(document.hidden){lastFrame=0}});setCamState(false);resize();if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
 })();

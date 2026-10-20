@@ -32,3 +32,11 @@
 .paletteTabs button.chosen{color:#0a220e}
 .outlinePanel .outlineActions button{min-width:100%;background:#213729;border:1px solid #678a61;font-size:12px}
 @media(max-width:390px){.paletteTabs button{font-size:9px;padding:3px 2px}}
+
+/* V5 lens selector, usable zoom controls, compact mobile viewport */
+.lensRow{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:10px 0 4px;font-size:10px;color:#cbe4bf}
+.lensRow label{font-weight:800;letter-spacing:.7px}.lensRow select{flex:1;min-width:135px;max-width:240px;color:#efffe7;background:#203528;border:1px solid #5e8560;border-radius:6px;padding:9px 7px;font-size:12px}
+.lensRow span{color:#aabda8;font-size:10px;flex-basis:100%}
+.zoomRow{gap:7px;margin:7px 0 4px}.zoomRow .mini{font-size:16px;padding:6px 9px;min-width:37px}.zoomTip{font-size:10px;line-height:1.4;color:#b7c8b5;margin:3px 0 7px}
+#outlinePanel .traceHelp{font-size:11px}#outlineStatus{min-height:30px}
+@media(max-width:380px){.zoomRow{gap:5px}.zoomRow label{min-width:46px}.zoomRow .mini{min-width:31px;padding:6px}}
