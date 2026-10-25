@@ -1,30 +1,36 @@
-RECON CAM V12.3 — SMOOTH LIVE CAMERA
+RECON CAM V12.4 - ITEM CHECK
+
+Use 1x for a small item instead of ultra-wide. Keep the blade and handle visible,
+reduce glare from metal surfaces, center the item, and tap CHECK ITEM.
+The standard object model works without the optional large weapon download.
 
 WHAT CHANGED
-- Camera preview remains a real <video> stream; object recognition analyzes a smaller separate canvas.
-- Object recognition scans less often (about every 1–3 seconds after each scan, depending on performance).
-- Default camera capture target is 720p / 24fps to reduce load. Optional High detail setting is available.
-- Top ↻ button restarts a frozen feed. A frame watchdog tries limited automatic recovery if the browser reports stopped frames.
-- Automatic text OCR is OFF at first launch, but tap READ TEXT to scan manually.
-- Optional experimental weapon model is NOT loaded automatically. Its AUTO weapon scanning switch is OFF by default to protect live performance. Manual focus scans are available after loading the model.
-- Standard object AI can still label knives and scissors without the large optional model.
+- Independent tighter crops for tool-like proposals, including toothbrush guesses.
+- At most one extra live tool pass every eight seconds.
+- CHECK ITEM uses a frozen center crop, two orientations and tool refinements.
+- Contradictory tool labels share an uncertain result instead of duplicate boxes.
+- People and vehicle detection remain enabled in the ordinary All objects mode.
+- Experimental weapon prompts include knife variants and nonweapon lookalikes.
 
-IPHONE GITHUB UPLOAD
-1. Save the included index.html to the iPhone Files app.
-2. Open https://github.com/nickolassantiago525-cell/recon-cam in Safari.
-3. Replace the existing root index.html in the main branch (not in a subfolder). If GitHub will not overwrite it, delete the old index.html, commit, then Add file > Upload files > select the new index.html and commit.
-4. Wait for GitHub Pages to publish. Then open:
-   https://nickolassantiago525-cell.github.io/recon-cam/index.html?v=123
-5. If an old screen remains, refresh Safari or close and reopen the Home Screen app.
+UPDATING THE APP
+The current app needs BOTH root index.html and root detection.js.
+Do not update only the legacy app.js file. GitHub Pages must finish publishing.
+Open the app and confirm the header says V12.4. If an older version remains,
+refresh Safari or close and reopen the Home Screen app.
 
-TROUBLESHOOTING
-- If the live picture sticks, tap ↻ in the upper-right corner. If it keeps happening, use Settings > Smooth live and turn OFF Auto weapon scans and Automatic text reading.
-- A stopped camera can also be caused by Safari/iOS permissions, thermal throttling, low available memory, other camera apps, or browser suspension. Web apps cannot promise uninterrupted operation in the background.
-- In this update, normal knife detection remains automatic. The optional, resource-heavy weapon beta must be enabled separately. It can make the feed less responsive, especially on an iPhone.
+CAMERA PERFORMANCE
+Smooth live uses a smaller separate AI canvas. Automatic OCR and the optional
+large weapon model remain off by default. Use the top restart button if the
+camera freezes. More inference uses battery and may stall older devices.
+
+OPTIONAL WEAPON MODEL
+Enable it in Settings, then use SCAN CENTER CLOSE-UP or SCAN WHOLE FRAME.
+The main CHECK ITEM button continues using the smaller standard model.
+Auto weapon scanning requires its own switch and is resource-intensive.
 
 LIMITS
-These features are experimental visual aids. Knives can be confused with scissors, and the optional weapon model's gun labels are unreliable. Failure to draw a box does NOT mean an area is safe.
-The application requires HTTPS, permission from Safari/iOS, and an internet connection to load its AI libraries/models unless cached by the browser.
-
-TESTING
-V12.3 passed JavaScript syntax checking and a simulated moving-camera test for live frame progress, throttled AI scans, manual restart, and automatic recovery after a stopped stream. It has not been tested on your actual iPhone hardware.
+The supplied green-handled work knife was recognized in one screenshot after
+candidate-guided cropping, but another screenshot still failed. No reliability
+rate has been established, and live iPhone hardware has not been validated.
+Knives may be missed or mislabeled. Scores are not calibrated probabilities.
+No detection is not evidence of safety. Do not use this as a security system.

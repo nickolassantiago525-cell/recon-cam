@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#05110a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Recon Cam V12.3 · Smooth Live Camera</title>
+<title>Recon Cam V12.4 · Item Check</title>
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -18,9 +18,10 @@
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="detection.js?v=124"></script>
 </head>
 <body>
-<main class="screen" aria-label="Recon Cam V12.3">
+<main class="screen" aria-label="Recon Cam V12.4">
   <section class="feed" id="feed">
     <video id="video" playsinline muted autoplay></video>
     <canvas id="overlay" aria-label="Recognized objects are outlined over camera picture"></canvas>
@@ -29,7 +30,7 @@
     <div id="message" class="centerMessage">Opening camera… If iPhone asks permission, tap Allow. If it does not open, tap START.</div>
   </section>
   <div class="hud top">
-    <div class="brand"><span class="brandmark">R◉</span><div><h1>RECON CAM</h1><small>V12.3 · <span id="liveStatus" aria-live="polite">STARTING</span></small></div></div>
+    <div class="brand"><span class="brandmark">R◉</span><div><h1>RECON CAM</h1><small>V12.4 · <span id="liveStatus" aria-live="polite">STARTING</span></small></div></div>
     <div class="topbuttons"><button class="control refreshControl" id="recoverBtn" type="button" aria-label="Restart camera if image is frozen" title="Restart live camera">↻</button><button class="control" id="startBtn" type="button">START</button><button class="control" id="settingsBtn" type="button" aria-label="Open settings">☰</button></div>
   </div>
   <div class="hud status"><div class="pill" id="objectStatus" role="status">OBJECT AI · LOADING</div><button class="pill weaponBadge" type="button" id="weaponStatus" aria-label="Tap to enable experimental weapon model">WEAPON · TAP TO ENABLE</button></div>
@@ -39,7 +40,7 @@
       <div class="readLines" id="readLines"><span class="hint">Point at printed writing, then tap SCAN TEXT.</span></div>
       <div class="readActions"><button id="scanTextBtn" type="button">SCAN TEXT</button><button id="readBtn" type="button">READ ALOUD</button><button id="spellBtn" type="button">SPELL</button><button id="copyBtn" type="button">COPY</button></div>
     </div>
-    <div class="row"><button class="control focusButton" id="focusWeaponBtn" type="button" disabled>FOCUS SCAN · LOAD MODEL FIRST</button></div>
+    <div class="row" style="flex-direction:column;align-items:stretch"><button class="control focusButton" id="focusWeaponBtn" type="button">CHECK ITEM · CENTER CLOSE-UP</button><span id="itemDetail" class="hint" role="status" style="background:#061008e8;border-radius:6px;padding:5px 8px">Center one item, use 1×, and tap CHECK ITEM. Results can be wrong.</span></div>
     <div class="row"><button class="control compact" data-zoom="0.5" type="button">0.5×</button><button class="control compact selected" data-zoom="1" type="button">1×</button><button class="control compact" data-zoom="2" type="button">2×</button><button class="control compact" data-zoom="5" type="button">5×</button><button class="control compact" id="zoomOutBtn" type="button">−</button><span class="zoomRead" id="zoomRead">1.0×</span><button class="control compact" id="zoomInBtn" type="button">+</button></div>
     <div class="row"><button class="control" id="farBtn" type="button" aria-pressed="true">FAR SCAN ON</button><button class="control" id="textBtn" type="button" aria-pressed="false">READ TEXT</button><button class="control" id="photoBtn" type="button">PHOTO</button></div>
   </div>
@@ -47,10 +48,22 @@
     <div class="sheetContent">
       <div class="sheetHeader"><h2>Recon Cam controls</h2><button class="control" type="button" id="closeSheet">CLOSE</button></div>
       <div class="settingsGroup"><h3>DETECTION</h3><label for="targetSelect">Show objects</label><select id="targetSelect"><option value="all">All recognized objects</option><option value="people">People only</option><option value="living">People, animals & vehicles</option><option value="tools">Tools / possible knives / scissors</option></select><label for="sensitivity">Sensitivity</label><select id="sensitivity"><option value="balanced" selected>Balanced · fewer false alerts</option><option value="sensitive">Sensitive · may show more false alerts</option><option value="strict">Strict · highest confidence only</option></select><label class="switchLine" for="farSwitch"><span>Search smaller, farther objects (uses more battery)</span><input type="checkbox" id="farSwitch" checked></label><p>Green boxes identify likely people, not who they are. Boxes can be wrong, and distance depends on lighting and camera resolution. Scanning smaller image regions may help, but cannot create missing detail.</p></div>
-      <div class="settingsGroup" id="weaponSettings"><h3>EXPERIMENTAL WEAPON SCANNER · OPTIONAL</h3><div class="notice">COCO recognition can suggest a knife or scissors, but has no firearm class. This optional second AI tries possible handgun/rifle/knife labels. It is experimental, needs about 155 MB for weights plus other files, may fail on iPhone, and cannot confirm that an area is safe. Never rely on it for safety decisions.</div><button class="settingsButton" type="button" id="weaponEnable">ENABLE EXPERIMENTAL MODEL</button><div class="twoCols"><button class="settingsButton" type="button" id="weaponScan" disabled>SCAN WHOLE FRAME</button><button class="settingsButton" type="button" id="weaponFocus" disabled>SCAN CENTER CLOSE-UP</button></div><label for="weaponSensitivity">Experimental match sensitivity</label><select id="weaponSensitivity"><option value="sensitive">Sensitive · many false positives</option><option value="balanced" selected>Balanced · experimental</option><option value="strict">Strict · fewer false positives</option></select><label class="switchLine" for="weaponAuto"><span>Auto weapon scans (resource-intensive; may freeze camera)</span><input type="checkbox" id="weaponAuto"></label><span class="substatus" id="weaponDetail" role="status" aria-live="polite">Off. Tap ENABLE to download the experimental model. It may need Wi-Fi and sufficient available memory.</span><span class="substatus" id="weaponDiagnostics" aria-live="polite">No weapon scan has run yet.</span><p>Automatic weapon scanning is OFF by default to keep the live camera smooth. If enabled, scans are requested about every 20 seconds after the previous scan completes. To examine a knife, hold it near the crosshair and tap FOCUS SCAN on the camera. A weak score is not a reliable recognition. No matches do not mean no weapons.</p></div>
+      <div class="settingsGroup" id="weaponSettings">
+        <h3>EXPERIMENTAL WEAPON SCANNER · OPTIONAL</h3>
+        <div class="notice">COCO recognition can suggest a knife or scissors, but has no firearm class. This optional second AI compares weapon labels with nonweapon lookalikes. It is experimental, needs about 155 MB for weights plus other files, may fail on iPhone, and cannot confirm that an area is safe. Never rely on it for safety decisions.</div>
+        <button class="settingsButton" type="button" id="weaponEnable">ENABLE EXPERIMENTAL MODEL</button>
+        <div class="twoCols"><button class="settingsButton" type="button" id="weaponScan" disabled>SCAN WHOLE FRAME</button><button class="settingsButton" type="button" id="weaponFocus" disabled>SCAN CENTER CLOSE-UP</button></div>
+        <label for="weaponSensitivity">Experimental match sensitivity</label>
+        <select id="weaponSensitivity"><option value="sensitive">Sensitive · many false positives</option><option value="balanced" selected>Balanced · experimental</option><option value="strict">Strict · fewer false positives</option></select>
+        <label class="switchLine" for="weaponAuto"><span>Auto weapon scans (resource-intensive; may freeze camera)</span><input type="checkbox" id="weaponAuto"></label>
+        <span class="substatus" id="weaponDetail" role="status" aria-live="polite">Off. Tap ENABLE to download the experimental model. It may need Wi-Fi and sufficient available memory.</span>
+        <span class="substatus" id="weaponDiagnostics" aria-live="polite">No weapon scan has run yet.</span>
+        <p>Automatic weapon scanning is OFF by default to keep the live camera smooth. If enabled, scans are requested about every 20 seconds after the previous scan completes. For an optional-model check, center the item and tap SCAN CENTER CLOSE-UP here. The camera's CHECK ITEM button uses the standard model instead. A weak score is not a reliable recognition. No matches do not mean no weapons.</p>
+      </div>
       <div class="settingsGroup"><h3>CAMERA</h3><div class="twoCols"><button class="settingsButton" id="cameraDefault" type="button">REAR CAMERA</button><button class="settingsButton" id="cameraUltra" type="button">TRY ULTRA-WIDE 0.5×</button></div><p id="cameraNote">iPhone controls camera permissions. Not all browsers expose the ultra-wide lens or hardware zoom.</p><label for="qualitySelect">Live camera performance</label><select id="qualitySelect"><option value="smooth" selected>Smooth live · 720p, lighter AI (recommended)</option><option value="detail">High detail · 1080p, slower AI</option></select><button class="settingsButton" id="recoverCamera" type="button">↻ RESTART LIVE CAMERA</button><p>Keeping the picture live takes priority over AI speed. If it freezes, use ↻. High detail uses more resources and may stall older iPhones.</p><label for="viewSelect">Picture appearance</label><select id="viewSelect"><option value="normal">Normal / natural color</option><option value="night">Brighten image</option><option value="outline">High contrast</option><option value="thermal">False-color effect (not thermal vision)</option></select><button class="settingsButton" id="refreshBtn" type="button">RELOAD OBJECT AI</button></div>
       <div class="settingsGroup"><h3>READ WRITING</h3><label class="switchLine" for="ocrSwitch"><span>Automatic text reading every 12 seconds (higher load)</span><input type="checkbox" id="ocrSwitch"></label><label class="switchLine" for="speechSwitch"><span>Automatically say new text after voice is enabled</span><input type="checkbox" id="speechSwitch"></label><p>Automatic reading is OFF by default to reduce freezes. Tap READ TEXT below the camera to scan words manually. Text is kept away from the picture. Automatic speech needs a user tap to begin on iPhone.</p></div>
-      <div class="settingsGroup"><h3>IMPORTANT LIMITS</h3><p>Object and text recognition need model downloads and may not work without internet on first load. This is a visual aid, not a security, medical, or emergency detection system. No camera can be permanently authorized by a web page; Safari controls permissions. Night/thermal modes are only visual filters.</p><span class="substatus" id="systemStatus">V12.3 ready · smooth live mode.</span></div>
+      <div class="settingsGroup"><h3>ITEM CHECK</h3><p>CHECK ITEM takes a detailed crop from the center and examines two orientations with the standard model. It works without the large weapon download. Conflicting knife, scissors, toothbrush or utensil guesses are shown as uncertain, not silently changed into knives. Scores measure model output, not the chance an identification is correct. For another experimental check, enable the optional model and use SCAN CENTER CLOSE-UP. It compares knife prompts with non-weapon lookalikes too.</p></div>
+      <div class="settingsGroup"><h3>IMPORTANT LIMITS</h3><p>Object and text recognition need model downloads and may not work without internet on first load. This is a visual aid, not a security, medical, or emergency detection system. No camera can be permanently authorized by a web page; Safari controls permissions. Night/thermal modes are only visual filters.</p><span class="substatus" id="systemStatus">V12.4 ready · item check.</span></div>
     </div>
   </div>
 </main>
@@ -58,11 +71,15 @@
 (() => {
 'use strict';
 const $=id=>document.getElementById(id), video=$('video'), overlay=$('overlay'), ctx=overlay.getContext('2d'), msg=$('message');
+const D=window.ReconDetection;
 const S={stream:null,track:null,running:false,generation:0,model:null,loading:false,busy:false,far:true,frame:0,tile:0,phase:0,tracks:[],zoom:1,deviceZoom:false,ultra:false,ultraId:null,ocrBusy:false,ocrWorker:null,ocrLines:[],selected:'',ocrTimer:0,objectTimer:null,healthTimer:null,frameHandle:null,frameLast:0,frameLastSeen:0,frameCount:0,recoveries:0,lastRecovery:0,autoRecovery:false,resumeOnVisible:false,weaponModel:null,weaponImport:null,weaponBusy:false,weaponLoading:false,weaponDet:[],weaponTimer:null,weaponScans:0,weaponLast:0,speechUnlocked:false,interval:0};
 const COCO_COLORS={person:'#7bff92',dog:'#ffe06e',cat:'#ffe06e',car:'#fa8181',truck:'#fa8181',bus:'#fa8181',knife:'#ffae6e',scissors:'#ffae6e',book:'#9eaeff'};
 const TILES=[{x:0,y:0,w:.59,h:.59},{x:.41,y:0,w:.59,h:.59},{x:0,y:.41,w:.59,h:.59},{x:.41,y:.41,w:.59,h:.59}];
 const tileCanvas=document.createElement('canvas'),tileCtx=tileCanvas.getContext('2d',{willReadFrequently:false}),weaponCanvas=document.createElement('canvas');
 const weaponCtx=weaponCanvas.getContext('2d',{willReadFrequently:true});
+S.itemBusy=false;
+S.lastRefine=0;
+S.focusUntil=0;
 function notify(t,hold=3500){msg.textContent=t;msg.hidden=false;clearTimeout(notify.timer);if(hold>0)notify.timer=setTimeout(()=>{if(S.running)msg.hidden=true},hold)}
 function system(t){$('systemStatus').textContent=t}
 function objectStatus(t){$('objectStatus').textContent=t}
@@ -71,40 +88,81 @@ function fit(){const dpr=Math.min(devicePixelRatio||1,2),w=overlay.clientWidth,h
 function screenBox(box){const vw=video.videoWidth,vh=video.videoHeight,W=overlay.clientWidth,H=overlay.clientHeight;if(!vw||!vh)return null;const scale=Math.max(W/vw,H/vh),ox=(W-vw*scale)/2,oy=(H-vh*scale)/2;return [ox+box[0]*scale,oy+box[1]*scale,box[2]*scale,box[3]*scale]}
 function labelRect(text,x,y,color){const W=overlay.clientWidth;ctx.font='700 13px -apple-system,system-ui,sans-serif';const maxW=W-12;while(text.length>5&&ctx.measureText(text).width>maxW-18)text=text.slice(0,-2)+'…';const tw=ctx.measureText(text).width+15,w=Math.min(maxW,tw),h=24;const a=Math.max(5,Math.min(W-w-5,x));const topClear=$('objectStatus').getBoundingClientRect().bottom+8;const bottomClear=$('zoomOutBtn').getBoundingClientRect().top-8;const desired=y-h>topClear?y-h:y+6;const b=Math.max(topClear,Math.min(desired,bottomClear-h));ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(a,b,w,h,5);ctx.fill();ctx.fillStyle='#031006';ctx.fillText(text,a+7,b+16)}
 function rect(box,label,color){const b=screenBox(box);if(!b)return;const [x,y,w,h]=b;if(x>overlay.clientWidth||y>overlay.clientHeight||x+w<0||y+h<0)return;ctx.lineWidth=3.5;ctx.strokeStyle=color;ctx.shadowColor=color;ctx.shadowBlur=8;ctx.strokeRect(x,y,w,h);ctx.shadowBlur=0;labelRect(label,x,y,color)}
-function visibleTrack(t,now){return now-t.seen<((S.far)?2200:1700)&&(t.hits>=2||(t.class==='person'&&t.score>=.79))}
-function render(){const W=overlay.clientWidth,H=overlay.clientHeight;ctx.clearRect(0,0,W,H);if(!S.running)return;const now=performance.now(),target=$('targetSelect').value;const valid=S.tracks.filter(t=>visibleTrack(t,now));let count=0;for(const t of valid){if(target==='people'&&t.class!=='person')continue;if(target==='living'&&!['person','dog','cat','bird','car','truck','bus','motorcycle','bicycle','horse','cow','sheep','boat'].includes(t.class))continue;if(target==='tools'&&!['knife','scissors','fork','spoon','baseball bat'].includes(t.class))continue;const name=t.class==='knife'?'Possible knife':t.class.replace(/^\w/,a=>a.toUpperCase());rect(t.bbox,`${name} ${Math.round(t.score*100)}%`,COCO_COLORS[t.class]||'#8cfaa5');count++}
+function visibleTrack(t,now){return now-t.seen<(t.focus?5000:((S.far)?2200:1700))&&(t.focus||t.hits>=2||(t.class==='person'&&t.score>=.79))}
+function render(){const W=overlay.clientWidth,H=overlay.clientHeight;ctx.clearRect(0,0,W,H);if(!S.running)return;const now=performance.now(),target=$('targetSelect').value;const valid=S.tracks.filter(t=>visibleTrack(t,now));let count=0;for(const t of valid){if(target==='people'&&t.class!=='person')continue;if(target==='living'&&!['person','dog','cat','bird','car','truck','bus','motorcycle','bicycle','horse','cow','sheep','boat'].includes(t.class))continue;if(target==='tools'&&!D.isTool(t)&&t.class!=='baseball bat')continue;const name=D.label(t);rect(t.bbox,`${name}${D.isTool(t)?'':` ${Math.round(t.score*100)}%`}`,D.isTool(t)?'#ffbc79':COCO_COLORS[t.class]||'#8cfaa5');count++}
 for(const w of S.weaponDet.filter(x=>now-x.seen<5000)){rect(w.bbox,`Possible ${w.class} · experimental`, '#ffb54f')}
 if(!S.model)objectStatus(S.loading?'OBJECT AI · LOADING':'OBJECT AI · UNAVAILABLE');else objectStatus(count?`OBJECTS · ${count} VISIBLE`:'OBJECT AI · SCANNING')}
 function intersection(a,b){const x=Math.max(a[0],b[0]),y=Math.max(a[1],b[1]),right=Math.min(a[0]+a[2],b[0]+b[2]),bottom=Math.min(a[1]+a[3],b[1]+b[3]);const area=Math.max(0,right-x)*Math.max(0,bottom-y);return area/(a[2]*a[3]+b[2]*b[3]-area||1)}
 function near(a,b){const x=(a[0]+a[2]/2-b[0]-b[2]/2),y=(a[1]+a[3]/2-b[1]-b[3]/2);const d=Math.sqrt(x*x+y*y),size=Math.sqrt(Math.max(a[2],b[2])**2+Math.max(a[3],b[3])**2);return d<Math.max(25,size*.26)&&Math.min(a[2]*a[3],b[2]*b[3])/Math.max(a[2]*a[3],b[2]*b[3])>.32}
 function minConfidence(name){const level=$('sensitivity').value,base={person:.52,car:.67,truck:.66,bus:.66,book:.77,knife:.47,scissors:.51,bottle:.42,cup:.49};const b=base[name]||.53;return level==='sensitive'?Math.max(.22,b-.14):level==='strict'?Math.min(.93,b+.14):b}
-function updateTracks(pred){const now=performance.now(),gen=S.generation;S.tracks=S.tracks.filter(t=>now-t.seen<12000);for(const p of pred){if(!p||!Number.isFinite(p.score)||!Array.isArray(p.bbox)||p.score<minConfidence(p.class)||p.bbox[2]<3||p.bbox[3]<4)continue;let best=null,bestScore=0;for(const t of S.tracks){if(t.class!==p.class||t.generation!==gen||now-t.seen>8500)continue;const i=intersection(t.bbox,p.bbox),isNear=near(t.bbox,p.bbox);if(i>.14||isNear){const sim=i+(isNear?.15:0);if(sim>bestScore){best=t;bestScore=sim}}}if(best){const alpha=.58;best.bbox=best.bbox.map((v,i)=>v*(1-alpha)+p.bbox[i]*alpha);best.score=best.score*.35+p.score*.65;best.hits=Math.min(20,best.hits+1);best.seen=now}else S.tracks.push({class:p.class,score:p.score,bbox:p.bbox.slice(),hits:1,seen:now,generation:gen})}
-S.tracks=S.tracks.slice(-45);render()}
+function updateTracks(pred,focus=false){
+ const now=performance.now(),gen=S.generation,assigned=new Set();
+ S.tracks=S.tracks.filter(t=>now-t.seen<12000&&t.generation===gen);
+ const good=D.consolidate(pred.filter(p=>D.valid(p)&&p.score>=minConfidence(p.class)));
+ for(const p of good){
+   let best=null,bestScore=0;
+   for(const t of S.tracks){
+     if(assigned.has(t))continue;
+     const compatible=t.class===p.class||D.isTool(t)&&D.isTool(p)&&D.sameItem(t.bbox,p.bbox);
+     if(!compatible)continue;
+     const i=D.iou(t.bbox,p.bbox);
+     if(i>.25&&i>bestScore){best=t;bestScore=i}
+   }
+   if(best){
+     assigned.add(best);
+     // Do not immediately replace a detailed item check with a coarser live guess.
+     // The focused box still expires normally after five seconds.
+     if(best.focus&&!focus&&now-best.seen<5000)continue;
+     // Expire contradictory evidence rather than retaining a wrong label forever.
+     let choices=D.alternatives(p).map(x=>({...x,seen:now}));
+     if(D.isTool(p)&&D.isTool(best)){
+       const recent=D.alternatives(best).filter(x=>now-(x.seen??best.seen)<6000);
+       const map=new Map(recent.map(x=>[x.class,x]));
+       choices.forEach(x=>map.set(x.class,x));choices=[...map.values()];
+     }
+     best.class=choices.length>1&&D.isTool(p)?'uncertain tool':p.class;
+     best.alternatives=choices;
+     best.bbox=best.bbox.map((v,i)=>v*.42+p.bbox[i]*.58);
+     best.score=p.score;best.hits=Math.min(20,best.hits+1);best.seen=now;best.focus=focus;
+   }else{
+     const track={...p,bbox:p.bbox.slice(),alternatives:D.alternatives(p).map(x=>({...x,seen:now})),hits:1,seen:now,generation:gen,focus};
+     S.tracks.push(track);assigned.add(track);
+   }
+ }
+ S.tracks=S.tracks.slice(-45);render();
+}
 function scheduleObjects(gen,delay=1000){
  clearTimeout(S.objectTimer);S.objectTimer=null;
  if(S.running && gen===S.generation)S.objectTimer=setTimeout(()=>objectLoop(gen),delay);
 }
 async function objectLoop(gen){
  if(!S.running||gen!==S.generation)return;
- if(!S.model||S.busy||S.weaponBusy||video.readyState<2||!video.videoWidth){scheduleObjects(gen,900);return}
+ if(S.focusUntil>performance.now()){scheduleObjects(gen,Math.max(100,S.focusUntil-performance.now()));return}
+ if(!S.model||S.busy||S.weaponBusy||S.itemBusy||video.readyState<2||!video.videoWidth){scheduleObjects(gen,900);return}
  S.busy=true;
  const started=performance.now();
  try{
    const vw=video.videoWidth,vh=video.videoHeight;
    const detail=$('qualitySelect').value==='detail';
-   const doTile=S.far&&(S.frame++%(detail?3:4)===0);
-   const t=doTile?TILES[Math.floor(S.tile++)%TILES.length]:{x:0,y:0,w:1,h:1};
+   const phase=S.frame++%6;
+   const doCenter=phase===2;
+   const doTile=!doCenter&&S.far&&phase===0;
+   const t=doCenter?{x:.15,y:.20,w:.70,h:.60}:doTile?TILES[Math.floor(S.tile++)%TILES.length]:{x:0,y:0,w:1,h:1};
    const x=Math.round(t.x*vw),y=Math.round(t.y*vh);
    const w=Math.max(1,Math.min(vw-x,Math.round(t.w*vw))),h=Math.max(1,Math.min(vh-y,Math.round(t.h*vh)));
-   const cap=detail?(doTile?512:512):(doTile?400:416);
+   const cap=detail?640:(doCenter?512:416);
    tileCanvas.width=Math.min(cap,w);
    tileCanvas.height=Math.max(1,Math.round(tileCanvas.width*h/w));
    tileCtx.drawImage(video,x,y,w,h,0,0,tileCanvas.width,tileCanvas.height);
    // The video element stays on screen untouched; the smaller canvas is for AI only.
    const predictions=await S.model.detect(tileCanvas,doTile?9:18,.17);
    if(S.running&&gen===S.generation){
-     const mapped=predictions.map(p=>({...p,bbox:[x+p.bbox[0]/tileCanvas.width*w,y+p.bbox[1]/tileCanvas.height*h,p.bbox[2]/tileCanvas.width*w,p.bbox[3]/tileCanvas.height*h]}));
-     updateTracks(mapped);
+     let mapped=predictions.filter(D.valid).map(p=>({...p,bbox:[x+p.bbox[0]/tileCanvas.width*w,y+p.bbox[1]/tileCanvas.height*h,p.bbox[2]/tileCanvas.width*w,p.bbox[3]/tileCanvas.height*h]}));
+     if(performance.now()-S.lastRefine>8000&&mapped.some(D.isTool)){
+       S.lastRefine=performance.now();
+       mapped=await refineTools(mapped,video,vw,vh,gen,1);
+     }
+     if(S.running&&gen===S.generation)updateTracks(mapped);
    }
  }catch(e){console.error('Object scan',e);system('Object scan error: '+String(e.message||e).slice(0,110))}
  finally{
@@ -117,6 +175,66 @@ async function objectLoop(gen){
  }
 }
 async function loadObjects(){if(S.loading)return;S.loading=true;objectStatus('OBJECT AI · LOADING');system('Loading standard object detection…');try{if(!window.cocoSsd?.load)throw Error('TensorFlow or COCO script unavailable. Check internet.');S.model=await cocoSsd.load({base:'lite_mobilenet_v2'});objectStatus('OBJECT AI · READY');system('Object AI ready. Distant targets are scanned in tiles.');if(S.running)scheduleObjects(S.generation,400)}catch(e){S.model=null;objectStatus('OBJECT AI · OFFLINE');system('Object model unavailable: '+e.message)}finally{S.loading=false}}
+async function refineTools(predictions,input,vw,vh,gen,limit=2){
+ const proposals=predictions.filter(p=>D.valid(p)&&D.isTool(p)&&p.score>=.17).sort((a,b)=>b.score-a.score).slice(0,limit);
+ const out=predictions.filter(p=>!proposals.includes(p));
+ for(const proposal of proposals){
+   if(!S.running||S.generation!==gen)return [];
+   const roi=D.refinementCrop(proposal.bbox,vw,vh),c=document.createElement('canvas');
+   c.width=Math.max(1,Math.round(Math.min(900,roi.w)));c.height=Math.max(1,Math.round(c.width*roi.h/roi.w));
+   c.getContext('2d').drawImage(input,roi.x,roi.y,roi.w,roi.h,0,0,c.width,c.height);
+   const refined=(await S.model.detect(c,12,.17)).filter(D.valid).map(p=>({...p,bbox:[roi.x+p.bbox[0]/c.width*roi.w,roi.y+p.bbox[1]/c.height*roi.h,p.bbox[2]/c.width*roi.w,p.bbox[3]/c.height*roi.h]}));
+   out.push(...D.refineDecision(proposal,refined));
+ }
+ return out;
+}
+async function checkItem(){
+ if(S.itemBusy)return;
+ if(!S.running||video.readyState<2){notify('Start the camera before checking an item.');return}
+ if(!S.model){notify('Object model is not ready. Check internet and try again.');return}
+ if(S.weaponBusy||S.ocrBusy){notify('Another scan is working. Please wait.');return}
+ const gen=S.generation,button=$('focusWeaponBtn'),detail=$('itemDetail');
+ S.itemBusy=true;button.disabled=true;button.textContent='CHECK ITEM · WORKING…';setFocusGuide(true);
+ clearTimeout(notify.timer);msg.hidden=true;
+ detail.textContent='Reading two views of the same center crop. Hold the item still.';
+ try{
+   const until=performance.now()+10000;
+   while(S.busy&&S.running&&gen===S.generation&&performance.now()<until)await new Promise(r=>setTimeout(r,80));
+   if(S.busy)throw Error('Live scanner is still busy; try again.');
+   if(!S.running||gen!==S.generation)return;
+   const vw=video.videoWidth,vh=video.videoHeight;
+   const z=S.deviceZoom?1:Math.max(1,S.zoom/(S.ultra?.5:1));
+   const source=D.visibleCrop(vw,vh,overlay.clientWidth,overlay.clientHeight,z);
+   const snapshot=document.createElement('canvas');
+   snapshot.width=Math.max(1,Math.round(Math.min(900,source.w)));
+   snapshot.height=Math.max(1,Math.round(snapshot.width*source.h/source.w));
+   snapshot.getContext('2d').drawImage(video,source.x,source.y,source.w,source.h,0,0,snapshot.width,snapshot.height);
+   let all=[];
+   for(const angle of [0,90]){
+     const c=document.createElement('canvas'),quarter=angle===90;
+     c.width=quarter?snapshot.height:snapshot.width;c.height=quarter?snapshot.width:snapshot.height;
+     const g=c.getContext('2d');g.translate(c.width/2,c.height/2);g.rotate(angle*Math.PI/180);g.drawImage(snapshot,-snapshot.width/2,-snapshot.height/2);
+     const predictions=await S.model.detect(c,20,.17);
+     if(!S.running||gen!==S.generation)return;
+     for(const p of predictions.filter(D.valid)){
+       const b=D.unrotate(p.bbox,angle,snapshot.width,snapshot.height);
+       all.push({...p,bbox:[source.x+b[0]/snapshot.width*source.w,source.y+b[1]/snapshot.height*source.h,b[2]/snapshot.width*source.w,b[3]/snapshot.height*source.h]});
+     }
+   }
+   // Refine in snapshot coordinates, so every pass examines the same instant.
+   const local=all.map(p=>({...p,bbox:[(p.bbox[0]-source.x)/source.w*snapshot.width,(p.bbox[1]-source.y)/source.h*snapshot.height,p.bbox[2]/source.w*snapshot.width,p.bbox[3]/source.h*snapshot.height]}));
+   const refined=await refineTools(D.consolidate(local),snapshot,snapshot.width,snapshot.height,gen);
+   if(!S.running||gen!==S.generation)return;
+   all=refined.map(p=>({...p,bbox:[source.x+p.bbox[0]/snapshot.width*source.w,source.y+p.bbox[1]/snapshot.height*source.h,p.bbox[2]/snapshot.width*source.w,p.bbox[3]/snapshot.height*source.h]}));
+   const accepted=D.consolidate(all.filter(p=>p.score>=minConfidence(p.class)));
+   S.focusUntil=performance.now()+5000;
+   updateTracks(all,true);
+   detail.textContent=accepted.length
+     ?accepted.slice(0,3).map(D.label).join('; ')+'. Unverified model guesses; inspect the item yourself.'
+     :'No reliable identification. This can miss a knife. Try 1×, less glare, and another angle.';
+ }catch(e){if(gen===S.generation)detail.textContent='Item check failed: '+String(e.message||e).slice(0,120)}
+ finally{S.itemBusy=false;button.disabled=false;button.textContent='CHECK ITEM · CENTER CLOSE-UP';setFocusGuide(false)}
+}
 function liveState(t,stale=false){
  const el=$('liveStatus');el.textContent=t;el.classList.toggle('stale',stale);
  $('recoverBtn').classList.toggle('alert',stale);
@@ -156,7 +274,7 @@ function watchdog(gen){
  S.healthTimer=setTimeout(()=>watchdog(gen),1200);
 }
 function stop(){
- setFocusGuide(false);S.running=false;S.generation++;
+ setFocusGuide(false);S.running=false;S.generation++;S.focusUntil=0;
  clearTimeout(S.objectTimer);S.objectTimer=null;
  clearTimeout(S.healthTimer);S.healthTimer=null;
  clearTimeout(S.ocrTimer);clearTimeout(S.weaponTimer);S.weaponTimer=null;
@@ -256,10 +374,8 @@ async function enableWeapon(){
     $('weaponEnable').textContent='WEAPON MODEL READY';
     $('weaponScan').disabled=false;
     $('weaponFocus').disabled=false;
-    $('focusWeaponBtn').disabled=false;
-    $('focusWeaponBtn').textContent='FOCUS SCAN · CENTER TARGET';
     $('weaponDetail').textContent='Experimental model ready. Manual focus scan ready. To enable automatic scans, turn on Auto weapon scans in Settings. Misses and false matches are possible.';
-    notify('Experimental weapon model loaded. Scanning when camera runs.',3500);
+    notify('Experimental model ready. Use Settings for a manual scan, or enable auto scans.',3500);
     if(S.running && $('weaponAuto').checked)weaponSchedule();
   } catch(e){
     console.error('Weapon model failed to load:',e);
@@ -270,7 +386,6 @@ async function enableWeapon(){
     $('weaponEnable').disabled=false;
     $('weaponEnable').textContent='RETRY WEAPON DOWNLOAD';
     $('weaponFocus').disabled=true;
-    $('focusWeaponBtn').disabled=true;
     notify('Weapon model could not start. Tap the orange status to see the reason.',5000);
   } finally{
     clearTimeout(heartbeat);
@@ -279,8 +394,8 @@ async function enableWeapon(){
 }
 // Experimental OWL-ViT is a general text-prompted image model, not a certified weapon detector.
 // Keep weak raw scores visible in diagnostics without drawing authoritative weapon boxes.
-const WEAPON_LABELS=['kitchen knife','knife','knife blade','scissors','handgun','pistol','rifle','gun'];
-const AUTO_LABELS=['knife','kitchen knife','scissors','handgun','rifle'];
+const WEAPON_LABELS=['serrated knife','bread knife','kitchen knife','folding knife','knife blade','scissors','handgun','pistol','rifle','toothbrush','pen','spoon','cell phone'];
+const AUTO_LABELS=WEAPON_LABELS;
 function weaponThreshold(){return ({sensitive:.09,balanced:.12,strict:.20})[$('weaponSensitivity').value]||.12}
 function diagnostic(s){$('weaponDiagnostics').textContent=s}
 function setFocusGuide(on){$('focusGuide').hidden=!on}
@@ -299,16 +414,15 @@ function candidateDetail(results){
 // scan mode 'focus': crop the central visible screen area (85% x 62%) and enlarge
 // before inference. Auto scans are lower-cost whole-frame operations.
 async function scanWeapons(mode='full'){
- if(!S.weaponModel||S.weaponBusy||!S.running||!video.videoWidth){
+ if(!S.weaponModel||S.weaponBusy||S.itemBusy||S.busy||S.ocrBusy||!S.running||!video.videoWidth){
    if(S.weaponBusy)diagnostic('Scanner is still working on an earlier frame. Please wait.');
    return;
  }
  S.weaponBusy=true;S.weaponScans++;
- const button=$('focusWeaponBtn'),orig=button.textContent;
- button.disabled=true;$('weaponScan').disabled=true;$('weaponFocus').disabled=true;
+ $('weaponScan').disabled=true;$('weaponFocus').disabled=true;
  weaponStatus('WEAPON BETA · SCANNING',true);
  const gen=S.generation,focus=mode==='focus',t0=performance.now();
- if(focus){setFocusGuide(true);button.textContent='FOCUS SCAN · WORKING…'}
+ if(focus)setFocusGuide(true);
  try{
    const vw=video.videoWidth,vh=video.videoHeight;
    const sw=overlay.clientWidth,sh=overlay.clientHeight;
@@ -328,8 +442,8 @@ async function scanWeapons(mode='full'){
    if(!S.running||gen!==S.generation)return;
    const sorted=(Array.isArray(results)?results:[]).filter(resultOk).sort((a,b)=>b.score-a.score);
    const cutoff=weaponThreshold(),now=performance.now();
-   S.weaponDet=sorted.filter(r=>r.score>=cutoff).slice(0,4).map(r=>({
-     class:cleanWeaponLabel(r.label),score:r.score,bbox:targetToVideoBox(r,w,h,source),seen:now
+   S.weaponDet=D.weaponGroups(sorted,cutoff).slice(0,4).map(r=>({
+     ...r,bbox:[source.x+r.bbox[0]/w*source.w,source.y+r.bbox[1]/h*source.h,r.bbox[2]/w*source.w,r.bbox[3]/h*source.h],seen:now
    }));
    S.weaponLast=Date.now();
    weaponStatus(S.weaponDet.length?`WEAPON BETA · ${S.weaponDet.length} POSSIBLE`:'WEAPON BETA · NO CLEAR MATCH',true);
@@ -348,8 +462,6 @@ async function scanWeapons(mode='full'){
    S.weaponBusy=false;
    $('weaponScan').disabled=!S.weaponModel;
    $('weaponFocus').disabled=!S.weaponModel;
-   button.disabled=!S.weaponModel;
-   button.textContent='FOCUS SCAN · CENTER TARGET';
    if(focus){setTimeout(()=>setFocusGuide(false),1700)}
  }
 }
@@ -379,7 +491,7 @@ $('weaponAuto').onchange=()=>{if($('weaponAuto').checked){if(S.weaponModel&&S.ru
 $('cameraDefault').onclick=()=>start(false);$('cameraUltra').onclick=()=>start(true);$('refreshBtn').onclick=()=>{S.generation++;S.tracks=[];render();if(S.running&&S.model)scheduleObjects(S.generation,600);else loadObjects();if(S.running){ocrSchedule();if(S.weaponModel)weaponSchedule()}};$('viewSelect').onchange=e=>setFilter(e.target.value);$('targetSelect').onchange=render;$('sensitivity').onchange=()=>{S.tracks=[];render()};$('weaponEnable').onclick=enableWeapon;
 $('weaponScan').onclick=()=>scanWeapons('full');
 $('weaponFocus').onclick=()=>{sheet(false);scanWeapons('focus')};
-$('focusWeaponBtn').onclick=()=>scanWeapons('focus');
+$('focusWeaponBtn').onclick=checkItem;
 $('weaponStatus').onclick=()=>{
   if(S.weaponLoading){sheet(true);$('weaponSettings').scrollIntoView({block:'start'});return;}
   if(S.weaponModel){if(S.running)scanWeapons('focus');else notify('Start the camera to scan.');return;}
