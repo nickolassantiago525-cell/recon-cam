@@ -502,8 +502,13 @@ $('weaponStatus').onclick=()=>{
 window.addEventListener('resize',fit);video.addEventListener('loadedmetadata',fit);document.addEventListener('visibilitychange',()=>{if(document.hidden&&S.running){S.resumeOnVisible=true;stop()}else if(!document.hidden&&S.resumeOnVisible){S.resumeOnVisible=false;setTimeout(()=>start(false),300)}});
 let touchDistance=0;const feed=$('feed');feed.addEventListener('touchstart',e=>{if(e.touches.length===2)touchDistance=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY)},{passive:true});feed.addEventListener('touchend',()=>{touchDistance=0},{passive:true});feed.addEventListener('touchmove',e=>{if(e.touches.length!==2||!touchDistance)return;const distance=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);if(Math.abs(distance-touchDistance)>24){const step=distance>touchDistance ? 0.25 : -0.25;touchDistance=distance;setZoom(Math.max(1,S.zoom+step))}},{passive:true});
 // Clear old PWA cache/service-worker instances from previous Recon Cam versions.
+// Embedded previews can expose these properties but throw when they are read.
+try{
 if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(rs=>Promise.all(rs.filter(r=>r.scope.includes('/recon-cam/')).map(r=>r.unregister()))).catch(()=>{});}
+}catch{}
+try{
 if('caches' in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>/^reconcam-v/i.test(k)).map(k=>caches.delete(k)))).catch(()=>{});
+}catch{}
 setInterval(()=>{if(S.running)render()},700);fit();setFilter('normal');updateZoomRead();loadObjects();
 // Browsers may require a user gesture: attempt automatic camera, then keep START available.
 window.addEventListener('load',()=>start(false),{once:true});
