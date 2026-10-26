@@ -4,7 +4,7 @@
   try{
    const policy=doc.permissionsPolicy||doc.featurePolicy;
    if(win.origin==='null'||policy?.allowsFeature('camera')===false){
-    return 'This embedded preview blocks camera access. Open the standalone Recon Cam site in Safari, then tap START and Allow. Retrying inside this preview cannot change its camera permissions.';
+    return 'This embedded preview blocks camera access. Open the standalone camera site in Safari instead.';
    }
   }catch{/* Unsupported policy introspection is not itself a camera failure. */}
   if(!win.isSecureContext)return 'Camera access needs a secure page. Open Recon Cam directly in Safari over HTTPS.';

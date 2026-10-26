@@ -40,3 +40,20 @@ test('generic Safari Type error is explained for standalone and embedded views',
  assert.match(C.explain(new TypeError('Type error'),true),/standalone/);
  assert.match(C.explain(new TypeError('Type error'),false),/camera permission/);
 });
+test('blocked preview replaces ineffective permission request with standalone help',()=>{
+ const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+ const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
+ const start=html.indexOf('function cameraHelp('),end=html.indexOf('\nfunction system(',start);
+ const nodes={},$=id=>nodes[id]||(nodes[id]={scrollTop:90});
+ const help=vm.runInNewContext(html.slice(start,end)+';cameraHelp',{$,notify:{timer:0},msg:{},clearTimeout(){}});
+ help('Embedded camera is blocked',true);
+ assert.equal(nodes.enableCameraBtn.hidden,true);
+ assert.equal(nodes.standaloneCameraHelp.hidden,false);
+ assert.equal(nodes.startBtn.disabled,true);
+ assert.equal(nodes.cameraPermissionTitle.textContent,'OPEN IN SAFARI');
+ assert.equal(nodes.cameraPermissionBox.scrollTop,0);
+ help('Allow camera access',false);
+ assert.equal(nodes.enableCameraBtn.hidden,false);
+ assert.equal(nodes.standaloneCameraHelp.hidden,true);
+ assert.equal(nodes.startBtn.disabled,false);
+});

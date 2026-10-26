@@ -1,3 +1,18 @@
+# Recon Cam V12.7
+
+## Cinematic optical overlay
+
+- Brighter double sweep with a faint trailing band and deliberate stepped motion.
+- Squared split-corner center reticle, inset viewfinder corners and double-stroke
+  detection brackets with center/edge registration ticks.
+- Detection brackets converge once per newly visible track over 420ms, without
+  changing detection inputs, confidence, labels or tracking evidence.
+- Reduced motion disables convergence and sweep motion; stopped camera hides the
+  sweep. No weapon lock, confirmed identity or safety verdict is implied.
+- Blocked preview now replaces the ineffective Enable Camera button with an
+  explicit standalone-site link, resets help scroll, and explains that the live
+  site remains the existing version until publication is approved.
+
 # Recon Cam V12.6
 
 ## Expanded experimental recognition

@@ -20,5 +20,17 @@ test('machine vision starts by default and normal appearance remains available',
 test('photo uses selected filter and new version with optical overlay',()=>{
  assert.match(html,/x\.filter=video\.style\.filter/);
  assert.match(html,/if\(machineVision\(\)\)machinePhoto\(x,W,H\)/);
- assert.match(html,/recon-cam-v12-6-/);
+ assert.match(html,/recon-cam-v12-7-/);
+});
+test('bracket acquisition converges once per real track and respects reduced motion',()=>{
+ const start=html.indexOf('function acquisitionProgress('),end=html.indexOf('function updateVision(',start);
+ const hudMotion={matches:false},track={},hudLockTimes=new WeakMap();
+ const phase=vm.runInNewContext(html.slice(start,end)+';acquisitionProgress',{hudMotion,hudLockTimes});
+ assert.equal(phase(track,1000),0);
+ assert.equal(phase(track,1210),.5);
+ assert.equal(phase(track,1420),1);
+ assert.equal(phase(track,1800),1);
+ assert.equal(phase({},1800),0);
+ hudMotion.matches=true;assert.equal(phase({},1900),1);
+ assert.equal(phase(null,1900),1);
 });
