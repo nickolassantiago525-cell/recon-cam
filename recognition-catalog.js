@@ -33,6 +33,7 @@
   return 'objects';
  }
  function matches(p,filter){
+  if(p.class==='uncertain subject')return filter==='all'||(p.alternatives||[]).some(x=>matches(x,filter));
   const c=p.category||category(p.class,'');
   if(filter==='all')return true;
   if(filter==='people')return p.class==='person'||c==='people';

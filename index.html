@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#1a0505">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Terminator Cam V12.7 · Machine Vision</title>
+<title>Terminator Cam V12.8 · Machine Vision</title>
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -15,25 +15,23 @@
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#000;color:white;font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif}button,select,input{font:inherit}button{cursor:pointer;touch-action:manipulation}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #e8fa64;outline-offset:2px}.screen{position:fixed;inset:0;background:#000;overflow:hidden}.feed{position:absolute;inset:0;overflow:hidden;background:radial-gradient(circle,#1c3026,#020503 65%)}#video,#overlay{position:absolute;width:100%;height:100%;inset:0;object-fit:cover;transform-origin:50% 50%}#overlay{pointer-events:none}.feed:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.47),transparent 19%,transparent 66%,rgba(0,0,0,.66))}.hud{z-index:3;position:absolute;left:0;right:0;padding:0 12px}.top{top:0;padding-top:calc(env(safe-area-inset-top,0px) + 8px);display:flex;gap:8px;align-items:center;justify-content:space-between}.brand{display:flex;gap:8px;min-width:0;align-items:center}.brandmark{background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:7px;color:var(--green);font-size:23px;font-weight:900}.brand h1{font-size:15px;margin:0;letter-spacing:.10em;white-space:nowrap}.brand small{display:block;color:#bbd7c2;font-size:10px;letter-spacing:.05em}.topbuttons{display:flex;gap:7px}.control{border:1px solid var(--line);color:white;background:var(--glass);border-radius:12px;min-height:43px;padding:9px 12px;font-size:12px;font-weight:800;backdrop-filter:blur(8px)}.control[aria-pressed="true"],.control.selected{background:#7df59a;color:#061208}.control.alert{border-color:#ffc174}.refreshControl{font-size:19px;min-width:39px;padding:7px 8px}.brand h1{font-size:clamp(12px,3.6vw,15px)}.brandmark{flex-shrink:0}.topbuttons{flex-shrink:0}#liveStatus.stale{color:#ffc174}.status{top:calc(env(safe-area-inset-top,0px) + 65px);display:flex;justify-content:space-between;gap:8px;pointer-events:none}.pill{background:var(--glass);border:1px solid var(--line);color:#c6f4cd;font-size:11px;min-height:30px;padding:7px 9px;border-radius:9px;font-weight:800;backdrop-filter:blur(8px);max-width:48%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pill.warn{border-color:#ffbc6a;color:#ffe6c3}.weaponBadge{pointer-events:auto;cursor:pointer;text-align:center;white-space:normal;line-height:1.15;min-height:35px;font-family:inherit}.weaponBadge:focus-visible{outline:3px solid white;outline-offset:2px}.centerMessage{z-index:4;position:absolute;left:12%;right:12%;top:39%;background:rgba(0,0,0,.82);border:1px solid #4e8960;color:#f0ffed;padding:16px;border-radius:15px;text-align:center;font-size:14px;line-height:1.5;box-shadow:0 5px 25px #0009}.centerMessage[hidden]{display:none}.crosshair{position:absolute;z-index:2;top:50%;left:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border:1px solid #baffc275;border-radius:50%;pointer-events:none}.bottom{bottom:calc(var(--safe) + 8px);display:grid;gap:8px}.row{display:flex;align-items:center;justify-content:center;gap:7px}.row .control{min-height:44px}.row .compact{padding:7px 10px}.zoomRead{background:var(--glass);border:1px solid var(--line);border-radius:9px;min-width:67px;text-align:center;font-size:13px;font-weight:800;padding:11px 9px}.readDock{border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(14px);padding:10px;border-radius:14px;display:none;max-height:28dvh;overflow-y:auto}.readDock.show{display:block}.readHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:800}.readLines{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;max-height:13dvh;overflow:auto}.word{background:#172d1e;color:white;border:1px solid #386c44;border-radius:8px;padding:8px 10px;min-height:37px;font-size:14px;max-width:100%;overflow-wrap:anywhere}.word.active{background:#98ffaf;color:#05200b}.hint{font-size:11px;color:#c4d7c6;line-height:1.3}.readActions{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px}.readActions button{background:#1b4028;border:1px solid #54775c;border-radius:9px;color:white;padding:9px;font-size:12px;font-weight:800;min-height:38px}.sheet{z-index:9;position:absolute;inset:0;background:rgba(0,0,0,.56);display:none;align-items:flex-end}.sheet.open{display:flex}.sheetContent{width:100%;background:#0a1b10;border:1px solid #3d6546;border-bottom:0;border-radius:20px 20px 0 0;max-height:87dvh;overflow-y:auto;padding:14px 15px calc(var(--safe) + 20px);box-shadow:0 -14px 40px #0009}.sheetHeader{display:flex;align-items:center;justify-content:space-between;gap:10px}.sheetHeader h2{font-size:18px;margin:3px 0 12px}.settingsGroup{background:#102418;border:1px solid #36523d;border-radius:13px;padding:11px;margin:0 0 10px;display:grid;gap:7px}.settingsGroup h3{font-size:13px;margin:0;color:#baffb8}.settingsGroup p{margin:0;color:#c7d7ca;font-size:12px;line-height:1.45}.settingsGroup select,.settingsGroup input[type=range]{width:100%}.settingsGroup select{background:#051107;border:1px solid #4c7457;color:white;border-radius:9px;padding:9px;font-size:15px;min-height:40px}.settingsGroup label{font-size:12px;color:#dbf0e2}.switchLine{display:flex;justify-content:space-between;align-items:center;gap:10px}.switchLine input{width:22px;height:22px;accent-color:#7dffa2}.settingsButton{background:#1b4028;border:1px solid #67966e;color:white;border-radius:10px;min-height:42px;padding:10px;font-size:12px;font-weight:750}.settingsButton:disabled{opacity:.5}.notice{border-left:3px solid #efc277;padding:9px 11px;background:#2e281a;font-size:12px;line-height:1.4;color:#ffeac8}.twoCols{display:grid;grid-template-columns:1fr 1fr;gap:7px}.substatus{font-size:12px;color:#b5ddba;overflow-wrap:anywhere}.danger{color:#ffca91}.focusButton{width:100%;min-height:42px;background:rgba(31,33,13,.87);border-color:#dca665;color:#ffe4a3}.focusButton:disabled{opacity:.65}.focusGuide{position:absolute;z-index:2;pointer-events:none;width:85%;height:62%;left:7.5%;top:19%;border:2px dashed #ffdb7b;background:rgba(250,220,100,.035);border-radius:14px;box-shadow:0 0 0 9999px rgba(0,0,0,.03)}.focusGuide[hidden]{display:none}.focusGuide span{position:absolute;top:-28px;left:0;background:#26250c;color:#ffe6a5;border:1px solid #dfac65;border-radius:5px;padding:4px 6px;font-size:10px;font-weight:800}.noScroll{overflow:hidden}.srOnly{position:absolute;left:-9999px}
 @media(min-width:700px){.top,.bottom,.status{max-width:840px;margin:auto}.sheetContent{max-width:620px;margin:auto}}
 </style>
-<link rel="stylesheet" href="terminator.css?v=127">
+<link rel="stylesheet" href="terminator.css?v=128">
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="detection.js?v=127"></script>
-<script src="camera-support.js?v=127"></script>
-<script src="recognition-catalog.js?v=127"></script>
+<script src="detection.js?v=128"></script>
+<script src="camera-support.js?v=128"></script>
+<script src="recognition-catalog.js?v=128"></script>
 </head>
 <body data-vision="terminator">
-<main class="screen" aria-label="Terminator Cam V12.7">
+<main class="screen" aria-label="Terminator Cam V12.8">
   <section class="feed" id="feed">
     <video id="video" playsinline muted autoplay></video>
     <canvas id="overlay" aria-label="Recognized objects are outlined over camera picture"></canvas>
     <div class="visionHud" id="visionHud" aria-hidden="true">
       <div class="visionSweep"></div>
-      <div class="visionTop"><span>TERMINATOR / VISION<br><span id="visionSource">OPTICAL INPUT / OFFLINE</span></span><span>VISUAL FILTER / RED<br><span id="visionClock"></span></span></div>
       <div class="visionFrame"><i></i><i></i><i></i><i></i></div>
       <div class="visionReticle"></div>
-      <div class="visionBottom"><div class="visionAnalysis"><span>OBJECT ANALYSIS</span><strong id="visionAnalysis">AWAITING CAMERA</strong><span id="visionCount">NO ACTIVE TRACKS</span></div><div class="visionMark">TERMINATOR CAM / 12.7<br>OPTICAL OVERLAY<br>VERIFY ALL MATCHES</div></div>
     </div>
     <div class="crosshair" aria-hidden="true"></div>
     <div class="focusGuide" id="focusGuide" hidden><span>KEEP ITEM IN THIS BOX</span></div>
@@ -42,12 +40,12 @@
       <h2 id="cameraPermissionTitle">ENABLE CAMERA</h2>
       <p id="cameraAccessText">Tap Enable Camera, then approve the camera request from your browser.</p>
       <button class="control" id="enableCameraBtn" type="button">ENABLE CAMERA</button>
-      <div id="standaloneCameraHelp" hidden><a class="standaloneLink" id="standaloneCameraLink" href="https://nickolassantiago525-cell.github.io/recon-cam/index.html?v=127" target="_blank" rel="noopener noreferrer">OPEN CAMERA SITE</a><p class="hint">If it opens inside the app, use Share → Open in Safari. If the link is blocked, copy this address into Safari:</p><input id="standaloneAddress" type="url" readonly aria-label="Standalone camera address to copy into Safari" value="https://nickolassantiago525-cell.github.io/recon-cam/index.html?v=127"><p class="hint">Open the site directly in Safari, then tap START and approve camera access. Safari controls whether approval is remembered.</p></div>
+      <div id="standaloneCameraHelp" hidden><a class="standaloneLink" id="standaloneCameraLink" href="https://nickolassantiago525-cell.github.io/recon-cam/index.html?v=128" target="_blank" rel="noopener noreferrer">OPEN CAMERA SITE</a><p class="hint">If it opens inside the app, use Share → Open in Safari. If the link is blocked, copy this address into Safari:</p><input id="standaloneAddress" type="url" readonly aria-label="Standalone camera address to copy into Safari" value="https://nickolassantiago525-cell.github.io/recon-cam/index.html?v=128"><p class="hint">Open the site directly in Safari, then tap START and approve camera access. Safari controls whether approval is remembered.</p></div>
       <details><summary>Remember access on iPhone</summary><p>Open the standalone site in Safari. In Safari’s page menu, open Website Settings, then set Camera to Allow for this site. Terminator Cam tries to start on each visit; Safari decides whether to ask again. This button cannot approve permission or change Safari settings for you.</p><a href="https://support.apple.com/guide/iphone/browse-the-web-privately-iphb01fc3c85/ios" target="_blank" rel="noopener noreferrer">Apple camera-permission instructions</a></details>
     </section>
   </section>
   <div class="hud top">
-    <div class="brand"><span class="brandmark">T◉</span><div><h1>TERMINATOR CAM</h1><small>V12.7 · <span id="liveStatus" aria-live="polite">STARTING</span></small></div></div>
+    <div class="brand"><span class="brandmark">T◉</span><div><h1>TERMINATOR CAM</h1><small>V12.8 · <span id="liveStatus" aria-live="polite">STARTING</span></small></div></div>
     <div class="topbuttons"><button class="control refreshControl" id="recoverBtn" type="button" aria-label="Restart camera if image is frozen" title="Restart live camera">↻</button><button class="control" id="startBtn" type="button">START</button><button class="control" id="settingsBtn" type="button" aria-label="Open settings">☰</button></div>
   </div>
   <div class="hud status"><div class="pill" id="objectStatus" role="status">OBJECT AI · LOADING</div><button class="pill weaponBadge" type="button" id="weaponStatus" aria-label="Tap to enable experimental weapon model">WEAPON · TAP TO ENABLE</button></div>
@@ -64,6 +62,10 @@
   <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Terminator Cam controls">
     <div class="sheetContent">
       <div class="sheetHeader"><h2>Terminator Cam controls</h2><button class="control" type="button" id="closeSheet">CLOSE</button></div>
+      <div class="settingsGroup visionDetails"><h3>VIEW DETAILS</h3>
+        <div class="visionTop"><span>TERMINATOR / VISION<br><span id="visionSource">OPTICAL INPUT / OFFLINE</span></span><span id="visionFilter">VISUAL FILTER / RED</span><span id="visionClock"></span></div>
+        <div class="visionBottom"><div class="visionAnalysis"><span>OBJECT ANALYSIS</span><strong id="visionAnalysis">AWAITING CAMERA</strong><span id="visionCount">NO ACTIVE TRACKS</span></div><div class="visionMark">TERMINATOR CAM / 12.8<br>OPTICAL OVERLAY<br>VERIFY ALL MATCHES</div></div>
+      </div>
       <div class="settingsGroup"><h3>DETECTION</h3><label for="targetSelect">Show objects</label><select id="targetSelect"><option value="all">All recognized objects</option><option value="people">People only</option><option value="living">People, animals & vehicles</option><option value="tools">Tools / possible knives / scissors</option></select><label for="sensitivity">Sensitivity</label><select id="sensitivity"><option value="balanced" selected>Balanced · fewer false alerts</option><option value="sensitive">Sensitive · may show more false alerts</option><option value="strict">Strict · highest confidence only</option></select><label class="switchLine" for="farSwitch"><span>Search smaller, farther objects (uses more battery)</span><input type="checkbox" id="farSwitch" checked></label><p>Boxes identify likely people, not who they are. Boxes can be wrong, and distance depends on lighting and camera resolution. Scanning smaller image regions may help, but cannot create missing detail.</p></div>
       <div class="settingsGroup" id="weaponSettings">
         <h3>EXTENDED RECOGNITION · OPTIONAL</h3>
@@ -79,13 +81,13 @@
         <label class="switchLine" for="weaponAuto"><span>Auto extended scans (slow; may freeze camera)</span><input type="checkbox" id="weaponAuto"></label>
         <span class="substatus" id="weaponDetail" role="status" aria-live="polite">Off. Tap ENABLE to download the experimental model. It may need Wi-Fi and sufficient available memory.</span>
         <span class="substatus" id="weaponDiagnostics" aria-live="polite">No extended scan has run yet.</span>
-        <p>Extended automatic scanning is OFF by default. When enabled, one group is scanned about 20 seconds after the preceding scan finishes. All groups rotates through seven groups, not all labels every frame. Choose a specific group for repeated scans of it. CHECK ITEM still uses the lightweight live model. No matches do not establish that an area is safe. The basic model's “mouse” means a computer mouse; animal mice need the extended wildlife group.</p>
+        <p>Extended automatic scanning is OFF by default. When enabled, one group is scanned about 20 seconds after the preceding scan finishes. All groups rotates through seven groups, not all labels every frame. Choose a specific group for repeated scans of it. CHECK ITEM still uses the fuller live model. No matches do not establish that an area is safe. The basic model's “mouse” means a computer mouse; animal mice need the extended wildlife group.</p>
       </div>
       <div class="settingsGroup"><h3>CAMERA PERMISSION</h3><button class="settingsButton" id="settingsEnableCamera" type="button">ENABLE CAMERA</button><span class="substatus" id="permissionState">Your browser controls camera permission and whether it is remembered.</span><p>To remember approval on iPhone, open the standalone site in Safari, then open the page menu, Website Settings, Camera, Allow. Terminator Cam automatically attempts camera startup when opened. A webpage cannot approve permission, override a blocked preview, or force Safari to retain approval.</p><a href="https://support.apple.com/guide/iphone/browse-the-web-privately-iphb01fc3c85/ios" target="_blank" rel="noopener noreferrer">Apple camera-permission instructions</a></div>
       <div class="settingsGroup"><h3>CAMERA</h3><div class="twoCols"><button class="settingsButton" id="cameraDefault" type="button">REAR CAMERA</button><button class="settingsButton" id="cameraUltra" type="button">TRY ULTRA-WIDE 0.5×</button></div><p id="cameraNote">iPhone controls camera permissions. Not all browsers expose the ultra-wide lens or hardware zoom.</p><label for="qualitySelect">Live camera performance</label><select id="qualitySelect"><option value="smooth" selected>Smooth live · 720p, lighter AI (recommended)</option><option value="detail">High detail · 1080p, slower AI</option></select><button class="settingsButton" id="recoverCamera" type="button">↻ RESTART LIVE CAMERA</button><p>Keeping the picture live takes priority over AI speed. If it freezes, use ↻. High detail uses more resources and may stall older iPhones.</p><label for="viewSelect">Picture appearance</label><select id="viewSelect"><option value="normal">Normal / natural color</option><option value="night">Brighten image</option><option value="outline">High contrast</option><option value="thermal">False-color effect (not thermal vision)</option></select><button class="settingsButton" id="refreshBtn" type="button">RELOAD OBJECT AI</button></div>
       <div class="settingsGroup"><h3>READ WRITING</h3><label class="switchLine" for="ocrSwitch"><span>Automatic text reading every 12 seconds (higher load)</span><input type="checkbox" id="ocrSwitch"></label><label class="switchLine" for="speechSwitch"><span>Automatically say new text after voice is enabled</span><input type="checkbox" id="speechSwitch"></label><p>Automatic reading is OFF by default to reduce freezes. Tap READ TEXT below the camera to scan words manually. Text is kept away from the picture. Automatic speech needs a user tap to begin on iPhone.</p></div>
       <div class="settingsGroup"><h3>ITEM CHECK</h3><p>CHECK ITEM takes a detailed crop from the center and examines two orientations with the standard model. It works without the large weapon download. Conflicting knife, scissors, toothbrush or utensil guesses are shown as uncertain, not silently changed into knives. Scores measure model output, not the chance an identification is correct. For another experimental check, enable the optional model and use SCAN CENTER CLOSE-UP. It compares knife prompts with non-weapon lookalikes too.</p></div>
-      <div class="settingsGroup"><h3>IMPORTANT LIMITS</h3><p>Object and text recognition need model downloads and may not work without internet on first load. This is a visual aid, not a security, medical, or emergency detection system. No camera can be permanently authorized by a web page; Safari controls permissions. Machine vision, night and false-color modes are visual filters, not infrared or thermal sensors.</p><span class="substatus" id="systemStatus">V12.7 ready · red machine vision.</span></div>
+      <div class="settingsGroup"><h3>IMPORTANT LIMITS</h3><p>Object and text recognition need model downloads and may not work without internet on first load. This is a visual aid, not a security, medical, or emergency detection system. No camera can be permanently authorized by a web page; Safari controls permissions. Machine vision, night and false-color modes are visual filters, not infrared or thermal sensors.</p><span class="substatus" id="systemStatus">V12.8 ready · red machine vision.</span></div>
     </div>
   </div>
 </main>
@@ -122,6 +124,7 @@ function acquisitionProgress(track,now){
 function updateVision(tracks=[]){
  document.body.dataset.camera=S.running?'live':'off';
  $('visionClock').textContent=new Date().toLocaleTimeString('en-US',{hour12:false});
+ $('visionFilter').textContent='VISUAL FILTER / '+(machineVision()?'RED':$('viewSelect').selectedOptions[0]?.textContent||'NORMAL');
  $('visionSource').textContent=S.running?`OPTICAL INPUT / ${video.videoWidth} × ${video.videoHeight}`:'OPTICAL INPUT / OFFLINE';
  $('visionAnalysis').textContent=!S.running?'AWAITING CAMERA':tracks.length?tracks.slice(0,2).map(t=>t.experimental?C.label(t):D.label(t)).join(' / '):S.model?'SCANNING FOR OBJECTS':S.loading?'LOADING OBJECT MODEL':'OBJECT MODEL UNAVAILABLE';
  $('visionCount').textContent=S.running?`${tracks.length} VISIBLE TRACK${tracks.length===1?'':'S'} / UNVERIFIED`:'NO ACTIVE TRACKS';
@@ -129,7 +132,7 @@ function updateVision(tracks=[]){
  document.documentElement.style.setProperty('--vision-bottom',`${Math.max(12,innerHeight-bottom.top+16)}px`);
 }
 function screenBox(box){const vw=video.videoWidth,vh=video.videoHeight,W=overlay.clientWidth,H=overlay.clientHeight;if(!vw||!vh)return null;const scale=Math.max(W/vw,H/vh),ox=(W-vw*scale)/2,oy=(H-vh*scale)/2;return [ox+box[0]*scale,oy+box[1]*scale,box[2]*scale,box[3]*scale]}
-function labelRect(text,x,y,color){const W=overlay.clientWidth;ctx.font=machineVision()?'700 13px "JetBrains Mono",monospace':'700 13px -apple-system,system-ui,sans-serif';const maxW=W-12;while(text.length>5&&ctx.measureText(text).width>maxW-18)text=text.slice(0,-2)+'…';const tw=ctx.measureText(text).width+15,w=Math.min(maxW,tw),h=24;const a=Math.max(5,Math.min(W-w-5,x));const topClear=machineVision()?document.querySelector('.visionTop').getBoundingClientRect().bottom+8:$('objectStatus').getBoundingClientRect().bottom+8;const bottomClear=machineVision()&&innerHeight>580?document.querySelector('.visionBottom').getBoundingClientRect().top-8:$('zoomOutBtn').getBoundingClientRect().top-8;const desired=y-h>topClear?y-h:y+6;const b=Math.max(topClear,Math.min(desired,bottomClear-h));ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(a,b,w,h,3);ctx.fill();ctx.fillStyle=machineVision()?'#260505':'#031006';ctx.fillText(text,a+7,b+16)}
+function labelRect(text,x,y,color){const W=overlay.clientWidth;ctx.font=machineVision()?'700 13px "JetBrains Mono",monospace':'700 13px -apple-system,system-ui,sans-serif';const maxW=W-12;while(text.length>5&&ctx.measureText(text).width>maxW-18)text=text.slice(0,-2)+'…';const tw=ctx.measureText(text).width+15,w=Math.min(maxW,tw),h=24;const a=Math.max(5,Math.min(W-w-5,x));const topClear=document.querySelector('.status').getBoundingClientRect().bottom+8;const bottomClear=document.querySelector('.bottom').getBoundingClientRect().top-8;const desired=y-h>topClear?y-h:y+6;const b=Math.max(topClear,Math.min(desired,bottomClear-h));ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(a,b,w,h,3);ctx.fill();ctx.fillStyle=machineVision()?'#260505':'#031006';ctx.fillText(text,a+7,b+16)}
 function rect(box,label,color,track){const b=screenBox(box);if(!b)return;const [x,y,w,h]=b;if(x>overlay.clientWidth||y>overlay.clientHeight||x+w<0||y+h<0)return;
  if(machineVision()){
   const progress=acquisitionProgress(track,performance.now());
@@ -151,22 +154,24 @@ function rect(box,label,color,track){const b=screenBox(box);if(!b)return;const [
   ctx.stroke();ctx.globalAlpha=1;labelRect(label.toUpperCase(),x,y,color);return;
  }
  ctx.lineWidth=3.5;ctx.strokeStyle=color;ctx.shadowColor=color;ctx.shadowBlur=8;ctx.strokeRect(x,y,w,h);ctx.shadowBlur=0;labelRect(label,x,y,color)}
-function visibleTrack(t,now){return now-t.seen<(t.focus?5000:((S.far)?2200:1700))&&(t.focus||t.hits>=2||(t.class==='person'&&t.score>=.79))}
+function visibleTrack(t,now){return now-t.seen<(t.focus?5000:((S.far)?2200:1700))&&(t.class==='person'?t.hits>=2:t.focus||t.hits>=2)}
 function render(){cancelAnimationFrame(hudFrame);hudFrame=0;hudAnimating=false;const W=overlay.clientWidth,H=overlay.clientHeight;ctx.clearRect(0,0,W,H);if(!S.running){updateVision();return}const now=performance.now(),target=$('targetSelect').value;const valid=S.tracks.filter(t=>visibleTrack(t,now));let count=0;const shown=[];for(const t of valid){if(!C.matches(t,target))continue;const name=D.label(t);rect(t.bbox,`${name}${D.isTool(t)?'':` ${Math.round(t.score*100)}%`}`,D.isTool(t)?'#ffbc79':COCO_COLORS[t.class]||'#8cfaa5',t);count++;shown.push(t)}
 for(const w of S.weaponDet.filter(x=>now-x.seen<5000&&C.matches(x,target))){rect(w.bbox,`${C.label(w)} · experimental`, '#ffb54f',w);count++;shown.push(w)}
 updateVision(shown);if(!S.model)objectStatus(S.loading?'OBJECT AI · LOADING':'OBJECT AI · UNAVAILABLE');else objectStatus(count?`OBJECTS · ${count} VISIBLE`:'OBJECT AI · SCANNING');if(hudAnimating&&!document.hidden)hudFrame=requestAnimationFrame(render)}
 function intersection(a,b){const x=Math.max(a[0],b[0]),y=Math.max(a[1],b[1]),right=Math.min(a[0]+a[2],b[0]+b[2]),bottom=Math.min(a[1]+a[3],b[1]+b[3]);const area=Math.max(0,right-x)*Math.max(0,bottom-y);return area/(a[2]*a[3]+b[2]*b[3]-area||1)}
 function near(a,b){const x=(a[0]+a[2]/2-b[0]-b[2]/2),y=(a[1]+a[3]/2-b[1]-b[3]/2);const d=Math.sqrt(x*x+y*y),size=Math.sqrt(Math.max(a[2],b[2])**2+Math.max(a[3],b[3])**2);return d<Math.max(25,size*.26)&&Math.min(a[2]*a[3],b[2]*b[3])/Math.max(a[2]*a[3],b[2]*b[3])>.32}
-function minConfidence(name){const level=$('sensitivity').value,base={person:.52,car:.67,truck:.66,bus:.66,book:.77,knife:.47,scissors:.51,bottle:.42,cup:.49};const b=base[name]||.53;return level==='sensitive'?Math.max(.22,b-.14):level==='strict'?Math.min(.93,b+.14):b}
+function minConfidence(name){const level=$('sensitivity').value,base={person:.72,cat:.5,dog:.5,car:.67,truck:.66,bus:.66,book:.77,knife:.47,scissors:.51,bottle:.42,cup:.49};const b=base[name]||.53;return level==='sensitive'?Math.max(name==='person'?.64:.22,b-.14):level==='strict'?Math.min(.93,b+.14):b}
 function updateTracks(pred,focus=false){
  const now=performance.now(),gen=S.generation,assigned=new Set();
  S.tracks=S.tracks.filter(t=>now-t.seen<12000&&t.generation===gen);
  const good=D.consolidate(pred.filter(p=>D.valid(p)&&p.score>=minConfidence(p.class)));
+ // A newly observed animal or conflict retires an overlapping stale person.
+ S.tracks=S.tracks.filter(t=>!(t.class==='person'&&good.some(p=>(p.class==='cat'||p.class==='dog'||p.class==='uncertain subject')&&D.sameSubject(t.bbox,p.bbox))));
  for(const p of good){
    let best=null,bestScore=0;
    for(const t of S.tracks){
      if(assigned.has(t))continue;
-     const compatible=t.class===p.class||D.isTool(t)&&D.isTool(p)&&D.sameItem(t.bbox,p.bbox);
+     const compatible=t.class===p.class||D.isTool(t)&&D.isTool(p)&&D.sameItem(t.bbox,p.bbox)||t.class==='uncertain subject'&&D.isSubject(p)&&D.sameSubject(t.bbox,p.bbox);
      if(!compatible)continue;
      const i=D.iou(t.bbox,p.bbox);
      if(i>.25&&i>bestScore){best=t;bestScore=i}
@@ -183,10 +188,12 @@ function updateTracks(pred,focus=false){
        const map=new Map(recent.map(x=>[x.class,x]));
        choices.forEach(x=>map.set(x.class,x));choices=[...map.values()];
      }
+     const subjectChanged=D.isSubject(p)&&best.class!==p.class;
      best.class=choices.length>1&&D.isTool(p)?'uncertain tool':p.class;
+     best.subjectVerified=p.subjectVerified;
      best.alternatives=choices;
      best.bbox=best.bbox.map((v,i)=>v*.42+p.bbox[i]*.58);
-     best.score=p.score;best.hits=Math.min(20,best.hits+1);best.seen=now;best.focus=focus;
+     best.score=p.score;best.hits=subjectChanged?1:Math.min(20,best.hits+1);best.seen=now;best.focus=focus;
    }else{
      const track={...p,bbox:p.bbox.slice(),alternatives:D.alternatives(p).map(x=>({...x,seen:now})),hits:1,seen:now,generation:gen,focus};
      S.tracks.push(track);assigned.add(track);
@@ -213,7 +220,7 @@ async function objectLoop(gen){
    const t=doCenter?{x:.15,y:.20,w:.70,h:.60}:doTile?TILES[Math.floor(S.tile++)%TILES.length]:{x:0,y:0,w:1,h:1};
    const x=Math.round(t.x*vw),y=Math.round(t.y*vh);
    const w=Math.max(1,Math.min(vw-x,Math.round(t.w*vw))),h=Math.max(1,Math.min(vh-y,Math.round(t.h*vh)));
-   const cap=detail?640:(doCenter?512:416);
+   const cap=detail?640:512;
    tileCanvas.width=Math.min(cap,w);
    tileCanvas.height=Math.max(1,Math.round(tileCanvas.width*h/w));
    tileCtx.drawImage(video,x,y,w,h,0,0,tileCanvas.width,tileCanvas.height);
@@ -221,6 +228,7 @@ async function objectLoop(gen){
    const predictions=await S.model.detect(tileCanvas,doTile?9:18,.17);
    if(S.running&&gen===S.generation){
      let mapped=predictions.filter(D.valid).map(p=>({...p,bbox:[x+p.bbox[0]/tileCanvas.width*w,y+p.bbox[1]/tileCanvas.height*h,p.bbox[2]/tileCanvas.width*w,p.bbox[3]/tileCanvas.height*h]}));
+     mapped=await verifySubjects(mapped,video,vw,vh,gen);
      if(performance.now()-S.lastRefine>8000&&mapped.some(D.isTool)){
        S.lastRefine=performance.now();
        mapped=await refineTools(mapped,video,vw,vh,gen,1);
@@ -237,7 +245,21 @@ async function objectLoop(gen){
    }
  }
 }
-async function loadObjects(){if(S.loading)return;S.loading=true;objectStatus('OBJECT AI · LOADING');system('Loading standard object detection…');try{if(!window.cocoSsd?.load)throw Error('TensorFlow or COCO script unavailable. Check internet.');S.model=await cocoSsd.load({base:'lite_mobilenet_v2'});objectStatus('OBJECT AI · READY');system('Object AI ready. Distant targets are scanned in tiles.');if(S.running)scheduleObjects(S.generation,400)}catch(e){S.model=null;objectStatus('OBJECT AI · OFFLINE');system('Object model unavailable: '+e.message)}finally{S.loading=false}}
+async function loadObjects(){if(S.loading)return;S.loading=true;objectStatus('OBJECT AI · LOADING');system('Loading fuller object detector…');try{if(!window.cocoSsd?.load)throw Error('TensorFlow or COCO script unavailable. Check internet.');S.model=await cocoSsd.load({base:'mobilenet_v2'});objectStatus('OBJECT AI · READY');system('Full object AI ready. Person/pet guesses receive a context check; matches remain unverified.');if(S.running)scheduleObjects(S.generation,400)}catch(e){S.model=null;objectStatus('OBJECT AI · OFFLINE');system('Object model unavailable: '+e.message)}finally{S.loading=false}}
+async function verifySubjects(predictions,input,vw,vh,gen){
+ const proposals=predictions.filter(p=>D.SUBJECT_CLASSES.has(p.class)&&p.score>=.5).sort((a,b)=>b.score-a.score).slice(0,3);
+ const out=predictions.filter(p=>!proposals.includes(p));
+ for(const p of proposals){
+   if(!S.running||S.generation!==gen)return [];
+   const [x,y,w,h]=p.bbox,cw=Math.min(vw,w*1.35),ch=Math.min(vh,h*1.35);
+   const roi={x:Math.max(0,Math.min(vw-cw,x+w/2-cw/2)),y:Math.max(0,Math.min(vh-ch,y+h/2-ch/2)),w:cw,h:ch};
+   const c=document.createElement('canvas');c.width=Math.max(1,Math.round(Math.min(640,roi.w)));c.height=Math.max(1,Math.round(c.width*roi.h/roi.w));
+   c.getContext('2d').drawImage(input,roi.x,roi.y,roi.w,roi.h,0,0,c.width,c.height);
+   const results=(await S.model.detect(c,12,.25)).filter(D.valid).map(r=>({...r,bbox:[roi.x+r.bbox[0]/c.width*roi.w,roi.y+r.bbox[1]/c.height*roi.h,r.bbox[2]/c.width*roi.w,r.bbox[3]/c.height*roi.h]}));
+   out.push(D.subjectDecision(p,[...predictions.filter(r=>r!==p),...results]));
+ }
+ return out;
+}
 async function refineTools(predictions,input,vw,vh,gen,limit=2){
  const proposals=predictions.filter(p=>D.valid(p)&&D.isTool(p)&&p.score>=.17).sort((a,b)=>b.score-a.score).slice(0,limit);
  const out=predictions.filter(p=>!proposals.includes(p));
@@ -286,7 +308,8 @@ async function checkItem(){
    }
    // Refine in snapshot coordinates, so every pass examines the same instant.
    const local=all.map(p=>({...p,bbox:[(p.bbox[0]-source.x)/source.w*snapshot.width,(p.bbox[1]-source.y)/source.h*snapshot.height,p.bbox[2]/source.w*snapshot.width,p.bbox[3]/source.h*snapshot.height]}));
-   const refined=await refineTools(D.consolidate(local),snapshot,snapshot.width,snapshot.height,gen);
+   let refined=await refineTools(D.consolidate(local),snapshot,snapshot.width,snapshot.height,gen);
+   refined=await verifySubjects(refined,snapshot,snapshot.width,snapshot.height,gen);
    if(!S.running||gen!==S.generation)return;
    all=refined.map(p=>({...p,bbox:[source.x+p.bbox[0]/snapshot.width*source.w,source.y+p.bbox[1]/snapshot.height*source.h,p.bbox[2]/snapshot.width*source.w,p.bbox[3]/snapshot.height*source.h]}));
    const accepted=D.consolidate(all.filter(p=>p.score>=minConfidence(p.class)));
@@ -556,13 +579,13 @@ function machinePhoto(x,W,H){
  x.strokeStyle='#ff9b90';x.lineWidth=1;x.beginPath();x.arc(W/2,H/2,58,0,Math.PI*2);x.moveTo(W/2-75,H/2);x.lineTo(W/2+75,H/2);x.moveTo(W/2,H/2-75);x.lineTo(W/2,H/2+75);x.stroke();
  x.fillStyle='#160303e8';x.fillRect(8,8,W-16,64);x.fillRect(8,H-64,W-16,56);
  x.fillStyle='#ffb1a8';x.font='600 12px monospace';
- x.fillText('TERMINATOR CAM / MACHINE VISION / 12.7',16,30);
+ x.fillText('TERMINATOR CAM / MACHINE VISION / 12.8',16,30);
  x.fillText($('visionSource').textContent,16,52);
  x.fillText($('visionClock').textContent+' / '+$('visionCount').textContent,16,H-42);
  const text=$('visionAnalysis').textContent;
  x.fillText(text.length>Math.floor((W-32)/7)?text.slice(0,Math.max(1,Math.floor((W-32)/7)-3))+'...':text,16,H-20);
 }
-function savePhoto(){if(!S.running||!video.videoWidth){notify('Start camera first.');return}const W=overlay.clientWidth,H=overlay.clientHeight,dpr=2,can=document.createElement('canvas');can.width=W*dpr;can.height=H*dpr;const x=can.getContext('2d');x.scale(dpr,dpr);x.fillStyle='#000';x.fillRect(0,0,W,H);const vw=video.videoWidth,vh=video.videoHeight,sc=Math.max(W/vw,H/vh),cw=vw*sc,ch=vh*sc,rel=S.deviceZoom?1:S.zoom/(S.ultra?.5:1);x.save();x.translate(W/2,H/2);x.scale(Math.max(1,rel),Math.max(1,rel));x.translate(-W/2,-H/2);x.filter=video.style.filter||'none';x.drawImage(video,(W-cw)/2,(H-ch)/2,cw,ch);x.restore();x.drawImage(overlay,0,0,W,H);if(machineVision())machinePhoto(x,W,H);can.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`terminator-cam-v12-7-${Date.now()}.jpg`;a.click();setTimeout(()=>URL.revokeObjectURL(url),12000)},'image/jpeg',.92)}
+function savePhoto(){if(!S.running||!video.videoWidth){notify('Start camera first.');return}const W=overlay.clientWidth,H=overlay.clientHeight,dpr=2,can=document.createElement('canvas');can.width=W*dpr;can.height=H*dpr;const x=can.getContext('2d');x.scale(dpr,dpr);x.fillStyle='#000';x.fillRect(0,0,W,H);const vw=video.videoWidth,vh=video.videoHeight,sc=Math.max(W/vw,H/vh),cw=vw*sc,ch=vh*sc,rel=S.deviceZoom?1:S.zoom/(S.ultra?.5:1);x.save();x.translate(W/2,H/2);x.scale(Math.max(1,rel),Math.max(1,rel));x.translate(-W/2,-H/2);x.filter=video.style.filter||'none';x.drawImage(video,(W-cw)/2,(H-ch)/2,cw,ch);x.restore();x.drawImage(overlay,0,0,W,H);if(machineVision())machinePhoto(x,W,H);can.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`terminator-cam-v12-8-${Date.now()}.jpg`;a.click();setTimeout(()=>URL.revokeObjectURL(url),12000)},'image/jpeg',.92)}
 function sheet(open){$('sheet').classList.toggle('open',open)}
 $('settingsBtn').onclick=()=>sheet(true);$('closeSheet').onclick=()=>sheet(false);$('sheet').addEventListener('click',e=>{if(e.target===$('sheet'))sheet(false)});
 $('startBtn').onclick=()=>S.running?(stop(),notify('Camera stopped',0)):start(false);

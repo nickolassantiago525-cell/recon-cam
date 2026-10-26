@@ -2,6 +2,25 @@
 (function(root){
 'use strict';
 const TOOL_CLASSES=new Set(['knife','scissors','toothbrush','fork','spoon']);
+const SUBJECT_CLASSES=new Set(['person','cat','dog']);
+function isSubject(p){return SUBJECT_CLASSES.has(p.class)||p.class==='uncertain subject'}
+// Only compare substantially overlapping subjects, not a pet beside its owner.
+function sameSubject(a,b){return sameItem(a,b)&&iou(a,b)>.5}
+function subjectDecision(proposal,results){
+  const related=results.filter(p=>valid(p)&&SUBJECT_CLASSES.has(p.class)&&sameSubject(proposal.bbox,p.bbox)&&p.score>=.5);
+  const choices=new Map([[proposal.class,{class:proposal.class,score:proposal.score}]]);
+  for(const p of related)if(!choices.has(p.class)||choices.get(p.class).score<p.score)choices.set(p.class,{class:p.class,score:p.score});
+  const ranked=[...choices.values()].sort((a,b)=>b.score-a.score);
+  if(ranked.length>1){
+    const best=ranked[0],runner=ranked[1];
+    if(best.class!=='person'&&best.score>=.65&&best.score-runner.score>=.12){
+      const animal=related.find(p=>p.class===best.class);
+      if(animal)return {...animal,subjectVerified:true};
+    }
+    return {...proposal,class:'uncertain subject',alternatives:ranked,subjectVerified:false};
+  }
+  return {...proposal,subjectVerified:related.some(p=>p.class===proposal.class&&p.score>=.72)};
+}
 function valid(p){
   return p&&typeof p.class==='string'&&Number.isFinite(p.score)&&p.score>=0&&p.score<=1&&
     Array.isArray(p.bbox)&&p.bbox.length===4&&p.bbox.every(Number.isFinite)&&p.bbox[2]>=3&&p.bbox[3]>=3;
@@ -29,13 +48,19 @@ function combine(a,b){
 function consolidate(predictions){
   const out=[];
   for(const p of predictions.filter(valid).sort((a,b)=>b.score-a.score)){
-    const existing=out.findIndex(t=>(t.class===p.class||isTool(t)&&isTool(p))&&sameItem(t.bbox,p.bbox));
+    const existing=out.findIndex(t=>(t.class===p.class||isTool(t)&&isTool(p)||isSubject(t)&&isSubject(p)&&sameSubject(t.bbox,p.bbox))&&sameItem(t.bbox,p.bbox));
     if(existing<0)out.push({...p,bbox:p.bbox.slice()});
     else if(isTool(p))out[existing]=combine(out[existing],p);
+    else if(isSubject(p)&&out[existing].class!==p.class){
+      const merged=combine(out[existing],p);
+      out[existing]={...merged,class:'uncertain subject',subjectVerified:false};
+    }
   }
   return out;
 }
 function label(p){
+  if(p.class==='uncertain subject')return 'Uncertain: '+alternatives(p).map(x=>x.class).join(' / ');
+  if(p.class==='person'&&(!p.subjectVerified||p.score<.85))return 'Possible person';
   if(p.class==='mouse')return 'Computer mouse';
   if(p.class==='uncertain tool'){
     const names=alternatives(p).map(x=>x.class).slice(0,3);
@@ -94,7 +119,7 @@ function weaponGroups(results,cutoff){
   }
   return out.sort((a,b)=>b.score-a.score);
 }
-const api={TOOL_CLASSES,valid,iou,sameItem,isTool,alternatives,combine,consolidate,label,unrotate,visibleCrop,refinementCrop,refineDecision,weaponGroups};
+const api={TOOL_CLASSES,SUBJECT_CLASSES,isSubject,sameSubject,subjectDecision,valid,iou,sameItem,isTool,alternatives,combine,consolidate,label,unrotate,visibleCrop,refinementCrop,refineDecision,weaponGroups};
 if(typeof module!=='undefined'&&module.exports)module.exports=api;
 else root.ReconDetection=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

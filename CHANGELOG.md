@@ -1,3 +1,23 @@
+# Terminator Cam V12.8
+
+- Moved the Terminator / Vision, optical input, filter, clock and object-analysis
+  metadata into Settings > View Details. Retained the red filter and brackets.
+- Docked transient notices above the bottom controls rather than over the center.
+- Replaced the lite COCO detector with the fuller MobileNet V2 model and raised
+  the default inference canvas width to 512px.
+- Added context-crop checks for up to three person/cat/dog proposals per scan,
+  uncertain cross-category labels, conservative person thresholds and removal of
+  stale overlapping person tracks when animal/conflicting evidence appears.
+- A person label requires repeated sightings; unsupported or lower-score people
+  remain "Possible person". Agreement is not proof of correctness.
+- Automated subject, tracking, camera, catalog and HUD tests pass. Browser controls
+  were exercised at phone and desktop sizes using a synthetic camera/mock models.
+- A real fuller-model test on the red-filtered screenshot's subject region
+  produced a person score of 0.288, below the display threshold, and no accepted
+  cat result. This is not validation of live iPhone recognition accuracy.
+- The fuller model and crop passes cost more download, memory and inference time.
+  Live iPhone latency and accuracy still need on-device testing.
+
 # Recon Cam V12.7
 
 ## Terminator Cam rename

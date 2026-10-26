@@ -37,3 +37,17 @@ test('people and cars still gain stable live tracks',()=>{
   t.update(preds);t.time(2000);t.update(preds);
   assert.equal(t.S.tracks.length,2);assert.ok(t.S.tracks.every(x=>x.hits===2));
 });
+test('new cat evidence removes an overlapping stale person immediately',()=>{
+ const t=tracker();t.update([p('person')]);t.time(2000);t.update([p('person')]);
+ t.time(3000);t.update([p('cat')]);
+ assert.equal(t.S.tracks.length,1);assert.equal(t.S.tracks[0].class,'cat');
+});
+test('uncertainty removes a stale person but preserves a separate person',()=>{
+ const t=tracker();t.update([p('person'),p('person',.9,[500,200,100,300])]);
+ t.time(2000);t.update([{...p('uncertain subject'),alternatives:[{class:'person',score:.74},{class:'cat',score:.8}]}]);
+ assert.equal(t.S.tracks.length,2);assert.equal(t.S.tracks.filter(x=>x.class==='person').length,1);
+});
+test('resolving uncertainty to a person requires fresh sightings',()=>{
+ const t=tracker();t.update([p('uncertain subject')]);t.time(2000);t.update([p('uncertain subject')]);
+ t.time(3000);t.update([p('person')]);assert.equal(t.S.tracks[0].hits,1);
+});

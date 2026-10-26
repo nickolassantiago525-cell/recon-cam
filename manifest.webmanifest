@@ -1,7 +1,7 @@
 {
-  "name": "Terminator Cam V12.7 - Machine Vision",
+  "name": "Terminator Cam V12.8 - Machine Vision",
   "short_name": "Terminator Cam",
-  "start_url": "./index.html?v=127",
+  "start_url": "./index.html?v=128",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#1a0505",
