@@ -1,3 +1,28 @@
+# Recon Cam V12.5
+
+## Machine vision presentation
+
+- Default red machine-vision camera appearance, scanlines, low-motion scan sweep,
+  optical reticle, corner frame and bracket-style object tracking.
+- HUD reads actual camera resolution, clock, displayed track labels and count.
+  Offline and unavailable-model states never invent detections.
+- All existing picture appearances remain available in Camera settings.
+- Original video remains the inference source; recognition models and tracking
+  thresholds are unchanged. This is not infrared, thermal vision or identity recognition.
+- Photo downloads retain the selected color filter; machine-vision photos also
+  include scanlines, reticle and compact real status readouts.
+- Updated installation manifest and added presentation regression tests.
+
+## Verification
+
+All 24 unit tests passed, including existing geometry/conflict/tracking cases.
+Desktop 1280x800, mobile 375x812 and short landscape controls were checked.
+Simulated-camera/model fixtures exercised view switching, far scan, zoom,
+text-dock switching, item check, photo download, target filters, sensitivity,
+stop/start and restart. No uncaught page errors were observed.
+No-camera handling, reduced-motion rendering and normal-view fallback were checked.
+Physical camera performance and real-world recognition on iPhone remain unverified.
+
 # Recon Cam V12.4
 
 ## Changed
