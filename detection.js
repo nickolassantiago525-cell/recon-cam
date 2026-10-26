@@ -36,6 +36,7 @@ function consolidate(predictions){
   return out;
 }
 function label(p){
+  if(p.class==='mouse')return 'Computer mouse';
   if(p.class==='uncertain tool'){
     const names=alternatives(p).map(x=>x.class).slice(0,3);
     return 'Uncertain: '+names.join(' / ');

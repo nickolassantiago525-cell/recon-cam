@@ -20,5 +20,5 @@ test('machine vision starts by default and normal appearance remains available',
 test('photo uses selected filter and new version with optical overlay',()=>{
  assert.match(html,/x\.filter=video\.style\.filter/);
  assert.match(html,/if\(machineVision\(\)\)machinePhoto\(x,W,H\)/);
- assert.match(html,/recon-cam-v12-5-/);
+ assert.match(html,/recon-cam-v12-6-/);
 });

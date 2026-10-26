@@ -9,7 +9,19 @@
   --space-1: .25rem; --space-2: .5rem; --space-3: .75rem; --space-4: 1rem;
   --hud-red: #ff8680; --hud-bright: #ffb1a8; --hud-dim: #da958f;
 }
+html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
 button, select { min-height: 44px; }
+.focusActions { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-2); }
+#customLabels { width:100%; min-height:44px; background:#140706; color:#ffe2db; border:1px solid #94584f; padding:var(--space-2); }
+.cameraPermissionBox { top:26%; left:var(--space-4); right:var(--space-4); max-width:520px; margin-inline:auto; max-height:46dvh; overflow:auto; text-align:left; }
+.cameraPermissionBox[hidden] { display:none; }
+.cameraPermissionBox h2 { font-size:var(--text-base); margin:0 0 var(--space-2); }
+.cameraPermissionBox p { margin:var(--space-2) 0; }
+.cameraPermissionBox button { width:100%; margin-block:var(--space-2); }
+.cameraPermissionBox details { font-size:var(--text-xs); line-height:1.5; }
+.cameraPermissionBox summary { min-height:44px; display:flex; align-items:center; cursor:pointer; text-decoration:underline; }
+.cameraPermissionBox a { color:#ffd6cc; display:inline-block; padding-block:var(--space-2); }
+@media(max-height:580px) { .cameraPermissionBox { top:28%; max-height:33dvh; } }
 .visionHud { display: none; }
 body[data-vision="terminator"] {
   --green: var(--hud-red); --bg: #140505; --glass: rgba(24,3,3,.91);
@@ -33,15 +45,17 @@ body[data-vision="terminator"] {
   position: absolute; top: calc(env(safe-area-inset-top,0px) + 120px);
   left: var(--space-4); right: var(--space-4);
   display: flex; justify-content: space-between; gap: var(--space-3);
-  border-top: 1px solid #ff86804d; padding-top: var(--space-2);
+  border-top: 1px solid #ff86804d; padding-top: var(--space-2); background:#180303d9;
 }
 .visionTop span:last-child { text-align: right; }
+.visionTop>span { min-width:0; }
 .visionBottom {
   position: absolute; left: var(--space-4); right: var(--space-4);
   bottom: var(--vision-bottom, 220px); display: flex;
   justify-content: space-between; align-items: flex-end; gap: var(--space-3);
 }
 .visionAnalysis { max-width: 65%; overflow-wrap: anywhere; }
+.visionAnalysis,.visionMark { background:#180303d9; padding:var(--space-1); }
 .visionAnalysis strong { display: block; color: var(--hud-bright); font-size: var(--text-sm); }
 .visionMark { text-align: right; color: var(--hud-dim); }
 .visionReticle {

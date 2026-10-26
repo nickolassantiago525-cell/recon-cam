@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#1a0505">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Recon Cam V12.5 · Machine Vision</title>
+<title>Recon Cam V12.6 · Machine Vision</title>
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -15,14 +15,16 @@
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#000;color:white;font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif}button,select,input{font:inherit}button{cursor:pointer;touch-action:manipulation}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #e8fa64;outline-offset:2px}.screen{position:fixed;inset:0;background:#000;overflow:hidden}.feed{position:absolute;inset:0;overflow:hidden;background:radial-gradient(circle,#1c3026,#020503 65%)}#video,#overlay{position:absolute;width:100%;height:100%;inset:0;object-fit:cover;transform-origin:50% 50%}#overlay{pointer-events:none}.feed:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.47),transparent 19%,transparent 66%,rgba(0,0,0,.66))}.hud{z-index:3;position:absolute;left:0;right:0;padding:0 12px}.top{top:0;padding-top:calc(env(safe-area-inset-top,0px) + 8px);display:flex;gap:8px;align-items:center;justify-content:space-between}.brand{display:flex;gap:8px;min-width:0;align-items:center}.brandmark{background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:7px;color:var(--green);font-size:23px;font-weight:900}.brand h1{font-size:15px;margin:0;letter-spacing:.10em;white-space:nowrap}.brand small{display:block;color:#bbd7c2;font-size:10px;letter-spacing:.05em}.topbuttons{display:flex;gap:7px}.control{border:1px solid var(--line);color:white;background:var(--glass);border-radius:12px;min-height:43px;padding:9px 12px;font-size:12px;font-weight:800;backdrop-filter:blur(8px)}.control[aria-pressed="true"],.control.selected{background:#7df59a;color:#061208}.control.alert{border-color:#ffc174}.refreshControl{font-size:19px;min-width:39px;padding:7px 8px}.brand h1{font-size:clamp(12px,3.6vw,15px)}.brandmark{flex-shrink:0}.topbuttons{flex-shrink:0}#liveStatus.stale{color:#ffc174}.status{top:calc(env(safe-area-inset-top,0px) + 65px);display:flex;justify-content:space-between;gap:8px;pointer-events:none}.pill{background:var(--glass);border:1px solid var(--line);color:#c6f4cd;font-size:11px;min-height:30px;padding:7px 9px;border-radius:9px;font-weight:800;backdrop-filter:blur(8px);max-width:48%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pill.warn{border-color:#ffbc6a;color:#ffe6c3}.weaponBadge{pointer-events:auto;cursor:pointer;text-align:center;white-space:normal;line-height:1.15;min-height:35px;font-family:inherit}.weaponBadge:focus-visible{outline:3px solid white;outline-offset:2px}.centerMessage{z-index:4;position:absolute;left:12%;right:12%;top:39%;background:rgba(0,0,0,.82);border:1px solid #4e8960;color:#f0ffed;padding:16px;border-radius:15px;text-align:center;font-size:14px;line-height:1.5;box-shadow:0 5px 25px #0009}.centerMessage[hidden]{display:none}.crosshair{position:absolute;z-index:2;top:50%;left:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border:1px solid #baffc275;border-radius:50%;pointer-events:none}.bottom{bottom:calc(var(--safe) + 8px);display:grid;gap:8px}.row{display:flex;align-items:center;justify-content:center;gap:7px}.row .control{min-height:44px}.row .compact{padding:7px 10px}.zoomRead{background:var(--glass);border:1px solid var(--line);border-radius:9px;min-width:67px;text-align:center;font-size:13px;font-weight:800;padding:11px 9px}.readDock{border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(14px);padding:10px;border-radius:14px;display:none;max-height:28dvh;overflow-y:auto}.readDock.show{display:block}.readHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:800}.readLines{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;max-height:13dvh;overflow:auto}.word{background:#172d1e;color:white;border:1px solid #386c44;border-radius:8px;padding:8px 10px;min-height:37px;font-size:14px;max-width:100%;overflow-wrap:anywhere}.word.active{background:#98ffaf;color:#05200b}.hint{font-size:11px;color:#c4d7c6;line-height:1.3}.readActions{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px}.readActions button{background:#1b4028;border:1px solid #54775c;border-radius:9px;color:white;padding:9px;font-size:12px;font-weight:800;min-height:38px}.sheet{z-index:9;position:absolute;inset:0;background:rgba(0,0,0,.56);display:none;align-items:flex-end}.sheet.open{display:flex}.sheetContent{width:100%;background:#0a1b10;border:1px solid #3d6546;border-bottom:0;border-radius:20px 20px 0 0;max-height:87dvh;overflow-y:auto;padding:14px 15px calc(var(--safe) + 20px);box-shadow:0 -14px 40px #0009}.sheetHeader{display:flex;align-items:center;justify-content:space-between;gap:10px}.sheetHeader h2{font-size:18px;margin:3px 0 12px}.settingsGroup{background:#102418;border:1px solid #36523d;border-radius:13px;padding:11px;margin:0 0 10px;display:grid;gap:7px}.settingsGroup h3{font-size:13px;margin:0;color:#baffb8}.settingsGroup p{margin:0;color:#c7d7ca;font-size:12px;line-height:1.45}.settingsGroup select,.settingsGroup input[type=range]{width:100%}.settingsGroup select{background:#051107;border:1px solid #4c7457;color:white;border-radius:9px;padding:9px;font-size:15px;min-height:40px}.settingsGroup label{font-size:12px;color:#dbf0e2}.switchLine{display:flex;justify-content:space-between;align-items:center;gap:10px}.switchLine input{width:22px;height:22px;accent-color:#7dffa2}.settingsButton{background:#1b4028;border:1px solid #67966e;color:white;border-radius:10px;min-height:42px;padding:10px;font-size:12px;font-weight:750}.settingsButton:disabled{opacity:.5}.notice{border-left:3px solid #efc277;padding:9px 11px;background:#2e281a;font-size:12px;line-height:1.4;color:#ffeac8}.twoCols{display:grid;grid-template-columns:1fr 1fr;gap:7px}.substatus{font-size:12px;color:#b5ddba;overflow-wrap:anywhere}.danger{color:#ffca91}.focusButton{width:100%;min-height:42px;background:rgba(31,33,13,.87);border-color:#dca665;color:#ffe4a3}.focusButton:disabled{opacity:.65}.focusGuide{position:absolute;z-index:2;pointer-events:none;width:85%;height:62%;left:7.5%;top:19%;border:2px dashed #ffdb7b;background:rgba(250,220,100,.035);border-radius:14px;box-shadow:0 0 0 9999px rgba(0,0,0,.03)}.focusGuide[hidden]{display:none}.focusGuide span{position:absolute;top:-28px;left:0;background:#26250c;color:#ffe6a5;border:1px solid #dfac65;border-radius:5px;padding:4px 6px;font-size:10px;font-weight:800}.noScroll{overflow:hidden}.srOnly{position:absolute;left:-9999px}
 @media(min-width:700px){.top,.bottom,.status{max-width:840px;margin:auto}.sheetContent{max-width:620px;margin:auto}}
 </style>
-<link rel="stylesheet" href="terminator.css?v=125">
+<link rel="stylesheet" href="terminator.css?v=126">
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="detection.js?v=124"></script>
+<script src="detection.js?v=126"></script>
+<script src="camera-support.js?v=126"></script>
+<script src="recognition-catalog.js?v=126"></script>
 </head>
 <body data-vision="terminator">
-<main class="screen" aria-label="Recon Cam V12.5">
+<main class="screen" aria-label="Recon Cam V12.6">
   <section class="feed" id="feed">
     <video id="video" playsinline muted autoplay></video>
     <canvas id="overlay" aria-label="Recognized objects are outlined over camera picture"></canvas>
@@ -31,14 +33,20 @@
       <div class="visionTop"><span>RECON / MACHINE VISION<br><span id="visionSource">OPTICAL INPUT / OFFLINE</span></span><span>VISUAL FILTER / RED<br><span id="visionClock"></span></span></div>
       <div class="visionFrame"><i></i><i></i><i></i><i></i></div>
       <div class="visionReticle"></div>
-      <div class="visionBottom"><div class="visionAnalysis"><span>OBJECT ANALYSIS</span><strong id="visionAnalysis">AWAITING CAMERA</strong><span id="visionCount">NO ACTIVE TRACKS</span></div><div class="visionMark">RECON CAM / 12.5<br>OPTICAL OVERLAY<br>VERIFY ALL MATCHES</div></div>
+      <div class="visionBottom"><div class="visionAnalysis"><span>OBJECT ANALYSIS</span><strong id="visionAnalysis">AWAITING CAMERA</strong><span id="visionCount">NO ACTIVE TRACKS</span></div><div class="visionMark">RECON CAM / 12.6<br>OPTICAL OVERLAY<br>VERIFY ALL MATCHES</div></div>
     </div>
     <div class="crosshair" aria-hidden="true"></div>
     <div class="focusGuide" id="focusGuide" hidden><span>KEEP ITEM IN THIS BOX</span></div>
     <div id="message" class="centerMessage">Opening camera… If iPhone asks permission, tap Allow. If it does not open, tap START.</div>
+    <section id="cameraPermissionBox" class="centerMessage cameraPermissionBox" aria-label="Enable camera access" hidden>
+      <h2>ENABLE CAMERA</h2>
+      <p id="cameraAccessText">Tap Enable Camera, then approve the camera request from your browser.</p>
+      <button class="control" id="enableCameraBtn" type="button">ENABLE CAMERA</button>
+      <details><summary>Remember access on iPhone</summary><p>Open the standalone site in Safari. In Safari’s page menu, open Website Settings, then set Camera to Allow for this site. Recon Cam tries to start on each visit; Safari decides whether to ask again. This button cannot approve permission or change Safari settings for you.</p><a href="https://support.apple.com/guide/iphone/browse-the-web-privately-iphb01fc3c85/ios" target="_blank" rel="noopener noreferrer">Apple camera-permission instructions</a></details>
+    </section>
   </section>
   <div class="hud top">
-    <div class="brand"><span class="brandmark">R◉</span><div><h1>RECON CAM</h1><small>V12.5 · <span id="liveStatus" aria-live="polite">STARTING</span></small></div></div>
+    <div class="brand"><span class="brandmark">R◉</span><div><h1>RECON CAM</h1><small>V12.6 · <span id="liveStatus" aria-live="polite">STARTING</span></small></div></div>
     <div class="topbuttons"><button class="control refreshControl" id="recoverBtn" type="button" aria-label="Restart camera if image is frozen" title="Restart live camera">↻</button><button class="control" id="startBtn" type="button">START</button><button class="control" id="settingsBtn" type="button" aria-label="Open settings">☰</button></div>
   </div>
   <div class="hud status"><div class="pill" id="objectStatus" role="status">OBJECT AI · LOADING</div><button class="pill weaponBadge" type="button" id="weaponStatus" aria-label="Tap to enable experimental weapon model">WEAPON · TAP TO ENABLE</button></div>
@@ -48,7 +56,7 @@
       <div class="readLines" id="readLines"><span class="hint">Point at printed writing, then tap SCAN TEXT.</span></div>
       <div class="readActions"><button id="scanTextBtn" type="button">SCAN TEXT</button><button id="readBtn" type="button">READ ALOUD</button><button id="spellBtn" type="button">SPELL</button><button id="copyBtn" type="button">COPY</button></div>
     </div>
-    <div class="row" style="flex-direction:column;align-items:stretch"><button class="control focusButton" id="focusWeaponBtn" type="button">CHECK ITEM · CENTER CLOSE-UP</button><span id="itemDetail" class="hint" role="status" style="background:#061008e8;border-radius:6px;padding:5px 8px">Center one item, use 1×, and tap CHECK ITEM. Results can be wrong.</span></div>
+    <div class="row" style="flex-direction:column;align-items:stretch"><div class="focusActions"><button class="control focusButton" id="focusWeaponBtn" type="button">CHECK ITEM</button><button class="control focusButton" id="deepScanBtn" type="button">DEEP SCAN</button></div><span id="itemDetail" class="hint" role="status" style="background:#061008e8;border-radius:6px;padding:5px 8px">Live: people, animals, cars & objects. DEEP SCAN adds experimental groups.</span></div>
     <div class="row"><button class="control compact" data-zoom="0.5" type="button">0.5×</button><button class="control compact selected" data-zoom="1" type="button">1×</button><button class="control compact" data-zoom="2" type="button">2×</button><button class="control compact" data-zoom="5" type="button">5×</button><button class="control compact" id="zoomOutBtn" type="button">−</button><span class="zoomRead" id="zoomRead">1.0×</span><button class="control compact" id="zoomInBtn" type="button">+</button></div>
     <div class="row"><button class="control" id="farBtn" type="button" aria-pressed="true">FAR SCAN ON</button><button class="control" id="textBtn" type="button" aria-pressed="false">READ TEXT</button><button class="control" id="photoBtn" type="button">PHOTO</button></div>
   </div>
@@ -57,21 +65,26 @@
       <div class="sheetHeader"><h2>Recon Cam controls</h2><button class="control" type="button" id="closeSheet">CLOSE</button></div>
       <div class="settingsGroup"><h3>DETECTION</h3><label for="targetSelect">Show objects</label><select id="targetSelect"><option value="all">All recognized objects</option><option value="people">People only</option><option value="living">People, animals & vehicles</option><option value="tools">Tools / possible knives / scissors</option></select><label for="sensitivity">Sensitivity</label><select id="sensitivity"><option value="balanced" selected>Balanced · fewer false alerts</option><option value="sensitive">Sensitive · may show more false alerts</option><option value="strict">Strict · highest confidence only</option></select><label class="switchLine" for="farSwitch"><span>Search smaller, farther objects (uses more battery)</span><input type="checkbox" id="farSwitch" checked></label><p>Boxes identify likely people, not who they are. Boxes can be wrong, and distance depends on lighting and camera resolution. Scanning smaller image regions may help, but cannot create missing detail.</p></div>
       <div class="settingsGroup" id="weaponSettings">
-        <h3>EXPERIMENTAL WEAPON SCANNER · OPTIONAL</h3>
-        <div class="notice">COCO recognition can suggest a knife or scissors, but has no firearm class. This optional second AI compares weapon labels with nonweapon lookalikes. It is experimental, needs about 155 MB for weights plus other files, may fail on iPhone, and cannot confirm that an area is safe. Never rely on it for safety decisions.</div>
-        <button class="settingsButton" type="button" id="weaponEnable">ENABLE EXPERIMENTAL MODEL</button>
+        <h3>EXTENDED RECOGNITION · OPTIONAL</h3>
+        <div class="notice">The live model covers common people, animals, vehicles and objects. This optional larger model searches text labels for snakes, rats, animal mice, more birds and possible weapons. Prompt support is experimental, not validated species or breed recognition. It needs about 155 MB for weights plus other files and may fail on iPhone. Never rely on it for safety or to identify dangerous animals.</div>
+        <label for="extendedPack">Extended scan group</label>
+        <select id="extendedPack"><option value="all">All groups · rotate one group per scan</option><option value="wildlife">Wildlife, rats & animal mice</option><option value="reptiles">Snakes & reptiles</option><option value="pets">Cats, dogs & other animals</option><option value="birds">Bird types</option><option value="vehicles">People & vehicles</option><option value="weapons">Possible weapons</option><option value="objects">More everyday objects</option><option value="custom">Custom types or objects</option></select>
+        <div id="customPromptGroup" hidden><label for="customLabels">Up to 8 names, separated by commas</label><input id="customLabels" type="text" maxlength="320" placeholder="Labrador dog, German shepherd dog, tabby cat"><p>Custom names are experimental search prompts, not validated breed, species or identity recognition.</p></div>
+        <span class="substatus" id="extendedCoverage">Next group: Wildlife & rodents. No extended scan has run.</span>
+        <button class="settingsButton" type="button" id="weaponEnable">ENABLE EXTENDED MODEL</button>
         <div class="twoCols"><button class="settingsButton" type="button" id="weaponScan" disabled>SCAN WHOLE FRAME</button><button class="settingsButton" type="button" id="weaponFocus" disabled>SCAN CENTER CLOSE-UP</button></div>
         <label for="weaponSensitivity">Experimental match sensitivity</label>
         <select id="weaponSensitivity"><option value="sensitive">Sensitive · many false positives</option><option value="balanced" selected>Balanced · experimental</option><option value="strict">Strict · fewer false positives</option></select>
-        <label class="switchLine" for="weaponAuto"><span>Auto weapon scans (resource-intensive; may freeze camera)</span><input type="checkbox" id="weaponAuto"></label>
+        <label class="switchLine" for="weaponAuto"><span>Auto extended scans (slow; may freeze camera)</span><input type="checkbox" id="weaponAuto"></label>
         <span class="substatus" id="weaponDetail" role="status" aria-live="polite">Off. Tap ENABLE to download the experimental model. It may need Wi-Fi and sufficient available memory.</span>
-        <span class="substatus" id="weaponDiagnostics" aria-live="polite">No weapon scan has run yet.</span>
-        <p>Automatic weapon scanning is OFF by default to keep the live camera smooth. If enabled, scans are requested about every 20 seconds after the previous scan completes. For an optional-model check, center the item and tap SCAN CENTER CLOSE-UP here. The camera's CHECK ITEM button uses the standard model instead. A weak score is not a reliable recognition. No matches do not mean no weapons.</p>
+        <span class="substatus" id="weaponDiagnostics" aria-live="polite">No extended scan has run yet.</span>
+        <p>Extended automatic scanning is OFF by default. When enabled, one group is scanned about 20 seconds after the preceding scan finishes. All groups rotates through seven groups, not all labels every frame. Choose a specific group for repeated scans of it. CHECK ITEM still uses the lightweight live model. No matches do not establish that an area is safe. The basic model's “mouse” means a computer mouse; animal mice need the extended wildlife group.</p>
       </div>
+      <div class="settingsGroup"><h3>CAMERA PERMISSION</h3><button class="settingsButton" id="settingsEnableCamera" type="button">ENABLE CAMERA</button><span class="substatus" id="permissionState">Your browser controls camera permission and whether it is remembered.</span><p>To remember approval on iPhone, open the standalone site in Safari, then open the page menu, Website Settings, Camera, Allow. Recon Cam automatically attempts camera startup when opened. A webpage cannot approve permission, override a blocked preview, or force Safari to retain approval.</p><a href="https://support.apple.com/guide/iphone/browse-the-web-privately-iphb01fc3c85/ios" target="_blank" rel="noopener noreferrer">Apple camera-permission instructions</a></div>
       <div class="settingsGroup"><h3>CAMERA</h3><div class="twoCols"><button class="settingsButton" id="cameraDefault" type="button">REAR CAMERA</button><button class="settingsButton" id="cameraUltra" type="button">TRY ULTRA-WIDE 0.5×</button></div><p id="cameraNote">iPhone controls camera permissions. Not all browsers expose the ultra-wide lens or hardware zoom.</p><label for="qualitySelect">Live camera performance</label><select id="qualitySelect"><option value="smooth" selected>Smooth live · 720p, lighter AI (recommended)</option><option value="detail">High detail · 1080p, slower AI</option></select><button class="settingsButton" id="recoverCamera" type="button">↻ RESTART LIVE CAMERA</button><p>Keeping the picture live takes priority over AI speed. If it freezes, use ↻. High detail uses more resources and may stall older iPhones.</p><label for="viewSelect">Picture appearance</label><select id="viewSelect"><option value="normal">Normal / natural color</option><option value="night">Brighten image</option><option value="outline">High contrast</option><option value="thermal">False-color effect (not thermal vision)</option></select><button class="settingsButton" id="refreshBtn" type="button">RELOAD OBJECT AI</button></div>
       <div class="settingsGroup"><h3>READ WRITING</h3><label class="switchLine" for="ocrSwitch"><span>Automatic text reading every 12 seconds (higher load)</span><input type="checkbox" id="ocrSwitch"></label><label class="switchLine" for="speechSwitch"><span>Automatically say new text after voice is enabled</span><input type="checkbox" id="speechSwitch"></label><p>Automatic reading is OFF by default to reduce freezes. Tap READ TEXT below the camera to scan words manually. Text is kept away from the picture. Automatic speech needs a user tap to begin on iPhone.</p></div>
       <div class="settingsGroup"><h3>ITEM CHECK</h3><p>CHECK ITEM takes a detailed crop from the center and examines two orientations with the standard model. It works without the large weapon download. Conflicting knife, scissors, toothbrush or utensil guesses are shown as uncertain, not silently changed into knives. Scores measure model output, not the chance an identification is correct. For another experimental check, enable the optional model and use SCAN CENTER CLOSE-UP. It compares knife prompts with non-weapon lookalikes too.</p></div>
-      <div class="settingsGroup"><h3>IMPORTANT LIMITS</h3><p>Object and text recognition need model downloads and may not work without internet on first load. This is a visual aid, not a security, medical, or emergency detection system. No camera can be permanently authorized by a web page; Safari controls permissions. Machine vision, night and false-color modes are visual filters, not infrared or thermal sensors.</p><span class="substatus" id="systemStatus">V12.5 ready · red machine vision.</span></div>
+      <div class="settingsGroup"><h3>IMPORTANT LIMITS</h3><p>Object and text recognition need model downloads and may not work without internet on first load. This is a visual aid, not a security, medical, or emergency detection system. No camera can be permanently authorized by a web page; Safari controls permissions. Machine vision, night and false-color modes are visual filters, not infrared or thermal sensors.</p><span class="substatus" id="systemStatus">V12.6 ready · red machine vision.</span></div>
     </div>
   </div>
 </main>
@@ -80,6 +93,7 @@
 'use strict';
 const $=id=>document.getElementById(id), video=$('video'), overlay=$('overlay'), ctx=overlay.getContext('2d'), msg=$('message');
 const D=window.ReconDetection;
+const C=window.ReconCatalog;
 const S={stream:null,track:null,running:false,generation:0,model:null,loading:false,busy:false,far:true,frame:0,tile:0,phase:0,tracks:[],zoom:1,deviceZoom:false,ultra:false,ultraId:null,ocrBusy:false,ocrWorker:null,ocrLines:[],selected:'',ocrTimer:0,objectTimer:null,healthTimer:null,frameHandle:null,frameLast:0,frameLastSeen:0,frameCount:0,recoveries:0,lastRecovery:0,autoRecovery:false,resumeOnVisible:false,weaponModel:null,weaponImport:null,weaponBusy:false,weaponLoading:false,weaponDet:[],weaponTimer:null,weaponScans:0,weaponLast:0,speechUnlocked:false,interval:0};
 const COCO_COLORS={person:'#7bff92',dog:'#ffe06e',cat:'#ffe06e',car:'#fa8181',truck:'#fa8181',bus:'#fa8181',knife:'#ffae6e',scissors:'#ffae6e',book:'#9eaeff'};
 const TILES=[{x:0,y:0,w:.59,h:.59},{x:.41,y:0,w:.59,h:.59},{x:0,y:.41,w:.59,h:.59},{x:.41,y:.41,w:.59,h:.59}];
@@ -88,16 +102,18 @@ const weaponCtx=weaponCanvas.getContext('2d',{willReadFrequently:true});
 S.itemBusy=false;
 S.lastRefine=0;
 S.focusUntil=0;
-function notify(t,hold=3500){msg.textContent=t;msg.hidden=false;clearTimeout(notify.timer);if(hold>0)notify.timer=setTimeout(()=>{if(S.running)msg.hidden=true},hold)}
+S.extendedIndex=0;
+function notify(t,hold=3500){$('cameraPermissionBox').hidden=true;msg.textContent=t;msg.hidden=false;clearTimeout(notify.timer);if(hold>0)notify.timer=setTimeout(()=>{if(S.running)msg.hidden=true},hold)}
+function cameraHelp(text){clearTimeout(notify.timer);msg.hidden=true;$('cameraAccessText').textContent=text;$('cameraPermissionBox').hidden=false;$('permissionState').textContent='Camera access needs review. Safari controls saved permission.'}
 function system(t){$('systemStatus').textContent=t}
 function objectStatus(t){$('objectStatus').textContent=t}
-function weaponStatus(t,warning=false){const b=$('weaponStatus');b.textContent=t;b.classList.toggle('warn',warning);b.setAttribute('aria-label',t+'; tap for weapon model controls');b.setAttribute('aria-pressed',String(!!S.weaponModel));}
+function weaponStatus(t,warning=false){const b=$('weaponStatus');const text=t.replace(/WEAPON(?: BETA)?/g,'EXTENDED');b.textContent=text;b.classList.toggle('warn',warning);b.setAttribute('aria-label',text+'; tap for extended model controls');b.setAttribute('aria-pressed',String(!!S.weaponModel));}
 function fit(){const dpr=Math.min(devicePixelRatio||1,2),w=overlay.clientWidth,h=overlay.clientHeight;overlay.width=Math.ceil(w*dpr);overlay.height=Math.ceil(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);render()}
 function machineVision(){return document.body.dataset.vision==='terminator'}
 function updateVision(tracks=[]){
  $('visionClock').textContent=new Date().toLocaleTimeString('en-US',{hour12:false});
  $('visionSource').textContent=S.running?`OPTICAL INPUT / ${video.videoWidth} × ${video.videoHeight}`:'OPTICAL INPUT / OFFLINE';
- $('visionAnalysis').textContent=!S.running?'AWAITING CAMERA':tracks.length?tracks.slice(0,2).map(t=>D.label(t)).join(' / '):S.model?'SCANNING FOR OBJECTS':S.loading?'LOADING OBJECT MODEL':'OBJECT MODEL UNAVAILABLE';
+ $('visionAnalysis').textContent=!S.running?'AWAITING CAMERA':tracks.length?tracks.slice(0,2).map(t=>t.experimental?C.label(t):D.label(t)).join(' / '):S.model?'SCANNING FOR OBJECTS':S.loading?'LOADING OBJECT MODEL':'OBJECT MODEL UNAVAILABLE';
  $('visionCount').textContent=S.running?`${tracks.length} VISIBLE TRACK${tracks.length===1?'':'S'} / UNVERIFIED`:'NO ACTIVE TRACKS';
  const bottom=document.querySelector('.bottom').getBoundingClientRect();
  document.documentElement.style.setProperty('--vision-bottom',`${Math.max(12,innerHeight-bottom.top+16)}px`);
@@ -114,8 +130,8 @@ function rect(box,label,color){const b=screenBox(box);if(!b)return;const [x,y,w,
  }
  ctx.lineWidth=3.5;ctx.strokeStyle=color;ctx.shadowColor=color;ctx.shadowBlur=8;ctx.strokeRect(x,y,w,h);ctx.shadowBlur=0;labelRect(label,x,y,color)}
 function visibleTrack(t,now){return now-t.seen<(t.focus?5000:((S.far)?2200:1700))&&(t.focus||t.hits>=2||(t.class==='person'&&t.score>=.79))}
-function render(){const W=overlay.clientWidth,H=overlay.clientHeight;ctx.clearRect(0,0,W,H);if(!S.running){updateVision();return}const now=performance.now(),target=$('targetSelect').value;const valid=S.tracks.filter(t=>visibleTrack(t,now));let count=0;const shown=[];for(const t of valid){if(target==='people'&&t.class!=='person')continue;if(target==='living'&&!['person','dog','cat','bird','car','truck','bus','motorcycle','bicycle','horse','cow','sheep','boat'].includes(t.class))continue;if(target==='tools'&&!D.isTool(t)&&t.class!=='baseball bat')continue;const name=D.label(t);rect(t.bbox,`${name}${D.isTool(t)?'':` ${Math.round(t.score*100)}%`}`,D.isTool(t)?'#ffbc79':COCO_COLORS[t.class]||'#8cfaa5');count++;shown.push(t)}
-for(const w of S.weaponDet.filter(x=>now-x.seen<5000)){rect(w.bbox,`Possible ${w.class} · experimental`, '#ffb54f')}
+function render(){const W=overlay.clientWidth,H=overlay.clientHeight;ctx.clearRect(0,0,W,H);if(!S.running){updateVision();return}const now=performance.now(),target=$('targetSelect').value;const valid=S.tracks.filter(t=>visibleTrack(t,now));let count=0;const shown=[];for(const t of valid){if(!C.matches(t,target))continue;const name=D.label(t);rect(t.bbox,`${name}${D.isTool(t)?'':` ${Math.round(t.score*100)}%`}`,D.isTool(t)?'#ffbc79':COCO_COLORS[t.class]||'#8cfaa5');count++;shown.push(t)}
+for(const w of S.weaponDet.filter(x=>now-x.seen<5000&&C.matches(x,target))){rect(w.bbox,`${C.label(w)} · experimental`, '#ffb54f');count++;shown.push(w)}
 updateVision(shown);if(!S.model)objectStatus(S.loading?'OBJECT AI · LOADING':'OBJECT AI · UNAVAILABLE');else objectStatus(count?`OBJECTS · ${count} VISIBLE`:'OBJECT AI · SCANNING')}
 function intersection(a,b){const x=Math.max(a[0],b[0]),y=Math.max(a[1],b[1]),right=Math.min(a[0]+a[2],b[0]+b[2]),bottom=Math.min(a[1]+a[3],b[1]+b[3]);const area=Math.max(0,right-x)*Math.max(0,bottom-y);return area/(a[2]*a[3]+b[2]*b[3]-area||1)}
 function near(a,b){const x=(a[0]+a[2]/2-b[0]-b[2]/2),y=(a[1]+a[3]/2-b[1]-b[3]/2);const d=Math.sqrt(x*x+y*y),size=Math.sqrt(Math.max(a[2],b[2])**2+Math.max(a[3],b[3])**2);return d<Math.max(25,size*.26)&&Math.min(a[2]*a[3],b[2]*b[3])/Math.max(a[2]*a[3],b[2]*b[3])>.32}
@@ -312,7 +328,8 @@ function stop(){
 async function findUltra(){try{const devices=await navigator.mediaDevices.enumerateDevices();const found=devices.find(d=>d.kind==='videoinput'&&/ultra[ -]?wide|0[.,]5\s*x/i.test(d.label));S.ultraId=found?.deviceId||null}catch{S.ultraId=null}return S.ultraId}
 async function start(useUltra=false){
  stop();const gen=S.generation;notify('Requesting rear camera access…',0);
- if(!navigator.mediaDevices?.getUserMedia){notify('Camera access unavailable. Open this page in Safari over HTTPS.',0);return}
+ const issue=window.ReconCamera.environmentIssue(window,document,navigator);
+ if(issue){cameraHelp(issue);$('cameraNote').textContent=issue;liveState('CAMERA BLOCKED',true);return}
  try{
    if(useUltra&&!S.ultraId){
      const temp=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
@@ -326,12 +343,13 @@ async function start(useUltra=false){
      ...(useUltra?{deviceId:{exact:S.ultraId}}:{facingMode:{ideal:'environment'}}),
      width:{ideal:desired.width},height:{ideal:desired.height},frameRate:{ideal:desired.frameRate,max:30}
    };
-   const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:constraints});
+   const stream=await window.ReconCamera.request(navigator.mediaDevices,{audio:false,video:constraints},!useUltra,()=>gen===S.generation);
    if(gen!==S.generation){stream.getTracks().forEach(t=>t.stop());return}
    S.stream=stream;S.track=stream.getVideoTracks()[0];
    video.srcObject=stream;await video.play();
    if(gen!==S.generation)return;
    S.ultra=useUltra;S.running=true;S.zoom=useUltra?0.5:1;
+   $('permissionState').textContent='Camera access granted for this session. Your browser manages whether that approval is remembered.';
    $('startBtn').textContent='STOP';fit();await applyZoom();
    S.frameLast=performance.now();S.frameCount=0;monitorFrames(S.generation);
    watchdog(S.generation);liveState('CONNECTING');
@@ -341,15 +359,18 @@ async function start(useUltra=false){
    ocrSchedule();if(S.weaponModel&&$('weaponAuto').checked)weaponSchedule();
    system('Live video is separate from lower-rate AI scans. Use ↻ to recover a stalled picture.');
  }catch(e){
-   console.warn(e);notify(String(e.message||'Camera could not open'),0);
-   $('cameraNote').textContent=String(e.message||'Camera unavailable');
+   if(gen!==S.generation)return;
+   console.warn('Camera startup failed:',e);
+   const explanation=window.ReconCamera.explain(e,window.self!==window.top);
+   stop();cameraHelp(explanation);$('cameraNote').textContent=explanation;
+   system(`Camera startup: ${e.name||'Error'}. ${explanation}`);
    liveState('CAMERA ERROR',true);S.ultra=false;S.zoom=1;updateZoomRead();
    if(useUltra){await start(false);notify('0.5× lens unavailable. Returned to 1×.',4200)}
  }
 }
 function updateZoomRead(){$('zoomRead').textContent=S.zoom.toFixed(1)+'×';document.querySelectorAll('[data-zoom]').forEach(b=>b.classList.toggle('selected',Math.abs(Number(b.dataset.zoom)-S.zoom)<.01))}
 function setDisplayScale(scale){const t=scale>1?`scale(${scale})`:'none';video.style.transform=t;overlay.style.transform=t}
-async function applyZoom(){updateZoomRead();if(!S.track)return;const relative=S.zoom/(S.ultra ? 0.5 : 1);const caps=S.track.getCapabilities?.()||{};if(caps.zoom){const z=Math.min(caps.zoom.max,Math.max(caps.zoom.min,relative));try{await S.track.applyConstraints({advanced:[{zoom:z}]});S.deviceZoom=true;setDisplayScale(1);return}catch(e){console.info('Device zoom unavailable',e)}}S.deviceZoom=false;setDisplayScale(Math.max(1,relative))}
+async function applyZoom(){updateZoomRead();if(!S.track)return;const relative=S.zoom/(S.ultra ? 0.5 : 1);const caps=window.ReconCamera.capabilities(S.track);if(caps.zoom){const z=Math.min(caps.zoom.max,Math.max(caps.zoom.min,relative));try{await S.track.applyConstraints({advanced:[{zoom:z}]});S.deviceZoom=true;setDisplayScale(1);return}catch(e){console.info('Device zoom unavailable',e)}}S.deviceZoom=false;setDisplayScale(Math.max(1,relative))}
 async function setZoom(z){if(z<1){if(S.ultra){S.zoom=.5;await applyZoom();return}if(!S.running){notify('Start camera first to check 0.5× lens.');return}await start(true);if(!S.running){S.zoom=1;updateZoomRead()}return}if(S.ultra&&z>=1){await start(false)}S.zoom=Math.min(12,Math.max(1,z));await applyZoom()}
 function setFilter(v){const css={terminator:'grayscale(1) brightness(.6) sepia(1) hue-rotate(310deg) saturate(10)',normal:'none',night:'brightness(1.5) contrast(1.1) saturate(.86)',outline:'contrast(1.6) saturate(.85)',thermal:'contrast(1.4) saturate(2.2) hue-rotate(115deg)'};document.body.dataset.vision=v;video.style.filter=css[v]||'none';render()}
 function cleanText(s){return String(s||'').normalize('NFKC').replace(/\s+/g,' ').replace(/[|~^_]{2,}/g,'').trim().slice(0,115)}
@@ -360,11 +381,12 @@ function ocrSchedule(){clearTimeout(S.ocrTimer);const gen=S.generation;const loo
 function speak(text,spell=false){const s=String(text||'');if(!s){$('ocrStatus').textContent='Scan text first';return}if(!window.speechSynthesis){$('ocrStatus').textContent='Speech not available';return}S.speechUnlocked=true;try{speechSynthesis.cancel();const chars=spell?Array.from(s).map(ch=>ch===' '?'pause':ch).join(', '):s;const utter=new SpeechSynthesisUtterance(chars);utter.lang='en-US';utter.rate=spell?.65:.85;speechSynthesis.speak(utter)}catch{$('ocrStatus').textContent='Speech blocked by browser'}}
 async function enableWeapon(){
   if(S.weaponLoading||S.weaponModel)return;
+  if(!window.confirm('Download the optional extended recognition model? About 155 MB of weights plus other files. It may run slowly or fail on iPhone. Animal, breed and weapon matches are experimental and can be wrong.'))return;
   if(navigator.onLine===false){
     weaponStatus('WEAPON · OFFLINE',true);
     $('weaponDetail').textContent='Cannot download the experimental model while offline. Connect to Wi-Fi or mobile data and try again.';
     $('weaponEnable').textContent='RETRY WHEN ONLINE';
-    notify('Weapon model needs internet for the first download.',4500);
+    notify('Extended model needs internet for the first download.',4500);
     return;
   }
   S.weaponLoading=true;
@@ -396,10 +418,10 @@ async function enableWeapon(){
       }
     });
     weaponStatus('WEAPON · READY',true);
-    $('weaponEnable').textContent='WEAPON MODEL READY';
+    $('weaponEnable').textContent='EXTENDED MODEL READY';
     $('weaponScan').disabled=false;
     $('weaponFocus').disabled=false;
-    $('weaponDetail').textContent='Experimental model ready. Manual focus scan ready. To enable automatic scans, turn on Auto weapon scans in Settings. Misses and false matches are possible.';
+    $('weaponDetail').textContent='Extended model ready. Choose a group, then use DEEP SCAN or a manual scan. Auto extended scans are optional. Misses and false matches are possible.';
     notify('Experimental model ready. Use Settings for a manual scan, or enable auto scans.',3500);
     if(S.running && $('weaponAuto').checked)weaponSchedule();
   } catch(e){
@@ -409,9 +431,9 @@ async function enableWeapon(){
     weaponStatus('WEAPON · LOAD FAILED',true);
     $('weaponDetail').textContent='Model failed to load: '+m+'. Check internet, available memory, or try Safari. Standard object recognition still works independently.';
     $('weaponEnable').disabled=false;
-    $('weaponEnable').textContent='RETRY WEAPON DOWNLOAD';
+    $('weaponEnable').textContent='RETRY EXTENDED DOWNLOAD';
     $('weaponFocus').disabled=true;
-    notify('Weapon model could not start. Tap the orange status to see the reason.',5000);
+    notify('Extended model could not start. Tap the extended status to see the reason.',5000);
   } finally{
     clearTimeout(heartbeat);
     S.weaponLoading=false;
@@ -419,8 +441,6 @@ async function enableWeapon(){
 }
 // Experimental OWL-ViT is a general text-prompted image model, not a certified weapon detector.
 // Keep weak raw scores visible in diagnostics without drawing authoritative weapon boxes.
-const WEAPON_LABELS=['serrated knife','bread knife','kitchen knife','folding knife','knife blade','scissors','handgun','pistol','rifle','toothbrush','pen','spoon','cell phone'];
-const AUTO_LABELS=WEAPON_LABELS;
 function weaponThreshold(){return ({sensitive:.09,balanced:.12,strict:.20})[$('weaponSensitivity').value]||.12}
 function diagnostic(s){$('weaponDiagnostics').textContent=s}
 function setFocusGuide(on){$('focusGuide').hidden=!on}
@@ -441,6 +461,8 @@ function candidateDetail(results){
 async function scanWeapons(mode='full'){
  if(!S.weaponModel||S.weaponBusy||S.itemBusy||S.busy||S.ocrBusy||!S.running||!video.videoWidth){
    if(S.weaponBusy)diagnostic('Scanner is still working on an earlier frame. Please wait.');
+   else if(!S.running)notify('Start the camera before an extended scan.');
+   else if(S.busy||S.itemBusy||S.ocrBusy)notify('Another recognition pass is finishing. Tap DEEP SCAN again in a moment.');
    return;
  }
  S.weaponBusy=true;S.weaponScans++;
@@ -463,19 +485,25 @@ async function scanWeapons(mode='full'){
    weaponCanvas.width=w;weaponCanvas.height=h;
    weaponCtx.drawImage(video,source.x,source.y,source.w,source.h,0,0,w,h);
    const raw=await S.weaponImport.RawImage.fromCanvas(weaponCanvas);
-   const results=await S.weaponModel(raw,focus?WEAPON_LABELS:AUTO_LABELS,{top_k:10,threshold:.03});
-   if(!S.running||gen!==S.generation)return;
+   const selected=$('extendedPack').value,key=selected==='all'?C.order[S.extendedIndex++%C.order.length]:selected,customText=$('customLabels').value;
+   const config=C.pack(key,customText);
+   if(!config.labels.length)throw Error('Enter at least one custom label first.');
+   $('extendedCoverage').textContent=`Scanning: ${config.title}. This is an experimental prompt search.`;
+   const results=await S.weaponModel(raw,[...config.labels,...config.distractors],{top_k:24,threshold:.03});
+   if(!S.running||gen!==S.generation||$('extendedPack').value!==selected||$('customLabels').value!==customText)return;
    const sorted=(Array.isArray(results)?results:[]).filter(resultOk).sort((a,b)=>b.score-a.score);
    const cutoff=weaponThreshold(),now=performance.now();
-   S.weaponDet=D.weaponGroups(sorted,cutoff).slice(0,4).map(r=>({
+   S.weaponDet=C.resolve(sorted,key,cutoff,D,customText).map(r=>({
      ...r,bbox:[source.x+r.bbox[0]/w*source.w,source.y+r.bbox[1]/h*source.h,r.bbox[2]/w*source.w,r.bbox[3]/h*source.h],seen:now
    }));
    S.weaponLast=Date.now();
-   weaponStatus(S.weaponDet.length?`WEAPON BETA · ${S.weaponDet.length} POSSIBLE`:'WEAPON BETA · NO CLEAR MATCH',true);
+   weaponStatus(S.weaponDet.length?`EXTENDED · ${S.weaponDet.length} POSSIBLE`:'EXTENDED · NO CLEAR MATCH',true);
    const detail=candidateDetail(sorted);
    $('weaponDetail').textContent=S.weaponDet.length
     ? `${S.weaponDet.length} experimental ${focus?'focused':'whole-frame'} candidate(s) above ${Math.round(cutoff*100)}% threshold. Verify visually; these can be wrong.`
-    : `Scan completed, but no candidate met the ${Math.round(cutoff*100)}% display threshold. This does not rule out any weapon.`;
+    : `Scan completed, but no candidate met the ${Math.round(cutoff*100)}% display threshold. A missed match does not rule out an animal, object or weapon.`;
+   $('extendedCoverage').textContent=`Last: ${config.title} · ${new Date().toLocaleTimeString()} · ${S.weaponDet.length} possible match(es). ${selected==='all'?'Next: '+C.packs[C.order[S.extendedIndex%C.order.length]].title+'.':''}`;
+   $('itemDetail').textContent=S.weaponDet.length?S.weaponDet.slice(0,3).map(C.label).join('; ')+'. Experimental; verify visually.':`No clear match in ${config.title}. Other groups may not have been scanned.`;
    diagnostic(`#${S.weaponScans} ${focus?'FOCUS':'AUTO/FULL'} · ${((performance.now()-t0)/1000).toFixed(1)}s · top raw scores: ${detail}. Scores are not calibrated probabilities or trustworthy identifications.`);
    render();
  }catch(e){
@@ -506,16 +534,18 @@ function machinePhoto(x,W,H){
  x.strokeStyle='#ff9b90';x.lineWidth=1;x.beginPath();x.arc(W/2,H/2,58,0,Math.PI*2);x.moveTo(W/2-75,H/2);x.lineTo(W/2+75,H/2);x.moveTo(W/2,H/2-75);x.lineTo(W/2,H/2+75);x.stroke();
  x.fillStyle='#160303e8';x.fillRect(8,8,W-16,64);x.fillRect(8,H-64,W-16,56);
  x.fillStyle='#ffb1a8';x.font='600 12px monospace';
- x.fillText('RECON CAM / MACHINE VISION / 12.5',16,30);
+ x.fillText('RECON CAM / MACHINE VISION / 12.6',16,30);
  x.fillText($('visionSource').textContent,16,52);
  x.fillText($('visionClock').textContent+' / '+$('visionCount').textContent,16,H-42);
  const text=$('visionAnalysis').textContent;
  x.fillText(text.length>Math.floor((W-32)/7)?text.slice(0,Math.max(1,Math.floor((W-32)/7)-3))+'...':text,16,H-20);
 }
-function savePhoto(){if(!S.running||!video.videoWidth){notify('Start camera first.');return}const W=overlay.clientWidth,H=overlay.clientHeight,dpr=2,can=document.createElement('canvas');can.width=W*dpr;can.height=H*dpr;const x=can.getContext('2d');x.scale(dpr,dpr);x.fillStyle='#000';x.fillRect(0,0,W,H);const vw=video.videoWidth,vh=video.videoHeight,sc=Math.max(W/vw,H/vh),cw=vw*sc,ch=vh*sc,rel=S.deviceZoom?1:S.zoom/(S.ultra?.5:1);x.save();x.translate(W/2,H/2);x.scale(Math.max(1,rel),Math.max(1,rel));x.translate(-W/2,-H/2);x.filter=video.style.filter||'none';x.drawImage(video,(W-cw)/2,(H-ch)/2,cw,ch);x.restore();x.drawImage(overlay,0,0,W,H);if(machineVision())machinePhoto(x,W,H);can.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`recon-cam-v12-5-${Date.now()}.jpg`;a.click();setTimeout(()=>URL.revokeObjectURL(url),12000)},'image/jpeg',.92)}
+function savePhoto(){if(!S.running||!video.videoWidth){notify('Start camera first.');return}const W=overlay.clientWidth,H=overlay.clientHeight,dpr=2,can=document.createElement('canvas');can.width=W*dpr;can.height=H*dpr;const x=can.getContext('2d');x.scale(dpr,dpr);x.fillStyle='#000';x.fillRect(0,0,W,H);const vw=video.videoWidth,vh=video.videoHeight,sc=Math.max(W/vw,H/vh),cw=vw*sc,ch=vh*sc,rel=S.deviceZoom?1:S.zoom/(S.ultra?.5:1);x.save();x.translate(W/2,H/2);x.scale(Math.max(1,rel),Math.max(1,rel));x.translate(-W/2,-H/2);x.filter=video.style.filter||'none';x.drawImage(video,(W-cw)/2,(H-ch)/2,cw,ch);x.restore();x.drawImage(overlay,0,0,W,H);if(machineVision())machinePhoto(x,W,H);can.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`recon-cam-v12-6-${Date.now()}.jpg`;a.click();setTimeout(()=>URL.revokeObjectURL(url),12000)},'image/jpeg',.92)}
 function sheet(open){$('sheet').classList.toggle('open',open)}
 $('settingsBtn').onclick=()=>sheet(true);$('closeSheet').onclick=()=>sheet(false);$('sheet').addEventListener('click',e=>{if(e.target===$('sheet'))sheet(false)});
 $('startBtn').onclick=()=>S.running?(stop(),notify('Camera stopped',0)):start(false);
+$('enableCameraBtn').onclick=()=>start(false);
+$('settingsEnableCamera').onclick=()=>{sheet(false);start(false)};
 $('farBtn').onclick=()=>{S.far=!S.far;$('farSwitch').checked=S.far;$('farBtn').textContent=S.far?'FAR SCAN ON':'FAR SCAN OFF';$('farBtn').setAttribute('aria-pressed',String(S.far));S.tracks=[];render()};
 $('farSwitch').onchange=()=>{$('farBtn').click()};
 $('textBtn').onclick=()=>{const showing=!$('readDock').classList.contains('show');$('readDock').classList.toggle('show',showing);$('textBtn').setAttribute('aria-pressed',String(showing));if(showing&&S.running)scanOCR(true)};
@@ -528,12 +558,18 @@ $('cameraDefault').onclick=()=>start(false);$('cameraUltra').onclick=()=>start(t
 $('weaponScan').onclick=()=>scanWeapons('full');
 $('weaponFocus').onclick=()=>{sheet(false);scanWeapons('focus')};
 $('focusWeaponBtn').onclick=checkItem;
+$('deepScanBtn').onclick=()=>{
+ if(!S.weaponModel){sheet(true);$('weaponSettings').scrollIntoView({block:'start'});return}
+ scanWeapons('focus');
+};
+$('extendedPack').onchange=()=>{
+ S.weaponDet=[];S.extendedIndex=0;
+ $('customPromptGroup').hidden=$('extendedPack').value!=='custom';
+ $('extendedCoverage').textContent=$('extendedPack').value==='all'?'All groups: one group per scan, starting with wildlife.':`Selected: ${C.pack($('extendedPack').value,$('customLabels').value).title}. No scan of this selection yet.`;
+ render();
+};
 $('weaponStatus').onclick=()=>{
-  if(S.weaponLoading){sheet(true);$('weaponSettings').scrollIntoView({block:'start'});return;}
-  if(S.weaponModel){if(S.running)scanWeapons('focus');else notify('Start the camera to scan.');return;}
-  const approved=window.confirm('Enable experimental weapon scanning? This will download about 155 MB of AI model weights plus other files, may take several minutes and may fail on an iPhone. It cannot reliably rule out weapons.');
-  if(approved)enableWeapon();
-  else {sheet(true);$('weaponSettings').scrollIntoView({block:'start'});}
+  sheet(true);$('weaponSettings').scrollIntoView({block:'start'});
 };
 window.addEventListener('resize',fit);video.addEventListener('loadedmetadata',fit);document.addEventListener('visibilitychange',()=>{if(document.hidden&&S.running){S.resumeOnVisible=true;stop()}else if(!document.hidden&&S.resumeOnVisible){S.resumeOnVisible=false;setTimeout(()=>start(false),300)}});
 let touchDistance=0;const feed=$('feed');feed.addEventListener('touchstart',e=>{if(e.touches.length===2)touchDistance=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY)},{passive:true});feed.addEventListener('touchend',()=>{touchDistance=0},{passive:true});feed.addEventListener('touchmove',e=>{if(e.touches.length!==2||!touchDistance)return;const distance=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);if(Math.abs(distance-touchDistance)>24){const step=distance>touchDistance ? 0.25 : -0.25;touchDistance=distance;setZoom(Math.max(1,S.zoom+step))}},{passive:true});
@@ -546,6 +582,10 @@ try{
 if('caches' in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>/^reconcam-v/i.test(k)).map(k=>caches.delete(k)))).catch(()=>{});
 }catch{}
 const visionOption=document.createElement('option');visionOption.value='terminator';visionOption.textContent='Terminator / red machine vision';$('viewSelect').prepend(visionOption);$('viewSelect').value='terminator';
+for(const [value,text] of [['animals','Animals'],['pets','Cats & dogs'],['birds','Birds'],['rodents','Rats & animal mice · extended'],['snakes','Snakes · extended'],['vehicles','Cars & vehicles'],['weapons','Possible weapons'],['objects','Everyday objects']]){
+ const option=document.createElement('option');option.value=value;option.textContent=text;$('targetSelect').append(option);
+}
+weaponStatus('EXTENDED · TAP FOR GROUPS');
 new ResizeObserver(()=>updateVisionLayout()).observe(document.querySelector('.bottom'));
 function updateVisionLayout(){const bottom=document.querySelector('.bottom').getBoundingClientRect();document.documentElement.style.setProperty('--vision-bottom',`${Math.max(12,innerHeight-bottom.top+16)}px`)}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')sheet(false)});

@@ -1,3 +1,46 @@
+# Recon Cam V12.6
+
+## Expanded experimental recognition
+
+- Added seven extended prompt groups using the existing optional OWL-ViT model:
+  wildlife/rodents, reptiles, pets/animals, bird types, people/vehicles,
+  possible weapons and additional everyday objects.
+- Added up to eight custom text prompts, DEEP SCAN, group-by-group rotation,
+  opt-in periodic scanning and category filters shared by both detection paths.
+- Qualified all extended matches as possible or uncertain; stronger lookalike
+  results suppress overlapping positives. Standard mouse labels now explicitly
+  read Computer mouse rather than implying an animal.
+- The lightweight model's class coverage is documented in the
+  [TensorFlow class list](https://raw.githubusercontent.com/tensorflow/tfjs-models/master/coco-ssd/src/classes.ts).
+  Text-prompted boxes use the documented
+  [Transformers.js zero-shot detection interface](https://huggingface.co/docs/transformers.js/api/pipelines).
+  Prompt availability is not proof of species, breed or firearm accuracy.
+
+## Camera startup and permission repair
+
+- Added opaque-origin/Permissions Policy preflight and clear preview-blocked help.
+- Added ENABLE CAMERA buttons and browser-owned permission status. Retained
+  automatic startup, which may reuse a permission grant if the browser permits it.
+- Added constrained-camera TypeError fallback, cleanup of partial startup and
+  safe handling when optional track capabilities throw.
+- Permission denial is never silently retried. No code auto-approves browser or
+  OS permission or promises that approval is permanent.
+- On iPhone, the saved choice is controlled by Safari's per-site Camera setting:
+  [Apple instructions](https://support.apple.com/guide/iphone/browse-the-web-privately-iphb01fc3c85/ios).
+  Embedded-camera restrictions are documented by
+  [MDN](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia).
+
+## Verification and remaining limitations
+
+- Unit tests cover existing recognition geometry, camera failures/fallbacks and
+  all prompt groups, including computer-mouse disambiguation and lookalike veto.
+- Browser integration uses a simulated camera and explicitly mocked extended
+  model. It proves requests, grouping, filtering, rotation and rendering, not
+  actual animal/breed/weapon recognition accuracy.
+- The user's real iPhone camera and all requested species/types remain unvalidated.
+- A blocked embedded preview cannot be repaired by camera-request JavaScript.
+  Standalone hosting is required there; publication awaits user approval.
+
 # Recon Cam V12.5
 
 ## Machine vision presentation

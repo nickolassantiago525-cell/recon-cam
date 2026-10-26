@@ -1,7 +1,7 @@
 {
-  "name": "Recon Cam V12.5 - Machine Vision",
+  "name": "Recon Cam V12.6 - Machine Vision",
   "short_name": "ReconCam",
-  "start_url": "./index.html?v=125",
+  "start_url": "./index.html?v=126",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#1a0505",
