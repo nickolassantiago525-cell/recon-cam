@@ -20,7 +20,7 @@ test('machine vision starts by default and normal appearance remains available',
 test('photo uses selected filter and new version with optical overlay',()=>{
  assert.match(html,/x\.filter=video\.style\.filter/);
  assert.match(html,/if\(machineVision\(\)\)machinePhoto\(x,W,H\)/);
- assert.match(html,/recon-cam-v12-7-/);
+ assert.match(html,/terminator-cam-v12-7-/);
 });
 test('bracket acquisition converges once per real track and respects reduced motion',()=>{
  const start=html.indexOf('function acquisitionProgress('),end=html.indexOf('function updateVision(',start);
@@ -33,4 +33,15 @@ test('bracket acquisition converges once per real track and respects reduced mot
  assert.equal(phase({},1800),0);
  hudMotion.matches=true;assert.equal(phase({},1900),1);
  assert.equal(phase(null,1900),1);
+});
+test('Terminator Cam branding covers the page, settings, photos and install name',()=>{
+ assert.match(html,/<title>Terminator Cam V12.7/);
+ assert.match(html,/<h1>TERMINATOR CAM<\/h1>/);
+ assert.match(html,/Terminator Cam controls/);
+ assert.match(html,/TERMINATOR CAM \/ MACHINE VISION/);
+ assert.match(html,/terminator-cam-v12-7-/);
+ assert.ok(!html.includes('Recon Cam controls'));
+ const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'../manifest.webmanifest'),'utf8'));
+ assert.match(manifest.name,/^Terminator Cam/);
+ assert.equal(manifest.short_name,'Terminator Cam');
 });

@@ -1,7 +1,21 @@
-# Recon Cam V12.4
+# Terminator Cam V12.7
 
-Browser camera aid for common objects, people and vehicles, with optional
-experimental weapon matching. This is not a validated security or safety system.
+Browser camera aid with a red cinematic machine-vision HUD for common objects,
+people and vehicles, with optional experimental wildlife, reptile, pet, bird,
+weapon and custom-label matching. Formerly Recon Cam; the existing GitHub Pages
+address is unchanged. This is not a validated security or safety system.
+
+## Camera access and cinematic view
+
+- The red stepped sweep and squared targeting brackets are presentation only.
+  New visible detections get a short bracket-convergence animation.
+- Open the site directly in Safari over HTTPS, then allow camera access. A
+  restricted embedded viewer cannot be unlocked by the Enable Camera button;
+  it instead shows a standalone-site link and a copyable address.
+- Safari controls whether approval is saved. The app cannot approve browser or
+  phone permissions itself.
+- Normal color remains available in Settings, and reduced-motion preferences
+  disable the sweep and bracket animation.
 
 ## Detection improvements
 
@@ -40,6 +54,7 @@ The reported green-handled knife can still be missed or misclassified depending
 on crop, lighting and angle. These changes are inference and uncertainty handling,
 not retraining, and do not establish a detection accuracy rate.
 
-The page actually runs the inline application in `index.html` plus `detection.js`.
+The page actually runs the inline application in `index.html` plus `detection.js`,
+`camera-support.js`, `recognition-catalog.js` and `terminator.css`.
 The older `app.js` and `style.css` are legacy files, not the current entry point.
 Do not replace only `app.js` when updating the current app.

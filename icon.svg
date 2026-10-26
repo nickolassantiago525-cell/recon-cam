@@ -1,7 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="88" fill="#08110a"/>
-  <rect x="34" y="34" width="444" height="444" rx="74" fill="#0f1a10" stroke="#9af06f" stroke-width="14"/>
-  <text x="120" y="300" font-family="Arial, Helvetica, sans-serif" font-size="230" font-weight="700" fill="#9af06f">R</text>
-  <circle cx="340" cy="280" r="66" fill="none" stroke="#9af06f" stroke-width="18"/>
-  <circle cx="340" cy="280" r="14" fill="#9af06f"/>
+  <title>Terminator Cam</title>
+  <rect width="512" height="512" rx="88" fill="#140505"/>
+  <rect x="34" y="34" width="444" height="444" rx="74" fill="#220e0c" stroke="#ff9b90" stroke-width="14"/>
+  <text x="110" y="300" font-family="Arial, Helvetica, sans-serif" font-size="230" font-weight="700" fill="#ffb1a8">T</text>
+  <circle cx="340" cy="280" r="66" fill="none" stroke="#ff9b90" stroke-width="18"/>
+  <circle cx="340" cy="280" r="14" fill="#ffb1a8"/>
 </svg>

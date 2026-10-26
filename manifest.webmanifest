@@ -1,6 +1,6 @@
 {
-  "name": "Recon Cam V12.7 - Machine Vision",
-  "short_name": "ReconCam",
+  "name": "Terminator Cam V12.7 - Machine Vision",
+  "short_name": "Terminator Cam",
   "start_url": "./index.html?v=127",
   "display": "standalone",
   "background_color": "#000000",

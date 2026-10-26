@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#1a0505">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Recon Cam V12.7 · Machine Vision</title>
+<title>Terminator Cam V12.7 · Machine Vision</title>
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -24,16 +24,16 @@
 <script src="recognition-catalog.js?v=127"></script>
 </head>
 <body data-vision="terminator">
-<main class="screen" aria-label="Recon Cam V12.7">
+<main class="screen" aria-label="Terminator Cam V12.7">
   <section class="feed" id="feed">
     <video id="video" playsinline muted autoplay></video>
     <canvas id="overlay" aria-label="Recognized objects are outlined over camera picture"></canvas>
     <div class="visionHud" id="visionHud" aria-hidden="true">
       <div class="visionSweep"></div>
-      <div class="visionTop"><span>RECON / MACHINE VISION<br><span id="visionSource">OPTICAL INPUT / OFFLINE</span></span><span>VISUAL FILTER / RED<br><span id="visionClock"></span></span></div>
+      <div class="visionTop"><span>TERMINATOR / VISION<br><span id="visionSource">OPTICAL INPUT / OFFLINE</span></span><span>VISUAL FILTER / RED<br><span id="visionClock"></span></span></div>
       <div class="visionFrame"><i></i><i></i><i></i><i></i></div>
       <div class="visionReticle"></div>
-      <div class="visionBottom"><div class="visionAnalysis"><span>OBJECT ANALYSIS</span><strong id="visionAnalysis">AWAITING CAMERA</strong><span id="visionCount">NO ACTIVE TRACKS</span></div><div class="visionMark">RECON CAM / 12.7<br>OPTICAL OVERLAY<br>VERIFY ALL MATCHES</div></div>
+      <div class="visionBottom"><div class="visionAnalysis"><span>OBJECT ANALYSIS</span><strong id="visionAnalysis">AWAITING CAMERA</strong><span id="visionCount">NO ACTIVE TRACKS</span></div><div class="visionMark">TERMINATOR CAM / 12.7<br>OPTICAL OVERLAY<br>VERIFY ALL MATCHES</div></div>
     </div>
     <div class="crosshair" aria-hidden="true"></div>
     <div class="focusGuide" id="focusGuide" hidden><span>KEEP ITEM IN THIS BOX</span></div>
@@ -43,11 +43,11 @@
       <p id="cameraAccessText">Tap Enable Camera, then approve the camera request from your browser.</p>
       <button class="control" id="enableCameraBtn" type="button">ENABLE CAMERA</button>
       <div id="standaloneCameraHelp" hidden><a class="standaloneLink" id="standaloneCameraLink" href="https://nickolassantiago525-cell.github.io/recon-cam/index.html?v=127" target="_blank" rel="noopener noreferrer">OPEN CAMERA SITE</a><p class="hint">If it opens inside the app, use Share → Open in Safari. If the link is blocked, copy this address into Safari:</p><input id="standaloneAddress" type="url" readonly aria-label="Standalone camera address to copy into Safari" value="https://nickolassantiago525-cell.github.io/recon-cam/index.html?v=127"><p class="hint">Open the site directly in Safari, then tap START and approve camera access. Safari controls whether approval is remembered.</p></div>
-      <details><summary>Remember access on iPhone</summary><p>Open the standalone site in Safari. In Safari’s page menu, open Website Settings, then set Camera to Allow for this site. Recon Cam tries to start on each visit; Safari decides whether to ask again. This button cannot approve permission or change Safari settings for you.</p><a href="https://support.apple.com/guide/iphone/browse-the-web-privately-iphb01fc3c85/ios" target="_blank" rel="noopener noreferrer">Apple camera-permission instructions</a></details>
+      <details><summary>Remember access on iPhone</summary><p>Open the standalone site in Safari. In Safari’s page menu, open Website Settings, then set Camera to Allow for this site. Terminator Cam tries to start on each visit; Safari decides whether to ask again. This button cannot approve permission or change Safari settings for you.</p><a href="https://support.apple.com/guide/iphone/browse-the-web-privately-iphb01fc3c85/ios" target="_blank" rel="noopener noreferrer">Apple camera-permission instructions</a></details>
     </section>
   </section>
   <div class="hud top">
-    <div class="brand"><span class="brandmark">R◉</span><div><h1>RECON CAM</h1><small>V12.7 · <span id="liveStatus" aria-live="polite">STARTING</span></small></div></div>
+    <div class="brand"><span class="brandmark">T◉</span><div><h1>TERMINATOR CAM</h1><small>V12.7 · <span id="liveStatus" aria-live="polite">STARTING</span></small></div></div>
     <div class="topbuttons"><button class="control refreshControl" id="recoverBtn" type="button" aria-label="Restart camera if image is frozen" title="Restart live camera">↻</button><button class="control" id="startBtn" type="button">START</button><button class="control" id="settingsBtn" type="button" aria-label="Open settings">☰</button></div>
   </div>
   <div class="hud status"><div class="pill" id="objectStatus" role="status">OBJECT AI · LOADING</div><button class="pill weaponBadge" type="button" id="weaponStatus" aria-label="Tap to enable experimental weapon model">WEAPON · TAP TO ENABLE</button></div>
@@ -61,9 +61,9 @@
     <div class="row"><button class="control compact" data-zoom="0.5" type="button">0.5×</button><button class="control compact selected" data-zoom="1" type="button">1×</button><button class="control compact" data-zoom="2" type="button">2×</button><button class="control compact" data-zoom="5" type="button">5×</button><button class="control compact" id="zoomOutBtn" type="button">−</button><span class="zoomRead" id="zoomRead">1.0×</span><button class="control compact" id="zoomInBtn" type="button">+</button></div>
     <div class="row"><button class="control" id="farBtn" type="button" aria-pressed="true">FAR SCAN ON</button><button class="control" id="textBtn" type="button" aria-pressed="false">READ TEXT</button><button class="control" id="photoBtn" type="button">PHOTO</button></div>
   </div>
-  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Recon Cam controls">
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Terminator Cam controls">
     <div class="sheetContent">
-      <div class="sheetHeader"><h2>Recon Cam controls</h2><button class="control" type="button" id="closeSheet">CLOSE</button></div>
+      <div class="sheetHeader"><h2>Terminator Cam controls</h2><button class="control" type="button" id="closeSheet">CLOSE</button></div>
       <div class="settingsGroup"><h3>DETECTION</h3><label for="targetSelect">Show objects</label><select id="targetSelect"><option value="all">All recognized objects</option><option value="people">People only</option><option value="living">People, animals & vehicles</option><option value="tools">Tools / possible knives / scissors</option></select><label for="sensitivity">Sensitivity</label><select id="sensitivity"><option value="balanced" selected>Balanced · fewer false alerts</option><option value="sensitive">Sensitive · may show more false alerts</option><option value="strict">Strict · highest confidence only</option></select><label class="switchLine" for="farSwitch"><span>Search smaller, farther objects (uses more battery)</span><input type="checkbox" id="farSwitch" checked></label><p>Boxes identify likely people, not who they are. Boxes can be wrong, and distance depends on lighting and camera resolution. Scanning smaller image regions may help, but cannot create missing detail.</p></div>
       <div class="settingsGroup" id="weaponSettings">
         <h3>EXTENDED RECOGNITION · OPTIONAL</h3>
@@ -81,7 +81,7 @@
         <span class="substatus" id="weaponDiagnostics" aria-live="polite">No extended scan has run yet.</span>
         <p>Extended automatic scanning is OFF by default. When enabled, one group is scanned about 20 seconds after the preceding scan finishes. All groups rotates through seven groups, not all labels every frame. Choose a specific group for repeated scans of it. CHECK ITEM still uses the lightweight live model. No matches do not establish that an area is safe. The basic model's “mouse” means a computer mouse; animal mice need the extended wildlife group.</p>
       </div>
-      <div class="settingsGroup"><h3>CAMERA PERMISSION</h3><button class="settingsButton" id="settingsEnableCamera" type="button">ENABLE CAMERA</button><span class="substatus" id="permissionState">Your browser controls camera permission and whether it is remembered.</span><p>To remember approval on iPhone, open the standalone site in Safari, then open the page menu, Website Settings, Camera, Allow. Recon Cam automatically attempts camera startup when opened. A webpage cannot approve permission, override a blocked preview, or force Safari to retain approval.</p><a href="https://support.apple.com/guide/iphone/browse-the-web-privately-iphb01fc3c85/ios" target="_blank" rel="noopener noreferrer">Apple camera-permission instructions</a></div>
+      <div class="settingsGroup"><h3>CAMERA PERMISSION</h3><button class="settingsButton" id="settingsEnableCamera" type="button">ENABLE CAMERA</button><span class="substatus" id="permissionState">Your browser controls camera permission and whether it is remembered.</span><p>To remember approval on iPhone, open the standalone site in Safari, then open the page menu, Website Settings, Camera, Allow. Terminator Cam automatically attempts camera startup when opened. A webpage cannot approve permission, override a blocked preview, or force Safari to retain approval.</p><a href="https://support.apple.com/guide/iphone/browse-the-web-privately-iphb01fc3c85/ios" target="_blank" rel="noopener noreferrer">Apple camera-permission instructions</a></div>
       <div class="settingsGroup"><h3>CAMERA</h3><div class="twoCols"><button class="settingsButton" id="cameraDefault" type="button">REAR CAMERA</button><button class="settingsButton" id="cameraUltra" type="button">TRY ULTRA-WIDE 0.5×</button></div><p id="cameraNote">iPhone controls camera permissions. Not all browsers expose the ultra-wide lens or hardware zoom.</p><label for="qualitySelect">Live camera performance</label><select id="qualitySelect"><option value="smooth" selected>Smooth live · 720p, lighter AI (recommended)</option><option value="detail">High detail · 1080p, slower AI</option></select><button class="settingsButton" id="recoverCamera" type="button">↻ RESTART LIVE CAMERA</button><p>Keeping the picture live takes priority over AI speed. If it freezes, use ↻. High detail uses more resources and may stall older iPhones.</p><label for="viewSelect">Picture appearance</label><select id="viewSelect"><option value="normal">Normal / natural color</option><option value="night">Brighten image</option><option value="outline">High contrast</option><option value="thermal">False-color effect (not thermal vision)</option></select><button class="settingsButton" id="refreshBtn" type="button">RELOAD OBJECT AI</button></div>
       <div class="settingsGroup"><h3>READ WRITING</h3><label class="switchLine" for="ocrSwitch"><span>Automatic text reading every 12 seconds (higher load)</span><input type="checkbox" id="ocrSwitch"></label><label class="switchLine" for="speechSwitch"><span>Automatically say new text after voice is enabled</span><input type="checkbox" id="speechSwitch"></label><p>Automatic reading is OFF by default to reduce freezes. Tap READ TEXT below the camera to scan words manually. Text is kept away from the picture. Automatic speech needs a user tap to begin on iPhone.</p></div>
       <div class="settingsGroup"><h3>ITEM CHECK</h3><p>CHECK ITEM takes a detailed crop from the center and examines two orientations with the standard model. It works without the large weapon download. Conflicting knife, scissors, toothbrush or utensil guesses are shown as uncertain, not silently changed into knives. Scores measure model output, not the chance an identification is correct. For another experimental check, enable the optional model and use SCAN CENTER CLOSE-UP. It compares knife prompts with non-weapon lookalikes too.</p></div>
@@ -556,13 +556,13 @@ function machinePhoto(x,W,H){
  x.strokeStyle='#ff9b90';x.lineWidth=1;x.beginPath();x.arc(W/2,H/2,58,0,Math.PI*2);x.moveTo(W/2-75,H/2);x.lineTo(W/2+75,H/2);x.moveTo(W/2,H/2-75);x.lineTo(W/2,H/2+75);x.stroke();
  x.fillStyle='#160303e8';x.fillRect(8,8,W-16,64);x.fillRect(8,H-64,W-16,56);
  x.fillStyle='#ffb1a8';x.font='600 12px monospace';
- x.fillText('RECON CAM / MACHINE VISION / 12.7',16,30);
+ x.fillText('TERMINATOR CAM / MACHINE VISION / 12.7',16,30);
  x.fillText($('visionSource').textContent,16,52);
  x.fillText($('visionClock').textContent+' / '+$('visionCount').textContent,16,H-42);
  const text=$('visionAnalysis').textContent;
  x.fillText(text.length>Math.floor((W-32)/7)?text.slice(0,Math.max(1,Math.floor((W-32)/7)-3))+'...':text,16,H-20);
 }
-function savePhoto(){if(!S.running||!video.videoWidth){notify('Start camera first.');return}const W=overlay.clientWidth,H=overlay.clientHeight,dpr=2,can=document.createElement('canvas');can.width=W*dpr;can.height=H*dpr;const x=can.getContext('2d');x.scale(dpr,dpr);x.fillStyle='#000';x.fillRect(0,0,W,H);const vw=video.videoWidth,vh=video.videoHeight,sc=Math.max(W/vw,H/vh),cw=vw*sc,ch=vh*sc,rel=S.deviceZoom?1:S.zoom/(S.ultra?.5:1);x.save();x.translate(W/2,H/2);x.scale(Math.max(1,rel),Math.max(1,rel));x.translate(-W/2,-H/2);x.filter=video.style.filter||'none';x.drawImage(video,(W-cw)/2,(H-ch)/2,cw,ch);x.restore();x.drawImage(overlay,0,0,W,H);if(machineVision())machinePhoto(x,W,H);can.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`recon-cam-v12-7-${Date.now()}.jpg`;a.click();setTimeout(()=>URL.revokeObjectURL(url),12000)},'image/jpeg',.92)}
+function savePhoto(){if(!S.running||!video.videoWidth){notify('Start camera first.');return}const W=overlay.clientWidth,H=overlay.clientHeight,dpr=2,can=document.createElement('canvas');can.width=W*dpr;can.height=H*dpr;const x=can.getContext('2d');x.scale(dpr,dpr);x.fillStyle='#000';x.fillRect(0,0,W,H);const vw=video.videoWidth,vh=video.videoHeight,sc=Math.max(W/vw,H/vh),cw=vw*sc,ch=vh*sc,rel=S.deviceZoom?1:S.zoom/(S.ultra?.5:1);x.save();x.translate(W/2,H/2);x.scale(Math.max(1,rel),Math.max(1,rel));x.translate(-W/2,-H/2);x.filter=video.style.filter||'none';x.drawImage(video,(W-cw)/2,(H-ch)/2,cw,ch);x.restore();x.drawImage(overlay,0,0,W,H);if(machineVision())machinePhoto(x,W,H);can.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`terminator-cam-v12-7-${Date.now()}.jpg`;a.click();setTimeout(()=>URL.revokeObjectURL(url),12000)},'image/jpeg',.92)}
 function sheet(open){$('sheet').classList.toggle('open',open)}
 $('settingsBtn').onclick=()=>sheet(true);$('closeSheet').onclick=()=>sheet(false);$('sheet').addEventListener('click',e=>{if(e.target===$('sheet'))sheet(false)});
 $('startBtn').onclick=()=>S.running?(stop(),notify('Camera stopped',0)):start(false);
@@ -595,7 +595,7 @@ $('weaponStatus').onclick=()=>{
 };
 window.addEventListener('resize',fit);video.addEventListener('loadedmetadata',fit);document.addEventListener('visibilitychange',()=>{if(document.hidden&&S.running){S.resumeOnVisible=true;stop()}else if(!document.hidden&&S.resumeOnVisible){S.resumeOnVisible=false;setTimeout(()=>start(false),300)}});
 let touchDistance=0;const feed=$('feed');feed.addEventListener('touchstart',e=>{if(e.touches.length===2)touchDistance=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY)},{passive:true});feed.addEventListener('touchend',()=>{touchDistance=0},{passive:true});feed.addEventListener('touchmove',e=>{if(e.touches.length!==2||!touchDistance)return;const distance=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);if(Math.abs(distance-touchDistance)>24){const step=distance>touchDistance ? 0.25 : -0.25;touchDistance=distance;setZoom(Math.max(1,S.zoom+step))}},{passive:true});
-// Clear old PWA cache/service-worker instances from previous Recon Cam versions.
+// Clear old PWA cache/service-worker instances from previous Terminator Cam versions.
 // Embedded previews can expose these properties but throw when they are read.
 try{
 if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(rs=>Promise.all(rs.filter(r=>r.scope.includes('/recon-cam/')).map(r=>r.unregister()))).catch(()=>{});}

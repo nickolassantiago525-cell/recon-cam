@@ -1,5 +1,13 @@
 # Recon Cam V12.7
 
+## Terminator Cam rename
+
+- Renamed the runtime header, page and settings titles, camera help, install
+  manifest, exported-photo branding and filenames to Terminator Cam.
+- Updated the existing monogram icon to T with the red palette.
+- Repository name, public URL and legacy-cache cleanup identifiers are retained
+  so existing bookmarks and upgrades keep working.
+
 ## Cinematic optical overlay
 
 - Brighter double sweep with a faint trailing band and deliberate stepped motion.
